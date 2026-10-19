@@ -58,6 +58,10 @@ activating any profile, implement a provider adapter with explicit access checks
 host-enforced permission and cost ceilings, timeout and cancellation receipts,
 revision checks, test fixtures, and a real runtime qualification. Record the
 provider response and failures without upgrading another profile by association.
+The [disconnected hosted-provider drafts](PROVIDER-DRAFTS.md) prepare text-only
+request shapes and inspect offline response fixtures for four documented
+families. They supply no credential or transport and do not change the disabled
+or runtime-unverified status of any role.
 
 The existing Commons Builder/Reviewer workflow is a separate, locally configured
 path and still does not execute generated JavaScript. Its parser and review do

@@ -38,6 +38,7 @@ export const areas = {
       "shared/project-timeline.mjs",
       "shared/agent-catalog.mjs",
       "shared/agent-evaluation.mjs",
+      "shared/provider-drafts.mjs",
       "db/migrations/003_commons.sql",
       "db/migrations/004_commons_storage.sql",
       "db/migrations/005_commons_issues.sql",
@@ -62,11 +63,12 @@ export const areas = {
       "tests/contributions.test.mjs",
       "tests/project-timeline.test.mjs",
       "tests/agent-catalog.test.mjs",
+      "tests/provider-drafts.test.mjs",
       "tests/simulate-commons.test.mjs",
       "tests/browser/commons-first-run.spec.mjs",
       "tests/browser/commons-provider.spec.mjs",
     ],
-    docs: ["docs/COMMONS.md", "docs/BACKEND-PERFORMANCE.md", "docs/RELEASE.md", "docs/AGENT-CATALOG.md", "docs/SIMULATIONS.md"],
+    docs: ["docs/COMMONS.md", "docs/BACKEND-PERFORMANCE.md", "docs/RELEASE.md", "docs/AGENT-CATALOG.md", "docs/PROVIDER-DRAFTS.md", "docs/SIMULATIONS.md"],
   },
   lab: {
     purpose:
