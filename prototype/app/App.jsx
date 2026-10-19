@@ -356,14 +356,14 @@ export function App() {
                   <span
                     id="connection"
                     data-status={
-                      error ? "offline" : busy ? "loading" : "online"
+                      error ? "offline" : busy || !data ? "loading" : "online"
                     }
                   >
                     <span className="connection-dot" aria-hidden="true" />
                     <span id="connection-label" role="status">
                       {error
                         ? "Connection unavailable"
-                        : busy
+                        : busy || !data
                           ? "Syncing…"
                           : "Saved to PostgreSQL"}
                     </span>
@@ -371,7 +371,7 @@ export function App() {
                 </div>
                 <div className="playback">
                   <span id="playback-status" role="status">
-                    {data ? `Step ${data.step} / 10` : "Loading…"}
+                    {data ? `Step ${data.step} / 10` : error ? "Unavailable" : "Loading…"}
                   </span>
                   <button
                     id="playback-toggle"
@@ -429,7 +429,7 @@ export function App() {
             data-page={kind}
             ref={main}
             tabIndex="-1"
-            aria-busy={!data || busy}
+            aria-busy={busy || (!data && !error)}
           >
             {data ||
             ["login", "signup", "profile", "my-agents"].includes(kind) ? (
@@ -442,7 +442,11 @@ export function App() {
                     "Connecting to your saved projects and agent activity."}
                 </p>
                 {error && (
-                  <button className="btn" onClick={workspace.refresh}>
+                  <button className="btn" onClick={async () => {
+                    const next = await workspace.refresh();
+                    // The retry control disappears after success; retain keyboard entry to content.
+                    if (next) main.current?.focus({ preventScroll: true });
+                  }}>
                     Try again
                   </button>
                 )}

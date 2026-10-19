@@ -77,6 +77,10 @@ Mobile repository filters and standalone search/metadata actions have a minimum
 
 One React root owns all active pages and preview controls. Preserve component/node identity, text selection, code scroll, visible sections and focus when the scenario advances or refreshes. Use keyed React updates within the same route, retain the reading anchor when events are prepended, and restore each route's document scroll on return. A new run starts at the top. Route navigation moves focus to main without another scroll. Make pending, offline, stale-version, empty and saved states explicit. Retain previous data when the server is unavailable. Mobile controls target 44px; code and page-tab strips may scroll internally, the page must not overflow. Reserve scrollbar space and stable control widths. Mobile navigation exposes the same destinations as desktop without a disclosure or section selector. The skip link moves focus without replacing the current route. Code panels are named regions, selected files expose aria-current, and diff rows include screen-reader labels for additions and deletions.
 
+A settled initial connection error clears the main region's busy state and shows
+Unavailable in the scenario status. Explicit keyboard retry returns focus to main
+after content is restored; background refresh does not move focus.
+
 ## Motion
 
 No authored animation or transition in the workspace, including modal scale/fade, progress interpolation, hover motion and smooth route scrolling. Update status immediately without recreating the page. Native dialog handles focus and Escape; returning focus must not move the document. Game canvas motion belongs to gameplay and remains independent of workspace chrome.

@@ -48,6 +48,7 @@ do not establish runtime correctness. [Complete workflow](COMMONS.md).
 | Observation | Check and recovery |
 | --- | --- |
 | Gateway does not open | Run `npm run doctor`; check the terminal that runs `npm run dev`. Port 4173 must be free for this project. Do not remove a database lock to force startup. |
+| Workspace unavailable after the page opens | The initial workspace request failed. Restore the local service, then use **Try again**. The settled error is not marked busy; keyboard retry returns focus to the main content after success. |
 | Built UI is older than source | `npm start` serves `dist`; run `npm run build` after source changes, or use `npm run dev` for development. |
 | **Run agents** is disabled | Check that the task has text, the project is active, no task is running, and **Check model** reports available. Start the local provider if it is offline. |
 | Health request fails | Check gateway and provider terminals, then select **Check model** again. The draft remains in the form. |
@@ -67,3 +68,9 @@ comes from a real Chrome run against disposable services with one routed HTTP
 429 fixture. It shows the visible recovery message; the fixture then retried
 against the local service and received HTTP 200. It is not a production load
 test or evidence of a model run.
+
+The [initial unavailable-workspace capture](media/workspace-unavailable-2026-10-19.png)
+comes from an actual Chrome run with one routed HTTP 503 on the initial state
+read. The same test reaches the real local service with HTTP 200 after keyboard
+Retry, verifies focus returns to main and keeps all navigation visible. It uses
+disposable services and starts no model work.
