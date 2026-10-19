@@ -1,7 +1,7 @@
-import { spawn } from "node:child_process";
 import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { runBrowserTests } from "./browser-runtime.mjs";
 
 // Each group gets a fresh disposable service cluster. The ordinary 180/minute
 // API limiter remains active; no test-only bypass or reset endpoint is used.
@@ -34,17 +34,10 @@ async function run() {
   await assertBrowserCoverage();
   for (const group of browserGroups) {
     console.log(`\nBrowser group: ${group.name} (fresh disposable services)`);
-    const code = await new Promise((done, reject) => {
-      const child = spawn(process.execPath, [
-        "node_modules/playwright/cli.js", "test",
-        ...group.files.map((name) => `tests/browser/${name}`),
-      ], {
-        cwd: resolve("."), stdio: "inherit", shell: false,
-        env: { ...process.env, CZ_BROWSER_OUTPUT_DIR: `runtime/browser-results/${group.name}` },
-      });
-      child.once("error", reject);
-      child.once("exit", (status, signal) => done(signal ? 1 : (status ?? 1)));
-    });
+    const code = await runBrowserTests(
+      group.files.map((name) => `tests/browser/${name}`),
+      `runtime/browser-results/${group.name}`,
+    );
     if (code !== 0) {
       process.exitCode = code;
       return;

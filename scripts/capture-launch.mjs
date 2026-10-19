@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { chromium, expect } from "@playwright/test";
+import { browserTools } from "./browser-runtime.mjs";
 import { startServices } from "./services.mjs";
 import { fingerprint } from "./project-files.mjs";
 
@@ -10,6 +10,7 @@ const startedAt = new Date().toISOString();
 await writeFile(`${output}/manifest.json`, JSON.stringify({ status: "running", startedAt }) + "\n");
 let browser, cluster;
 try {
+  const { chromium, expect } = await browserTools();
   cluster = await startServices({ memory: true, staticRoot: "dist",
     ports: { gateway: 0, workspace: 0, identity: 0, ranking: 0 } });
   browser = await chromium.launch(process.env.CZ_BROWSER_EXECUTABLE

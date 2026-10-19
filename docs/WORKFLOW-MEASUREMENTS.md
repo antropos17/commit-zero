@@ -6,6 +6,38 @@ or normal user database write was part of these measurements.
 
 ## Feedback loop
 
+### Browser temporary paths and readiness
+
+Before the browser-runtime change, a read-only Node check returned
+`C:\Users\murtu\AppData\Local\Temp`. Installed Playwright 1.64.1 source uses
+`os.tmpdir()` for temporary profiles/artifacts; the old browser entrypoints did
+not set workspace variables. No baseline browser was launched for this check.
+Receipt: `runtime/verification/browser-temp-baseline-2026-10-19.json` includes
+the installed bundle digest and baseline local commit `b027fab`.
+
+Decision: share process-local `TEMP`/`TMP`/`TMPDIR` setup before Playwright import
+or child creation. The [Playwright launch reference](https://playwright.dev/docs/api/class-browsertype#browser-type-launch),
+accessed 2026-10-19, documents temporary artifact/download cleanup after browser
+closure. `browser:doctor` checks the actual profile path through CDP rather than
+inferring it solely from those settings. This probe uses `--enable-automation`
+because the installed Chrome otherwise rejects command-line inspection.
+
+One actual Chrome 155.0.8059.80 probe took 1,196 ms, opened only `about:blank`,
+observed a profile inside `X:\ai-github\.cache\tmp`, and confirmed removal after
+close. A missing-executable probe reported `blocked`; the first CDP attempt
+reported `failed` without claiming cleanup verification. Receipts are
+`runtime/verification/browser-doctor-{missing,cdp-baseline,profile}-2026-10-19.json`.
+This single observation is not a startup speedup or application acceptance test.
+No global Windows setting, existing browser profile or model was changed.
+
+`test:browser` passed the three account recovery journeys through the new runner.
+Launch capture and an 80-message/one-sample UI benchmark also exited successfully;
+their integration receipts are `browser-temp-{launch,benchmark}-2026-10-19.json`
+under `runtime/verification`. That small benchmark is not a new timing comparison.
+The profile/path checks establish ordinary tool hygiene, not a security boundary.
+
+### Earlier feedback measurements
+
 | Command | Observed samples | What it covers |
 | --- | --- | --- |
 | `npm run check:fast` | One current run: lint 689 ms, repository 95 ms, pure tests 1,334 ms (9/9) | Useful for quick pure-code feedback; excludes databases, build, DOM and serving. Not acceptance. |

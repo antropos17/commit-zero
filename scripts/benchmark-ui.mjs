@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
 import { parseArgs } from "node:util";
-import { chromium } from "@playwright/test";
+import { browserTools } from "./browser-runtime.mjs";
 import { startServices } from "./services.mjs";
 import { fingerprint } from "./project-files.mjs";
 
@@ -17,6 +17,7 @@ if (!Number.isInteger(history) || history < 1 || history > 5000 ||
 
 // A routed, read-only browser fixture measures client rendering, not storage or
 // provider throughput. Every service uses disposable in-memory databases.
+const { chromium } = await browserTools();
 const cluster = await startServices({ memory: true, staticRoot: "dist",
   ports: { gateway: 0, workspace: 0, identity: 0, ranking: 0 } });
 let browser;

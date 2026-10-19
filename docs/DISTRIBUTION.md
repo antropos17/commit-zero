@@ -94,13 +94,13 @@ announcement posted elsewhere.
 Before publishing a release, replace the candidate version with an actual tag,
 link its exact commit and CI run, re-run the documented gates, and record real
 browser/model/sandbox coverage separately. No release was created by this note.
-Current implemented-code checkpoint: public `ae6569b`, [CI run 39220678511](https://github.com/antropos17/commit-zero/actions/runs/39220678511)
-passed the full gate, Chromium and runtime dependency audit after the Commons
-retry repair. Local frozen gate at `3bfcc8d` passed 72/72 Node tests, DOM/axe 2/2,
+Current implemented-code checkpoint: public `0835284`, [CI run 39222123250](https://github.com/antropos17/commit-zero/actions/runs/39222123250)
+passed the full gate, Chromium and runtime dependency audit after account
+recovery. Local frozen gate at `b027fab` passed 72/72 Node tests, DOM/axe 2/2,
 build and serving with source hash
-`26cf7d425e0bc517e4e67b52aa530f315823736ffc268f940052dd7474f47c73`;
-separate local Chrome coverage passed 12/12. The account-recovery addition awaits
-its full gate. Verify the final candidate revision before creating a release.
+`18a10d49f2f726f5005289d035fe01d558b70fa72f8cc55e81996a26d404b3b4`;
+separate local Chrome coverage passed 15/15. Browser tooling changes await
+their full gate. Verify the final candidate revision before creating a release.
 The checked capture set is already published at `98389bd`.
 
 ## Show HN fact sheet for a human author

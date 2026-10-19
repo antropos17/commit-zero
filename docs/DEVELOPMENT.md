@@ -31,6 +31,11 @@
 Append `-- --plan` to any suite to inspect its exact commands without running them.
 Area maps also list Playwright `.spec.mjs` files for navigation; area checks run
 only Node `.test.mjs` files. Run `npm run test:ui` for real browser coverage.
+`npm run browser:doctor` checks the configured Chromium executable, opens a
+fresh blank page, verifies its temporary profile is inside `.cache/tmp`, closes
+it and checks profile removal. It reports no application or sandbox qualification.
+No browser is downloaded automatically. The mutable report is
+`.cache/verification/latest-browser.json`; preserve an immutable copy when needed.
 `npm run benchmark:ui -- --history 1000 --samples 5` measures a labelled read-only
 chat fixture in cold browser contexts after `npm run build`. Use the same browser,
 viewport and parameters for comparison; it never opens a retained user store.
@@ -85,7 +90,12 @@ output under `.cache/tmp`. Child processes receive TEMP/TMP/TMPDIR explicitly.
   normal 180-request/minute API limiter active. `scripts/test-ui.mjs`
   checks that each browser spec is listed exactly once. Playwright global setup
   awaits child-service shutdown after each group; the production limit is not
-  changed. Run a focused spec with `npx playwright test tests/browser/<name>.spec.mjs`.
+  changed. Run a focused spec with
+  `npm run test:browser -- tests/browser/<name>.spec.mjs` (and optional `--grep`).
+  The runner applies workspace `TEMP`, `TMP` and `TMPDIR` before importing
+  Playwright or starting children. Capture and benchmark helpers use the same
+  setup. These process-local paths are ordinary same-user storage, not isolation.
+  Existing files, symlinks or junctions at `.cache`/`.cache/tmp` are rejected.
   Recovery fixtures wait for the actual failed request to settle before retrying.
   The initial Commons retry test pauses polling with Playwright's clock and holds
   the retry response until busy/disabled assertions pass. Resume its clock before
