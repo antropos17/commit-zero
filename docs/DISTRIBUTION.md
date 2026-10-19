@@ -99,6 +99,18 @@ announcement posted elsewhere.
 > and review do not prove code behavior. Follow `README.md` for installation,
 > `docs/FIRST-RUN.md` for recovery and `docs/RELEASE.md` for scope.
 
+Candidate addendum for the maker's final technical notes:
+
+> Saved-author discovery now preserves the selected identity through unavailable
+> reads, and explicit retries retain drafts and keyboard focus. Timeline paging,
+> provider readiness and Language lab discovery distinguish failed reads from
+> last-available data. A clean public-source archive installed fresh dependencies,
+> built, served and passed model-free first-run/recovery journeys. Source tooling
+> now checks pinned vendored-reference bytes and original notices, diagnoses its
+> own checkout and verifies immutable working bytes during publication transfer.
+> New roles and hosted drafts remain disabled/disconnected; these source and
+> simulation checks do not qualify model behavior or sandbox isolation.
+
 Before publishing a release, replace the candidate version with an actual tag,
 link its exact commit and CI run, re-run the documented gates, and record real
 browser/model/sandbox coverage separately. No release was created by this note.

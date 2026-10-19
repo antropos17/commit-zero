@@ -5,6 +5,20 @@ below were checked or attempted on 2026-10-19; documentation does not establish 
 capabilities or provider entitlement. The [mission log](MISSION-2026-10-19.md)
 records implementation and verification timestamps.
 
+## Preserve immutable bytes during source transfer
+
+Accessed 2026-10-19: Git's [autocrlf configuration](https://git-scm.com/docs/git-config#Documentation/git-config.txt-coreautocrlf),
+[attribute inspection](https://git-scm.com/docs/git-check-attr) and
+[raw blob reads](https://git-scm.com/docs/git-cat-file) inform a narrow transfer
+repair. An actual same-patch Windows replay produced correct staged objects but
+CRLF working notices. Decision: disable autocrlf only for the apply command and
+compare explicitly immutable working files directly with their staged blobs.
+Expected benefit: exact upstream license bytes survive attribute changes in the
+same patch; an index stat cache cannot make an incorrect working file look clean.
+The fixture verifies LF/CRLF preservation and corrupt-byte rejection, while the
+actual patch replay and later successful preparation provide separate evidence.
+No global Git configuration or upstream source file was changed.
+
 ## Keep pagination independent from head polling
 
 Actual Timeline fixtures exposed stale busy state across filters, terminal focus

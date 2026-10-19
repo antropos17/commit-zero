@@ -1,8 +1,9 @@
 # Docker runner: unqualified contract
 
-As of 2026-10-19, `docker info` cannot connect to the Docker engine on this
-Windows host; `com.docker.service` is stopped and WSL enumeration returns access
-denied. `npm run sandbox:doctor` reports `docker-daemon-unavailable`,
+At the initial 2026-10-19 capability check, `docker info` could not connect to the
+engine, the service read reported stopped, and WSL enumeration returned access
+denied. The final 14:02 UTC read still could not reach a daemon from this environment.
+`npm run sandbox:doctor` reports `docker-daemon-unavailable`,
 `containerExecuted: false`, and `isolationVerified: false`. No image was pulled,
 container run, generated code executed, filesystem denial observed, or container
 cleanup exercised. Commit Zero's product code runner remains unavailable.
