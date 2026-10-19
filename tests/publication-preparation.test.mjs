@@ -16,6 +16,7 @@ import { resolve, join, dirname, basename } from "node:path";
 import {
   preparePublication,
   parsePreparationArgs,
+  verifyImmutableStaging,
 } from "../scripts/prepare-publication.mjs";
 import {
   fingerprint,
@@ -231,6 +232,52 @@ test("publication preparation dry run preserves both histories/indexes and stagi
   });
   t.diagnostic(
     `Disposable fixture dry-run + staging: ${Date.now() - started} ms; not a comparative speedup measurement.`,
+  );
+});
+
+test("a patch adding immutable notices and their attributes preserves exact working bytes", async (t) => {
+  const { root, publication, options } = await fixture(t);
+  git(publication, "config", "core.autocrlf", "true");
+  await writeFile(
+    join(root, ".gitattributes"),
+    "* text=auto eol=lf\n*.bin binary\n/docs/vendor-licenses/** -text whitespace=-blank-at-eol,-blank-at-eof\n",
+  );
+  await mkdir(join(root, "docs/vendor-licenses"));
+  const lf = await readFile("docs/vendor-licenses/impeccable-LICENSE.txt");
+  const crlf = Buffer.from(
+    "Synthetic immutable CRLF fixture.\r\nSecond line.\r\n",
+  );
+  await writeFile(join(root, "docs/vendor-licenses/LF.txt"), lf);
+  await writeFile(join(root, "docs/vendor-licenses/CRLF.txt"), crlf);
+  git(root, "add", ".gitattributes", "docs/vendor-licenses");
+  git(
+    root,
+    "commit",
+    "-m",
+    "Pin fixture notices and their attributes together",
+  );
+  await receipts(root);
+  const staged = await preparePublication(root, { ...options, stage: true });
+  assert.equal(staged.status, "staged", staged.error);
+  assert.equal(staged.stagedTree, git(root, "rev-parse", "HEAD^{tree}"));
+  assert.deepEqual(
+    await readFile(join(publication, "docs/vendor-licenses/LF.txt")),
+    lf,
+  );
+  assert.deepEqual(
+    await readFile(join(publication, "docs/vendor-licenses/CRLF.txt")),
+    crlf,
+  );
+  assert.equal(git(publication, "diff", "--name-only"), "");
+  assert.equal(git(publication, "rev-parse", "HEAD"), options.expectedPublic);
+  assert.equal(git(publication, "config", "core.autocrlf"), "true");
+  await writeFile(
+    join(publication, "docs/vendor-licenses/LF.txt"),
+    Buffer.from(lf.toString().replaceAll("\n", "\r\n")),
+  );
+  await assert.rejects(
+    verifyImmutableStaging(publication, ["docs/vendor-licenses/LF.txt"]),
+    /Immutable working bytes differ/,
   );
 });
 

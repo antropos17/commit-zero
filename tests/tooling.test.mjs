@@ -25,7 +25,9 @@ test("Verification preserves the full gate, focused scope and fail-fast results"
     qualityPlan("commons").at(-1).args.includes("tests/commons.test.mjs"),
   );
   assert.ok(
-    !qualityPlan("commons").at(-1).args.some((file) => file.endsWith(".spec.mjs")),
+    !qualityPlan("commons")
+      .at(-1)
+      .args.some((file) => file.endsWith(".spec.mjs")),
   );
   assert.throws(() => qualityPlan("typo"), /Unknown suite/);
   const called = [];
@@ -151,4 +153,37 @@ test("Doctor distinguishes a healthy dependency set from partial health and offl
   );
   assert.equal(offline.checks.find((c) => c.name === "Node").status, "error");
   assert.equal(offline.ok, false);
+});
+
+test("Doctor treats an archive inside another checkout as source-only rather than inheriting its Git identity", async (t) => {
+  const base = resolve(".cache/tmp");
+  await mkdir(base, { recursive: true });
+  const root = await mkdtemp(resolve(base, "doctor-archive-"));
+  t.after(async () => {
+    assert(inside(base, root) && root !== base);
+    await rm(root, { recursive: true, force: true });
+  });
+  await mkdir(resolve(root, "docs"));
+  await writeFile(
+    resolve(root, "package.json"),
+    JSON.stringify({ dependencies: {}, devDependencies: {} }),
+  );
+  await writeFile(
+    resolve(root, "package-lock.json"),
+    JSON.stringify({ packages: {} }),
+  );
+  await writeFile(
+    resolve(root, "docs/CONTEXT.md"),
+    "Synthetic source-only archive fixture.\n",
+  );
+  const result = await diagnose({
+    root,
+    fetcher: async () => {
+      throw new Error("offline fixture");
+    },
+  });
+  const git = result.checks.find((check) => check.name === "Git");
+  assert.equal(git.status, "warning");
+  assert.match(git.message, /Git metadata unavailable/);
+  assert(!git.message.includes("codex/development-foundation"));
 });

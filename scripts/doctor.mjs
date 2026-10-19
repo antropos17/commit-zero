@@ -1,8 +1,15 @@
-import { readFile, access, statfs, stat } from "node:fs/promises";
+import {
+  readFile,
+  access,
+  statfs,
+  stat,
+  lstat,
+  realpath,
+} from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { walk } from "./project-files.mjs";
+import { walk, gitEnvironment } from "./project-files.mjs";
 
 export function localBase(value) {
   const url = new URL(value);
@@ -77,16 +84,28 @@ export async function diagnose({
     `${freeGB.toFixed(1)} GB free on the workspace volume`,
   );
   try {
-    const status = execFileSync("git", ["status", "--porcelain=v1", "-z"], {
-      cwd: root,
-      encoding: "utf8",
-      windowsHide: true,
-    });
-    const branch = execFileSync("git", ["branch", "--show-current"], {
-      cwd: root,
-      encoding: "utf8",
-      windowsHide: true,
-    }).trim();
+    const marker = await lstat(resolve(root, ".git"));
+    if (marker.isSymbolicLink() || (!marker.isDirectory() && !marker.isFile()))
+      throw new Error("No ordinary local Git metadata.");
+    const git = (args) =>
+      execFileSync(
+        "git",
+        ["-c", `safe.directory=${root}`, "-C", root, ...args],
+        {
+          encoding: "utf8",
+          windowsHide: true,
+          timeout: 8000,
+          env: gitEnvironment(),
+          stdio: ["ignore", "pipe", "pipe"],
+        },
+      );
+    if (
+      (await realpath(git(["rev-parse", "--show-toplevel"]).trim())) !==
+      (await realpath(root))
+    )
+      throw new Error("Git metadata belongs to another checkout.");
+    const status = git(["status", "--porcelain=v1", "-z"]);
+    const branch = git(["branch", "--show-current"]).trim();
     record(
       "Git",
       "ok",

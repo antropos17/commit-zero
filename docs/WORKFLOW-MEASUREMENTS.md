@@ -6,6 +6,40 @@ or normal user database write was part of these measurements.
 
 ## Feedback loop
 
+### Clean public source archive
+
+On 2026-10-19, public `837a3d156b103434d4e6ca8458a064389e70861a` was
+archived and extracted into a new workspace-local directory with no `.git`,
+`node_modules`, retained store or model. Archive SHA-256:
+`56f289a37757db3a3b62e03d8b2b6396dda7c9a6bcc6959044300b0927b1c167`.
+`npm ci --cache X:/ai-github/.cache/npm-install-2026-10-19 --no-audit --no-fund`
+installed 226 packages with exit 0. The cache and dependency directory were new;
+this is one installation observation, not a timing comparison or speedup.
+
+`source:inspect`, `skills:verify`, production build and in-memory `test:serve`
+passed. Three actual Chrome first-run/recovery cases passed from that archive's
+own installed dependencies and disposable services. No retained stores or model
+were present. Receipt `runtime/verification/clean-install-837a3d1-2026-10-19.json`
+and npm/browser logs retain the exact scope. The archive's 443-file, 10,643,905-byte
+working-source hash was `1312ad7b8e0ddb7adaea299cd15c5a5df4addffa4ff790089746b251a12c70b8`.
+It differs from the Windows maintainer working hash because Git normalizes text;
+archive/commit identity and environment-specific byte hashes remain separate.
+
+The install exposed Doctor inheriting the parent checkout's branch. A minimal
+source-only fixture failed before the fix; metadata now must belong to the actual
+root and inherited Git overrides are cleared for the bounded reads. The corrected
+Doctor also reported unavailable Git metadata against the actual archive. These
+checks do not turn the archive into an independent security sandbox.
+
+A separate actual-patch replay exposed CRLF conversion when an immutable notice
+and its attributes arrived together. The original replay produced 1,091 bytes /
+21 CRLFs for a 1,070-byte LF notice; command-scoped `core.autocrlf=false` preserved
+the exact 1,070 bytes. Both produced the intended Git tree, so tree checks alone
+missed the dirty working bytes. The preparer now directly compares immutable
+working files with staged blobs. The targeted fixture tests LF/CRLF preservation
+and refuses explicit byte corruption without changing the repository's settings.
+All recovery bytes from the original transfer were preserved before correction.
+
 ### Maintainer transfer friction and reproducible preparation
 
 Repeated mission publications used handwritten path-copy/stage/tree-compare

@@ -61,6 +61,11 @@ The preparer never fetches, commits, pushes or creates a release/tag.
 original notices against pinned byte identities. It performs no download or
 execution. [Sources, terms and update procedure](VENDORED-SKILLS.md) apply when
 using or changing those references; the full gate includes its drift checks.
+Source hashes identify actual working bytes. A Git archive can have different
+text line endings from a Windows working tree while retaining the same committed
+content. Record the Git revision/tree and each environment's hash separately.
+Doctor requires metadata belonging to its own root; an archive inside another
+checkout reports unavailable Git metadata instead of inheriting the parent branch.
 `npm run benchmark:ui -- --history 1000 --samples 5` measures a labelled read-only
 chat fixture in cold browser contexts after `npm run build`. Use the same browser,
 viewport and parameters for comparison; it never opens a retained user store.

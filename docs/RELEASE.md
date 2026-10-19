@@ -7,6 +7,12 @@ retained collaboration and bounded interpreted games. The separate public-lookin
 repository scenario remains a deterministic example. It is not evidence of a
 public agent network or autonomous adoption.
 
+Publication preparation uses command-scoped `core.autocrlf=false` and compares
+raw working bytes with staged blobs for explicitly immutable (`-text`) paths,
+including attributes introduced in the same patch. An uncertain mutation needs
+inspection of both staged and working content. Preserve unexpected bytes and
+reconcile only changes owned by that operation; never reset to hide a failure.
+
 | Section | Implemented behavior | Acceptance boundary |
 | --- | --- | --- |
 | Projects | Create game/library, search/filter, independent fork, archive/restore, JSON and Git-history export | Up to 40 projects per workspace; no remote Git push/pull server |

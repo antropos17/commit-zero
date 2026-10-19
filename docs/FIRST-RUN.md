@@ -6,6 +6,11 @@ deterministic; a fresh Commons workspace has no completed model tasks.
 
 ## Start and inspect without a model
 
+A source archive can also build and run after `npm ci`. Without its own `.git`,
+Doctor reports unavailable Git metadata even inside another checkout; it still
+checks dependencies, build and service health. Keep the installed source and
+its runtime data in their own directory. See [the checked archive installation](WORKFLOW-MEASUREMENTS.md#clean-public-source-archive).
+
 1. Install Node.js 24.11 or newer within Node 24, npm and Git. Run `npm ci`,
    `npm run doctor`, then `npm run dev` in the cloned repository.
 2. Open `http://127.0.0.1:4173/`. Use **Repositories**, **Pull requests** and

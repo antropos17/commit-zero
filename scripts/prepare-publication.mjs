@@ -67,6 +67,30 @@ const dirty = async (root) =>
 const indexHash = async (root) =>
   digest(await readFile(resolve(root, ".git/index")));
 
+export async function verifyImmutableStaging(root, paths) {
+  const attributes = (
+    await git(root, ["check-attr", "-z", "text", "--", ...paths])
+  )
+    .toString("utf8")
+    .split("\0");
+  for (let index = 0; index + 2 < attributes.length; index += 3) {
+    if (attributes[index + 2] !== "unset") continue;
+    const path = attributes[index];
+    let bytes;
+    try {
+      bytes = await readFile(resolve(root, path));
+    } catch (error) {
+      if (error.code === "ENOENT") continue;
+      throw error;
+    }
+    const staged = await git(root, ["cat-file", "blob", `:${path}`]);
+    if (!bytes.equals(staged))
+      throw new Error(
+        `Immutable working bytes differ from the staged blob: ${path}`,
+      );
+  }
+}
+
 async function ordinary(path, directory = false) {
   const info = await lstat(path);
   if (
@@ -312,12 +336,16 @@ export async function preparePublication(
       report.stageAttempted = true;
       report.mutationOutcome = "uncertain";
       await git(publication, [
+        "-c",
+        "core.autocrlf=false",
         "apply",
         "--index",
         "--whitespace=nowarn",
         patchPath,
       ]);
       report.stagedTree = await value(publication, ["write-tree"]);
+      // Attribute changes in the same patch must preserve raw upstream notices.
+      await verifyImmutableStaging(publication, paths);
       const stagedPaths = (
         await git(publication, [
           "diff",
