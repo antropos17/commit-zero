@@ -6,6 +6,39 @@ or normal user database write was part of these measurements.
 
 ## Feedback loop
 
+### Source-index coverage and measured cost
+
+At 10:47 UTC, an actual input inventory found 147 tracked paths outside v1's
+272-file / 5,637,895-byte index. These included root contribution/license/security
+and environment-template files, legacy prototype files and vendored references.
+A controlled ordinary source-only fixture changed `CONTRIBUTING.md` without
+changing the old hash. Receipt: `runtime/verification/source-index-before-2026-10-19.json`.
+No real configuration, runtime history or installed model was read or changed.
+
+Decision: source index v2 includes ordinary tracked paths and Git modes alongside
+registered working inputs, with archive support and explicit rejected states.
+The initial expanded probe covered 419 files / 9,918,325 bytes with zero omitted
+tracked files; the same fixture's metadata change now changed its hash. Receipt:
+`runtime/verification/source-index-after-2026-10-19.json`.
+
+| Five observed fingerprint calls, milliseconds | Values |
+| --- | --- |
+| Earlier index | 137, 83, 82, 81, 80 |
+| Initial expanded index | 786, 261, 234, 222, 270 |
+
+Both batches used this Windows host and Node 24.11.1; raw commands and hashes are
+in the receipts. The input payloads and metadata work intentionally differ, the
+first call is cold, and host scheduling/cache effects remain. These observations
+measure the cost of broader evidence coverage and establish no speedup.
+The versioned current reproduction is `npm run source:inspect -- --samples 5`;
+its output reports the exact present file/byte counts and all timed samples.
+
+Nine source-index/CLI tests exercise root and unregistered tracked input changes,
+mode changes, deletion across a real commit, archive operation, private-path and
+link refusal, sparse/hidden flags, ambient Git overrides and unchanged index bytes.
+They use disposable Git/file fixtures, never real credentials or retained stores.
+Inspection failure replaces an earlier inspection; it never counts as a full gate.
+
 ### Browser temporary paths and readiness
 
 Before the browser-runtime change, a read-only Node check returned

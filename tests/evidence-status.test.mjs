@@ -6,6 +6,7 @@ import {
 } from "../scripts/evidence-status.mjs";
 import { browserGroups } from "../scripts/test-ui.mjs";
 import { qualityPlan } from "../scripts/quality-plan.mjs";
+import { sourceIndexVersion } from "../scripts/project-files.mjs";
 
 function fixture() {
   // Synthetic contract data only. Never saved as real verification evidence.
@@ -14,6 +15,7 @@ function fixture() {
     publicHead = "2".repeat(40),
     tree = "3".repeat(40);
   const stamp = {
+    sourceIndexVersion,
     status: "passed",
     stable: true,
     sourceHash,
@@ -89,6 +91,12 @@ test("evidence permits different Git histories only with matching trees and curr
 
 test("evidence rejects stale, focused, partial and probe-only verification", () => {
   const changes = [
+    (f) => {
+      f.full.sourceIndexVersion = 1;
+    },
+    (f) => {
+      delete f.browser.sourceIndexVersion;
+    },
     (f) => {
       f.full.sourceHash = "b".repeat(64);
     },

@@ -47,6 +47,26 @@ No substitute model is inferred from a familiar display name.
 
 ## Other adopted decisions and their evidence
 
+### Complete the source evidence boundary before publication automation
+
+The primary [Git ls-files reference](https://git-scm.com/docs/git-ls-files), accessed
+2026-10-19, documents NUL-delimited names, stage/mode records and hidden/sparse
+flags. Decision: extend the shared source index to tracked regular inputs and
+registered archive/working inputs, and reject unsupported index states. Expected
+benefit: root policy, configuration and legacy/reference changes invalidate frozen
+receipts. An actual omitted-input inventory and controlled metadata edit exposed
+the gap; nine filesystem/Git/CLI tests verify the correction. [Measurements and
+reproduction](WORKFLOW-MEASUREMENTS.md#source-index-coverage-and-measured-cost).
+The read-only inspection tool adds no provider, model execution or security sandbox.
+
+Git's [commit-tree](https://git-scm.com/docs/git-commit-tree),
+[hash-object](https://git-scm.com/docs/git-hash-object) and
+[compare-and-swap ref update](https://git-scm.com/docs/git-update-ref) documentation
+were also reviewed for a reversible publication preparer. Decision: defer that
+command until source evidence is complete and qualified; continue the established
+explicit copy/tree-compare/normal-push workflow. No new publication executor,
+release or tag was created by this research.
+
 ### Workspace and environment boundaries
 
 Primary sources accessed 2026-10-19:

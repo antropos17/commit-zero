@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { qualityPlan, executePlan } from "./quality-plan.mjs";
-import { fingerprint } from "./project-files.mjs";
+import { fingerprint, sourceIndexVersion } from "./project-files.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 process.chdir(root);
@@ -31,7 +31,13 @@ try {
     await writeFile(
       reportPath,
       JSON.stringify(
-        { mode, status: "running", startedAt, sourceHash: null },
+        {
+          mode,
+          status: "running",
+          startedAt,
+          sourceHash: null,
+          sourceIndexVersion,
+        },
         null,
         2,
       ),
@@ -45,6 +51,7 @@ try {
         JSON.stringify(
           {
             mode,
+            sourceIndexVersion,
             status: "failed",
             startedAt,
             finishedAt: new Date().toISOString(),
@@ -98,6 +105,7 @@ try {
     const ok = result.ok && stable;
     const report = {
       mode,
+      sourceIndexVersion,
       status: ok ? "passed" : "failed",
       fullGate: mode === "full",
       startedAt,

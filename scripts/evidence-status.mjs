@@ -3,7 +3,7 @@ import { readFile, realpath, writeFile } from "node:fs/promises";
 import { relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { fingerprint, inside } from "./project-files.mjs";
+import { fingerprint, inside, sourceIndexVersion } from "./project-files.mjs";
 import { verificationDirectory } from "./browser-runtime.mjs";
 import { browserGroups, browserStats } from "./test-ui.mjs";
 import { qualityPlan } from "./quality-plan.mjs";
@@ -18,6 +18,7 @@ function stamped(report, hash) {
   return (
     /^[a-f0-9]{64}$/.test(hash || "") &&
     report?.status === "passed" &&
+    report.sourceIndexVersion === sourceIndexVersion &&
     report.stable === true &&
     report.sourceHash === hash &&
     report.finalSourceHash === hash &&

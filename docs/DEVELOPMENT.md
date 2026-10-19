@@ -78,6 +78,33 @@ the final gate. These local summaries are disposable and not signed release rece
 There is one summary per known suite, one lint cache and project-local temporary
 output under `.cache/tmp`. Child processes receive TEMP/TMP/TMPDIR explicitly.
 
+### Source identity and inspection
+
+`npm run source:inspect [-- --samples 5]` reports source-index version, file/byte
+counts, hashes and measured fingerprint durations. Its `inspected` state is a
+read-only input probe; full/browser gates remain separate. The local report is
+`.cache/verification/latest-source-inspection.json`, replaced with running/blocked
+when appropriate, inside the same validated workspace directory as other receipts.
+
+Source index v2 includes every regular tracked input in an ordinary Git checkout,
+plus registered working source/assets/docs. It includes root policy/configuration,
+legacy prototype files and vendored skill references. Git modes participate in the
+hash. Source-only archives use the maintained registered inputs without requiring
+Git metadata; update `scripts/project-files.mjs` and the project map when adding
+an archive input outside the existing roots. No vendored skill engine is executed.
+
+Root private configuration, runtime, dependencies, build output and cache material
+stay outside this index. Forced tracked private/runtime entries, links, unresolved
+stages and sparse/assume-unchanged index flags block source evidence. Inspect the
+reported input and `git ls-files -v` before correcting the intended Git state.
+The probe does not alter index flags, Git configuration or retained data. Raw
+working-byte hashes can differ between Windows and Linux line endings; public
+Git trees and each environment's frozen receipts provide their own association.
+Earlier v1 receipts retain their dated narrower scope; rerun both full gates after
+the v2 change before accepting the expanded source. Full and grouped-browser
+receipts carry `sourceIndexVersion`; the evidence preflight requires the current
+version as well as matching hashes, so an older-version stamp cannot qualify.
+
 ## Find and diagnose problems
 
 - `npm run doctor -- --json`: structured health; use `--url http://127.0.0.1:PORT`

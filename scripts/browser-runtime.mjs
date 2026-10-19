@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { lstat, mkdir, realpath, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { fingerprint, inside } from "./project-files.mjs";
+import { fingerprint, inside, sourceIndexVersion } from "./project-files.mjs";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 
@@ -81,10 +81,11 @@ async function doctor() {
     started = performance.now();
   await writeFile(
     output,
-    JSON.stringify({ status: "running", startedAt }) + "\n",
+    JSON.stringify({ status: "running", startedAt, sourceIndexVersion }) + "\n",
   );
   const report = {
     startedAt,
+    sourceIndexVersion,
     status: "failed",
     browserLaunched: false,
     profileInsideWorkspace: false,

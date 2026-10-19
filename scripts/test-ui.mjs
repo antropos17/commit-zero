@@ -2,7 +2,7 @@ import { readdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { runBrowserTests, verificationDirectory } from "./browser-runtime.mjs";
-import { fingerprint } from "./project-files.mjs";
+import { fingerprint, sourceIndexVersion } from "./project-files.mjs";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 
@@ -86,6 +86,7 @@ async function run() {
   const output = resolve(directory, "latest-browser-suite.json");
   const report = {
     status: "running",
+    sourceIndexVersion,
     fullBrowserSuite: true,
     startedAt: new Date().toISOString(),
     sourceHash: null,
