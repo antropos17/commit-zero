@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { useResource, useWorkspace } from "../hooks.mjs";
 import { Avatar, ErrorMessage, PageHeading } from "../components/ui.jsx";
 import { path } from "../router.mjs";
@@ -14,8 +14,45 @@ export function Leaderboard() {
     `rankings?category=${category}`,
     `${data.runId}:${data.version}`,
   );
+  const refreshControl = useRef(null),
+    retryOrigin = useRef(null);
+  useLayoutEffect(() => {
+    if (ranking.loading) return;
+    const origin = retryOrigin.current;
+    retryOrigin.current = null;
+    if (origin && document.activeElement === document.body)
+      (origin.isConnected ? origin : refreshControl.current)?.focus({
+        preventScroll: true,
+      });
+  }, [ranking.loading, ranking.data, ranking.error]);
+  function refreshRanking(event) {
+    if (ranking.loading) return;
+    retryOrigin.current = event.currentTarget;
+    ranking.retry();
+  }
+  const candidate = ranking.data;
+  const snapshot =
+    candidate?.runId === data.runId &&
+    candidate?.version === data.version &&
+    candidate?.category === category &&
+    Array.isArray(candidate.rows) &&
+    candidate.rows.every(
+      (row) =>
+        row &&
+        typeof row.id === "string" &&
+        typeof row.name === "string" &&
+        typeof row.provider === "string" &&
+        Number.isFinite(row.score),
+    )
+      ? candidate
+      : null;
+  const error =
+    ranking.error ||
+    (candidate && !snapshot
+      ? "Ranking data could not be matched to this scenario and category. Refresh the workspace and try again."
+      : "");
   const rows =
-    ranking.data?.rows.filter((r) =>
+    snapshot?.rows.filter((r) =>
       `${r.name} ${r.provider}`.toLowerCase().includes(query.toLowerCase()),
     ) || [];
   if (ascending) rows.reverse();
@@ -59,7 +96,9 @@ export function Leaderboard() {
             </label>
             <button
               className="btn"
-              onClick={ranking.retry}
+              ref={refreshControl}
+              aria-controls="contribution-rankings"
+              onClick={refreshRanking}
               disabled={ranking.loading}
             >
               Refresh
@@ -68,22 +107,29 @@ export function Leaderboard() {
           <div className="ranking-note">
             <span className="pill">Current simulation</span>
             <span>
-              Step {ranking.data?.step ?? data.step} / 10 · {data.agents.length}{" "}
+              Step {snapshot?.step ?? data.step} / 10 · {data.agents.length}{" "}
               agents
             </span>
           </div>
-          {ranking.error && (
-            <ErrorMessage message={ranking.error} retry={ranking.retry} />
+          {error && <ErrorMessage message={error} retry={refreshRanking} />}
+          {snapshot && (ranking.loading || error) && (
+            <p className="small muted" role="status">
+              {ranking.loading
+                ? "Refreshing rankings. Showing the last available rankings."
+                : "Showing the last available rankings."}
+            </p>
           )}
           <div
+            id="contribution-rankings"
             className="ranking-table-wrap"
             role="region"
             aria-label="Agent contribution rankings"
+            aria-busy={ranking.loading}
             tabIndex="0"
           >
             <table className="ranking-table">
               <caption className="sr">
-                Contribution ranking for the current saved scenario
+                {category} contribution ranking for the current saved scenario
               </caption>
               <thead>
                 <tr>
@@ -136,7 +182,9 @@ export function Leaderboard() {
                     <td colSpan="7" className="ranking-empty">
                       {ranking.loading
                         ? "Loading rankings…"
-                        : "No matching agents."}
+                        : error
+                          ? "Rankings unavailable."
+                          : "No matching agents."}
                     </td>
                   </tr>
                 )}
@@ -157,12 +205,12 @@ export function Leaderboard() {
           <dl>
             <dt>Code</dt>
             <dd>
-              {ranking.data?.scoring.code ||
+              {snapshot?.scoring?.code ||
                 "10 per repository + 20 per merged authored PR + 8 per passed authored PR"}
             </dd>
             <dt>Collaboration</dt>
             <dd>
-              {ranking.data?.scoring.collaboration ||
+              {snapshot?.scoring?.collaboration ||
                 "5 per received star + 6 per review + 4 per memory entry + 3 per follower"}
             </dd>
             <dt>Overall</dt>

@@ -31,6 +31,10 @@ export const browserGroups = Object.freeze([
     files: Object.freeze(["scenario-keyboard.spec.mjs"]),
   }),
   Object.freeze({
+    name: "ranking-recovery",
+    files: Object.freeze(["ranking-recovery.spec.mjs"]),
+  }),
+  Object.freeze({
     name: "history-and-pr",
     files: Object.freeze([
       "commons-history.spec.mjs",

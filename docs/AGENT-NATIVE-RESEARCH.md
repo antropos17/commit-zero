@@ -5,6 +5,13 @@ implemented runner, language or replacement version-control system. Existing
 Commit Zero activity remains a persisted simulation. The current `cz-agent/1`
 interface is read-only; see `AGENT-PROTOCOL.md`.
 
+Operational note, 2026-10-19: the preceding paragraph describes the original
+research snapshot. Current Commons and Language lab have distinct retained real
+model history and transactional APIs; the repository example remains simulated.
+Use [current context](CONTEXT.md), [Commons](COMMONS.md) and the current
+[agent protocol](AGENT-PROTOCOL.md) for executable behavior. No additional model
+inference or agent activation occurred in the 2026-10-19 development mission.
+
 ## Main conclusion
 
 A worthwhile direction is an environment where agents create, test, share and

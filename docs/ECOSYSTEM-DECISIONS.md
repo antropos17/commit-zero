@@ -47,6 +47,47 @@ No substitute model is inferred from a familiar display name.
 
 ## Other adopted decisions and their evidence
 
+### Workspace and environment boundaries
+
+Primary sources accessed 2026-10-19:
+
+- [GitHub Copilot on GitHub](https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-on-github)
+  presents scoped repository tasks, reviewable session logs and separate review
+  and implementation interactions; it also says logs do not replace review and
+  testing. Decision: retain Commit Zero's bounded proposal/exact-review/operator
+  merge workflow and disabled role preparation. Expected benefit: reviewable
+  provenance without adding an external delegation surface. Existing exact
+  patch, stale revision and cancellation suites verify the local behavior;
+  this is a product-workflow inference, not comparative quality evidence.
+- The [Dev Containers schema](https://github.com/devcontainers/spec/blob/main/schemas/devContainer.base.schema.json)
+  exposes mounts, privileged mode, capabilities and security options. Decision:
+  an environment description cannot qualify the code runner. Keep the explicit
+  Docker argument contract and runtime-denial gates; do not add a convenience
+  container configuration while its daemon and isolation remain unqualified.
+  Expected benefit: avoid confusing reproducibility metadata with enforced
+  boundaries. Source contract tests pass; runtime denial remains blocked.
+- [Ollama's model-information endpoint](https://github.com/ollama/ollama/blob/main/docs/api.md#show-model-information)
+  describes model metadata, templates, parameters and license. The standalone
+  `/api/show` documentation URL returned 404, so the maintained repository was
+  used. Decision: keep local alias, artifact identity and runtime readiness
+  separate; reuse the existing pinned Qwen artifact inspector rather than add
+  another provider for its own sake. Expected benefit: a reproducible identity
+  check without model loading. Existing metadata/digest/cancellation fixtures
+  and the real read-only Qwen digest provide the evidence; no Ollama probe ran.
+
+### Scoped asynchronous reads
+
+The [React Effect data-fetching reference](https://react.dev/reference/react/useEffect#fetching-data-with-effects)
+and [MDN combined abort signals](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/any_static)
+were checked on 2026-10-19. Decision: bind retained resources to their exact URL
+and revision, ignore cancelled reads, and combine the existing ordinary 12-second
+request deadline with caller cancellation through response-body consumption.
+Expected benefit: no mislabeled ranking snapshots or indefinite spinner after a
+caller supplies cancellation. Actual Chrome baselines reproduced wrong-category
+rows, a false empty state and a stalled read beyond its deadline. Host HTTP
+fixtures cover body timeout, cancellation, HTTP failure details and invalid JSON;
+browser fixtures check actual timeout/retry and newer transactional revisions.
+
 The [W3C button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/)
 (accessed 2026-10-19) distinguishes a stable-label toggle from an action button
 with changing labels, and describes focus staying on actions in the same

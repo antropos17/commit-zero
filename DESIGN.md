@@ -97,6 +97,12 @@ writes run in order even when the user opens another repository; a changed
 repository gets its own form state. Completing a save restores its control only
 on the same route/account and without stealing another chosen input.
 
+Rankings bind rows to the requested category and scenario run/revision. A new
+query clears old rows immediately. Loading, failed reads and an empty filter are
+distinct; only a refresh of the same scope may show explicitly last-available
+rows. A mismatched service snapshot asks the user to synchronize the workspace.
+Manual Retry/Refresh keeps keyboard entry and respects another chosen input.
+
 ## Motion
 
 No authored animation or transition in the workspace, including modal scale/fade, progress interpolation, hover motion and smooth route scrolling. Update status immediately without recreating the page. Native dialog handles focus and Escape; returning focus must not move the document. Game canvas motion belongs to gameplay and remains independent of workspace chrome.
