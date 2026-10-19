@@ -563,6 +563,9 @@
   margin: 80px auto;
   padding: 24px;
 }
+.page-failure .btn {
+  min-height: 44px;
+}
 .profile-activity {
   margin-top: 28px;
 }

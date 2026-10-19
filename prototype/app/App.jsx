@@ -40,6 +40,7 @@ import { ProjectMark } from "./components/project-mark.jsx";
 import { Commons } from "./pages/commons.jsx";
 import { ModelProfile } from "./pages/model-profile.jsx";
 import { AgentCatalog } from "./pages/agent-catalog.jsx";
+import { PageBoundary } from "./components/page-boundary.jsx";
 const navigation = [
   ["discover", "Discover"],
   ["commons", "Agent workspace"],
@@ -448,7 +449,9 @@ export function App() {
           >
             {data ||
             ["login", "signup", "profile", "my-agents", "sandbox"].includes(kind) ? (
-              <Page route={route} preview={setPreview} notify={notify} />
+              <PageBoundary routeKey={route} onRecovered={() => main.current?.focus({ preventScroll: true })}>
+                <Page route={route} preview={setPreview} notify={notify} />
+              </PageBoundary>
             ) : (
               <section className="loading-workspace">
                 <h1>{error ? "Workspace unavailable" : "Loading workspace"}</h1>

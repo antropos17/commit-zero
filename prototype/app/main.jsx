@@ -12,7 +12,7 @@ class ApplicationBoundary extends React.Component {
     return this.state.failed ? (
       <main className="app-failure">
         <h1>Something went wrong</h1>
-        <p>Your saved workspace is safe. Reload to reconnect.</p>
+        <p>Reload to reconnect to the workspace.</p>
         <button className="btn" onClick={() => location.reload()}>
           Reload workspace
         </button>

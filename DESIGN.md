@@ -83,6 +83,12 @@ after content is restored if the user has not chosen another control or route;
 background refresh does not move focus. Service-health refresh distinguishes
 pending, unavailable and last-available data, with scoped busy state and a stable
 keyboard recovery control.
+
+A page render failure keeps the permanent header, navigation and footer visible.
+Its plain recovery section uses the shared page heading and a keyboard-accessible
+retry action. Retry remounts the failed page; normal navigation retains healthy
+component identity. Recovery respects focus already chosen outside the page.
+Errors outside that boundary can still require a full workspace reload.
 Environment stays readable without a workspace snapshot; unknown repository
 counts stay absent until data arrives.
 

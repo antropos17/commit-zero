@@ -104,3 +104,12 @@ rows are explicitly qualified as the last available result. The browser test
 recovers through the real health handler, checks keyboard focus and preserves
 the exact scenario step without reset/advance requests. These captures establish
 neither a production outage nor code-sandbox/model qualification.
+
+An unexpected page render failure leaves the header and permanent navigation
+available. Use **Try this page again** to repeat the page's initial reads, or
+open **Environment** to inspect services. A later visit also clears the failed
+page state. Errors outside the page can still require **Reload workspace**.
+The [actual narrow recovery capture](media/page-error-contained-2026-10-19.png)
+uses a deliberately malformed Language lab read in disposable services. The
+fixture then recovers through the real read handler, retains the shell search
+draft and checks unchanged scenario revision and zero write/model requests.

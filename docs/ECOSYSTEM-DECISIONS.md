@@ -5,6 +5,21 @@ below were checked or attempted on 2026-10-19; documentation does not establish 
 capabilities or provider entitlement. The [mission log](MISSION-2026-10-19.md)
 records implementation and verification timestamps.
 
+## Contain a failed page within the workspace
+
+The [React error-boundary reference](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)
+was accessed on 2026-10-19 after Chrome reproduced a malformed Language lab
+read removing the permanent navigation. Decision: add one small boundary around
+the page subtree while retaining the shell and provider instances. Healthy
+route changes do not acquire a remount key. Explicit retry remounts only the
+failed page; a changed route clears its failed state. Expected benefit: users
+can recover or open service health without discarding shell drafts. Fixtures
+check repeated failure, keyboard recovery, preserved focus and zero model/write
+requests in disposable services. This covers child rendering/lifecycle failures,
+not arbitrary async/event-handler failures or the boundary's own errors. The
+global fallback remains for failures outside the page and makes no data-safety
+promise. No dependency or external reporting service was introduced.
+
 ## Reuse a declared local artifact
 
 The official [Qwen model card](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF)

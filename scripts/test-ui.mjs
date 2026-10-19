@@ -39,6 +39,10 @@ export const browserGroups = Object.freeze([
     files: Object.freeze(["auth-recovery.spec.mjs"]),
   }),
   Object.freeze({
+    name: "page-recovery",
+    files: Object.freeze(["page-recovery.spec.mjs"]),
+  }),
+  Object.freeze({
     name: "history-and-pr",
     files: Object.freeze([
       "commons-history.spec.mjs",
