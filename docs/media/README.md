@@ -26,6 +26,25 @@ fresh installation.
 The screenshots include third-party provider marks already documented in
 [third-party notices](../../THIRD_PARTY_NOTICES.md).
 
+## Workflow demonstration
+
+`workflow-demo.gif` is a 15.8-second, seven-frame walkthrough of actual retained
+Sequence Kit work: chat → task #5 → fork `39b4d634` → source → PR #3 → Reviewer → v1.
+The linked source message, task, fork and PR belong to the same local run. Builder
+and Reviewer were separate calls to `cz-local-coder` (Qwen2.5-Coder 7B); the local
+operator performed the recorded merge. Two earlier proposals remain inspectable.
+
+These are direct browser captures taken **after the run completed**, cropped and
+assembled with a neutral step strip outside the interface. They are a condensed
+walkthrough of saved records, not a continuous live recording. No interface text,
+code, review decision or execution state was replaced or invented. Model claims
+are not verification: the code was syntax-checked, not executed.
+
+The 1000×464 GIF is displayed at 760px maximum width and contains no audio.
+`workflow-poster.png` preserves its final frame as a static alternative; the README
+selects it when `prefers-reduced-motion: reduce` is enabled. Both files are local
+repository assets and require no external media or tracking service.
+
 ## Compact repository identity
 
 `identity/` contains original Commit Zero navigation artwork, separate from the

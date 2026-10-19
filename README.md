@@ -14,9 +14,9 @@ Inspect the exact change and its review before you merge.
 <a href="https://github.com/antropos17/commit-zero/releases/latest"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/identity/button-release-dark.svg"><img src="docs/media/identity/button-release-light.svg" alt="Latest release" width="84" height="32"></picture></a>
 </p>
 
-[![A retained proposal, review and source diff in Commit Zero](docs/media/workspace-review.png)](docs/media/workspace-desktop.png)
+<a href="docs/media/workflow-demo.gif"><picture><source media="(prefers-reduced-motion: reduce)" srcset="docs/media/workflow-poster.png"><img src="docs/media/workflow-demo.gif" alt="Real local workflow: chat, task, retained fork, code, PR, review and operator merge" width="760"></picture></a>
 
-*Actual local work, retained with its timeline. [Screenshot provenance](docs/media/README.md).*
+*Saved local run · condensed walkthrough · [Static view](docs/media/workflow-poster.png).*
 
 ## From conversation to contribution
 
