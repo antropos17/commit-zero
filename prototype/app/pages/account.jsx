@@ -3,6 +3,11 @@ import { useAccount, useWorkspace, useResource } from "../hooks.mjs";
 import { request } from "../api.mjs";
 import { PageHeading, Repositories } from "../components/ui.jsx";
 
+const signInProviders = [
+  { id: "github", name: "GitHub" },
+  { id: "google", name: "Google" },
+];
+
 export function Authentication({ register = false }) {
   const account = useAccount();
   const providers = useResource("auth/providers");
@@ -17,7 +22,53 @@ export function Authentication({ register = false }) {
   }[oauthResult];
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  async function signInWith(provider) {
+  const submitControl = useRef(null),
+    authOrigin = useRef(null),
+    providerOrigin = useRef(null);
+  const entries = providers.data?.providers;
+  const optionsKnown =
+    Array.isArray(entries) &&
+    entries.length === signInProviders.length &&
+    signInProviders.every(
+      ({ id }) =>
+        entries.filter(
+          (entry) =>
+            entry?.id === id &&
+            typeof entry.available === "boolean" &&
+            (entry.reason == null || typeof entry.reason === "string"),
+        ).length === 1,
+    );
+  const discoveryError =
+    providers.error ||
+    (!providers.loading && !optionsKnown
+      ? "The service returned an invalid sign-in options response. Try refreshing."
+      : "");
+  useLayoutEffect(() => {
+    if (busy) return;
+    const origin = authOrigin.current;
+    authOrigin.current = null;
+    if (
+      origin?.isConnected &&
+      !origin.disabled &&
+      (document.activeElement === document.body ||
+        document.activeElement === origin)
+    )
+      origin.focus({ preventScroll: true });
+  }, [busy, error]);
+  useLayoutEffect(() => {
+    if (providers.loading || busy) return;
+    const origin = providerOrigin.current;
+    providerOrigin.current = null;
+    if (origin?.isConnected && document.activeElement === document.body)
+      origin.focus({ preventScroll: true });
+  }, [providers.loading, providers.data, providers.error, busy]);
+  function refreshProviders(event) {
+    if (providers.loading || busy) return;
+    providerOrigin.current = event.currentTarget;
+    providers.retry();
+  }
+  async function signInWith(provider, event) {
+    authOrigin.current = event.currentTarget;
     setBusy(true);
     setError("");
     try {
@@ -39,6 +90,7 @@ export function Authentication({ register = false }) {
   async function submit(event) {
     event.preventDefault();
     if (busy) return;
+    authOrigin.current = submitControl.current;
     const values = new FormData(event.currentTarget);
     setBusy(true);
     setError("");
@@ -131,6 +183,7 @@ export function Authentication({ register = false }) {
                 {error}
               </div>
               <button
+                ref={submitControl}
                 className="btn green auth-submit"
                 type="submit"
                 disabled={busy}
@@ -156,31 +209,58 @@ export function Authentication({ register = false }) {
             <section
               className="oauth-options"
               aria-label="Sign in with a provider"
+              aria-busy={providers.loading}
             >
-              {(
-                providers.data?.providers || [
-                  { id: "github", name: "GitHub" },
-                  { id: "google", name: "Google" },
-                ]
-              ).map((provider) => (
-                <div key={provider.id}>
-                  <button
-                    className="btn oauth-button"
-                    disabled={!provider.available || busy}
-                    onClick={() => signInWith(provider.id)}
-                  >
-                    Continue with {provider.name}
-                  </button>
-                  {!provider.available && (
-                    <p className="field-help">
-                      {providers.loading
-                        ? "Checking availability…"
-                        : provider.reason || "Provider unavailable."}
-                    </p>
-                  )}
-                </div>
-              ))}
-              {providers.error && <p role="alert">{providers.error}</p>}
+              <button
+                className="btn"
+                onClick={refreshProviders}
+                disabled={providers.loading || busy}
+              >
+                Refresh sign-in options
+              </button>
+              {providers.loading && (
+                <p className="field-help" role="status">
+                  Checking sign-in options…
+                </p>
+              )}
+              {discoveryError && (
+                <>
+                  <p role="alert">{discoveryError}</p>
+                  <p className="field-help">
+                    Provider availability is unknown. Refresh sign-in options to
+                    check again.
+                  </p>
+                </>
+              )}
+              {signInProviders.map((provider) => {
+                const status = optionsKnown
+                  ? entries.find((entry) => entry.id === provider.id)
+                  : null;
+                return (
+                  <div key={provider.id}>
+                    <button
+                      className="btn oauth-button"
+                      disabled={
+                        !status?.available ||
+                        providers.loading ||
+                        Boolean(discoveryError) ||
+                        busy
+                      }
+                      onClick={(event) => signInWith(provider.id, event)}
+                    >
+                      Continue with {provider.name}
+                    </button>
+                    {optionsKnown &&
+                      !providers.loading &&
+                      !discoveryError &&
+                      !status.available && (
+                        <p className="field-help">
+                          {status.reason || "Provider unavailable."}
+                        </p>
+                      )}
+                  </div>
+                );
+              })}
               {oauthMessage && (
                 <p className="inline-error" role="alert">
                   {oauthMessage}

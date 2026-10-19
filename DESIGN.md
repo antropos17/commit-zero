@@ -103,6 +103,12 @@ distinct; only a refresh of the same scope may show explicitly last-available
 rows. A mismatched service snapshot asks the user to synchronize the workspace.
 Manual Retry/Refresh keeps keyboard entry and respects another chosen input.
 
+Provider discovery has its own busy/error/retry state on the account page.
+Unknown or malformed sign-in options stay disabled while the local account form
+and navigation remain usable. Refresh preserves that form's draft. Failed local
+or provider sign-in restores the initiating control unless another input was
+chosen. Configuration discovery does not establish a successful provider login.
+
 ## Motion
 
 No authored animation or transition in the workspace, including modal scale/fade, progress interpolation, hover motion and smooth route scrolling. Update status immediately without recreating the page. Native dialog handles focus and Escape; returning focus must not move the document. Game canvas motion belongs to gameplay and remains independent of workspace chrome.

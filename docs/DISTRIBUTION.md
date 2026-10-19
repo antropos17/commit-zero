@@ -86,6 +86,14 @@ announcement posted elsewhere.
 > read-only large-history fixture; smaller initial DOM size is verified, while
 > changed snapshots still transfer the full history.
 >
+> Startup, service health, rankings and account recovery now have explicit
+> failure/retry behavior. Keyboard scenario stepping and pause remain usable;
+> saved-repository writes stay ordered across navigation and session changes.
+> Proposed roles include concrete downloadable fixtures and a separate unscored
+> evaluation set. Hosted-provider drafts remain disconnected. A read-only
+> artifact inspector identifies the existing Qwen file, and a source-evidence
+> preflight binds full/browser receipts to the exact source and public Git tree.
+>
 > The existing local Builder/Reviewer and Language lab paths remain separate
 > from the deterministic repository example and new fixtures. Proposal parsing
 > and review do not prove code behavior. Follow `README.md` for installation,
@@ -94,13 +102,14 @@ announcement posted elsewhere.
 Before publishing a release, replace the candidate version with an actual tag,
 link its exact commit and CI run, re-run the documented gates, and record real
 browser/model/sandbox coverage separately. No release was created by this note.
-Current implemented-code checkpoint: public `e788d0e`, [CI run 39228142114](https://github.com/antropos17/commit-zero/actions/runs/39228142114)
-passed the full gate, Chromium and runtime dependency audit. The fresh evidence
-preflight confirmed exact public main/CI. Local frozen gate at `e61e129` passed 81/81 Node tests, DOM/axe 2/2,
-build and serving with source hash
-`d3ab286ac18b39386976ac5278b923aebc2e4e066c7e509a26208793c3cce5e5`;
-separate local Chrome coverage passed 15/15 on the same hash. Health/retry changes await
-their full gate. Verify the final candidate revision before creating a release.
+Use the [dated handoff](HANDOFF-2026-10-19.md) and fresh
+`npm run evidence:status -- --github` output for the exact candidate SHA, source
+hash and CI association after frozen verification/publication. Copy those values
+into the release instead of carrying an earlier checkpoint's counts forward.
+The existing [v0.3.0 release](https://github.com/antropos17/commit-zero/releases/tag/v0.3.0)
+still points to `1abdf00` (checked 2026-10-19); this mission publishes newer main
+source and prepares the next release. Choose a new tag for that source and preserve
+the existing release and tag. No new release or promotional post was published.
 The checked capture set is already published at `98389bd`.
 
 ## Show HN fact sheet for a human author

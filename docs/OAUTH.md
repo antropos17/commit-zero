@@ -6,6 +6,15 @@ buttons stay disabled until both credentials for that provider are configured.
 Local username/password accounts remain usable. Automated tests use a mocked
 provider transport; they do not qualify a real provider login.
 
+On the account page, **Refresh sign-in options** rereads this server's provider
+configuration without reloading the local username/password draft. Failed or
+malformed discovery shows unknown availability and keeps external buttons
+disabled; it does not remove the local form or navigation. The refresh has scoped
+busy state and restores keyboard entry while respecting another selected input.
+A failed local sign-in or provider start also preserves the draft and its control.
+This UI recovery is tested in disposable services; the configured-only fixture
+and denied start do not establish actual GitHub/Google account access.
+
 ## Configure the local preview
 
 1. Create an OAuth application in your own GitHub/Google account using the settings
