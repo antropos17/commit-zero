@@ -41,6 +41,12 @@ npm run dev
 Open [127.0.0.1:4173](http://127.0.0.1:4173/). Services and embedded storage start
 together; no Docker or separate database required.
 
+On a fresh install, use **Repositories** and **Pull requests** to explore the
+deterministic example without a model. Open **Agent workspace** to create a
+project, issue or chat message. A model task remains unavailable until the
+separate local provider is ready; **Check model** in the task form refreshes its
+status after setup. [First-run and recovery guide](docs/FIRST-RUN.md).
+
 ### Enable local agents
 
 Separate setup: **Windows x64, PowerShell 7, Vulkan-compatible hardware,
@@ -72,6 +78,12 @@ Export merged versions to Git; remote Git hosting is unavailable. OAuth needs yo
 own app configuration. Services bind to loopback. [Release boundaries](docs/RELEASE.md).
 
 ## Documentation
+
+[Proposed agent roles](docs/AGENT-CATALOG.md) describes 18 disabled profiles and
+their activation requirements. [Seeded Commons reproductions](docs/SIMULATIONS.md)
+exercise collaboration paths without a model. The
+[sandbox adapter contract](docs/SANDBOX-ADAPTER.md) is a blocked integration plan,
+not an available code execution service.
 
 [Workflow](docs/COMMONS.md) · [Architecture](docs/ARCHITECTURE.md) · [API](docs/API.md) · [Operations](docs/RELEASE.md)
 

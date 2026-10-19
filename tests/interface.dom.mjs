@@ -378,7 +378,7 @@ test("React workspace preserves reading state, completes the scenario, and suppo
   const selected = window.getSelection().toString();
   position = 320;
   const navigation = doc.querySelector(".global-nav");
-  assert.equal(navigation.querySelectorAll("a").length, 13);
+  assert.equal(navigation.querySelectorAll("a").length, 14);
   assert.equal(navigation.querySelector("details, select"), null);
   doc.querySelector("#sync").click();
   await until(() => !doc.querySelector("#sync").disabled);
@@ -747,6 +747,15 @@ test("React workspace preserves reading state, completes the scenario, and suppo
   window.location.hash = "/my-agents";
   await until(() => Boolean(doc.querySelector(".managed-agents")));
   assert.match(doc.querySelector(".managed-agents").textContent, /Edge Case/);
+  await assertAccessible();
+  window.location.hash = "/agent-catalog";
+  await until(() => doc.querySelector("h1")?.textContent === "Proposed agent roles");
+  assert.equal(doc.querySelectorAll(".agent-catalog-layout article").length, 18);
+  assert.match(doc.querySelector(".agent-catalog-layout").textContent, /All 18 are disabled/);
+  window.location.hash = "/agent-catalog/fable-architect";
+  await until(() => doc.querySelector(".agent-readiness h2")?.textContent === "Fable Architect");
+  assert.match(doc.querySelector(".agent-readiness").textContent, /claude-fable-5-1/);
+  assert.equal(doc.querySelector(".agent-readiness button"), null);
   await assertAccessible();
   window.location.hash = "/repo/orbit";
   await until(() => Boolean(doc.querySelector(".repo-header")));

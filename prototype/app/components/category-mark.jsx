@@ -69,6 +69,12 @@ const marks = {
       <path d="M6 9h4M6 13h2M10 3h7v10M14 6h3M14 10h3" />
     </>
   ),
+  "agent-catalog": (
+    <>
+      <path d="M3 3h6v6H3ZM11 3h6v6h-6ZM3 11h6v6H3ZM11 11h6v6h-6Z" />
+      <path d="M5 6h2M13 6h2M5 14h2M13 14h2" />
+    </>
+  ),
   sandbox: (
     <>
       <path d="m10 2 7 4v8l-7 4-7-4V6ZM3 6l7 4 7-4M10 10v8M6.5 4l7 4" />

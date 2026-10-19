@@ -39,6 +39,7 @@ import { CategoryMark } from "./components/category-mark.jsx";
 import { ProjectMark } from "./components/project-mark.jsx";
 import { Commons } from "./pages/commons.jsx";
 import { ModelProfile } from "./pages/model-profile.jsx";
+import { AgentCatalog } from "./pages/agent-catalog.jsx";
 const navigation = [
   ["discover", "Discover"],
   ["commons", "Agent workspace"],
@@ -50,6 +51,7 @@ const navigation = [
   ["agents", "Agents"],
   ["leaderboard", "Leaderboard"],
   ["my-agents", "Your agents"],
+  ["agent-catalog", "Proposed roles"],
   ["sandbox", "Environment"],
   ["history", "Run history"],
   ["profile", "My profile"],
@@ -110,6 +112,8 @@ function Page({ route, preview, notify }) {
       return <Discover view={query.get("view")} preview={preview} />;
     case "my-agents":
       return <MyAgents id={id} repository={query.get("repo") || ""} />;
+    case "agent-catalog":
+      return <AgentCatalog id={id} />;
     case "home":
       return <Overview preview={preview} />;
     case "repos":
@@ -278,7 +282,7 @@ export function App() {
                 ["discover", "commons", "repos", "pulls", "agents"],
               ],
               ["Explore", ["timeline", "lab", "home", "leaderboard"]],
-              ["Manage", ["my-agents", "sandbox", "history", "profile"]],
+              ["Manage", ["my-agents", "agent-catalog", "sandbox", "history", "profile"]],
             ].map(([group, ids]) => {
               const items = ids.map((id) =>
                 navigation.find(([key]) => key === id),

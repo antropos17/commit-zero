@@ -61,6 +61,11 @@ output under `.cache/tmp`. Child processes receive TEMP/TMP/TMPDIR explicitly.
 - A UI change needs a real browser at desktop and narrow widths. DOM tests have no
   layout engine and their axe check disables color contrast. The separate browser
   suite runs in CI; `npm run test:ui` requires matching installed Chromium.
+  On Windows, a local Chrome installation can be used without downloading a
+  Playwright browser by setting `CZ_BROWSER_EXECUTABLE` to its absolute executable
+  path. `CZ_CAPTURE_BROWSER=1` saves catalog desktop/narrow captures under
+  `runtime/verification`. The browser suite starts disposable in-memory services
+  in Playwright global setup and awaits their shutdown on completion.
 
 Use `npm run dev` for React Fast Refresh while developing. `npm start` serves
 compiled `dist` and requires a rebuild after UI changes. They share port 4173:

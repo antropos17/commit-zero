@@ -56,7 +56,7 @@ test("React scenario, persistent state, games, rankings, keyboard and narrow lay
     name: "Main navigation",
     exact: true,
   });
-  await expect(navigation.locator("a")).toHaveCount(13);
+  await expect(navigation.locator("a")).toHaveCount(14);
   await expect(navigation.locator("details, select")).toHaveCount(0);
   await navigation
     .getByRole("link", { name: "My profile", exact: true })

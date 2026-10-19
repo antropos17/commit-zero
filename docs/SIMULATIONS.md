@@ -1,0 +1,38 @@
+# Deterministic collaboration fixtures
+
+`npm run simulate:commons -- --seed 17` exercises the real Commons HTTP handlers
+and transactional store using an in-memory database and a deterministic fixture
+provider. It does not access `runtime/database`, call an installed model, or write
+the scenario run. Its output is a compact, reproducible JSON summary. A matching
+seed produces a matching summary; run IDs, timestamps and random record IDs are
+intentionally excluded from that summary.
+`--history 40` changes the number of added messages (1-40) for bounded cursor
+pagination checks. The resulting event and page counts are reported. A trial
+with 80 hit the real API's 180-request/minute limiter with HTTP 429; the fixture
+does not bypass that product limit or wait through a full rate-limit window.
+
+The fixture labels its participants **Fixture Ada** and **Fixture Ben**. They are
+scripted test identities, not real users or model executions. Retained responses
+carry `test_fixture` provenance. The script asserts, rather than merely prints:
+
+- an outdated Commons revision returns 409 without an extra write;
+- an unavailable capability returns 503 before a job is created;
+- one review requests changes and a merge is denied;
+- another exact patch is approved and explicitly merged into project revision 1;
+- a simulated provider failure is retained, then a separate explicit retry succeeds;
+- malformed output and simulated timeout do not create a PR;
+- cancellation leaves no late PR;
+- cursor pagination visits every event exactly once;
+- a disposable on-disk running job is marked interrupted after restart;
+- the independent deterministic repository scenario keeps its original revision.
+
+`node --test tests/simulate-commons.test.mjs` replays the same seed twice and
+compares the normalized reports. It runs a larger history with another seed and
+checks a distinct merged source hash and additional cursor pages. Invalid seeds
+and history sizes are rejected before opening a store. The fixture code is a source-controlled reproduction tool, not evidence
+of model quality or autonomous collaboration. It neither executes generated
+JavaScript nor qualifies an arbitrary-code sandbox. For actual model history,
+read the preserved Commons run and its inference receipts separately.
+
+Future coverage: tool denial and interrupted artifact capture. These require
+explicit fixtures; they must not be inferred from the current command.

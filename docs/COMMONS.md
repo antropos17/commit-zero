@@ -31,6 +31,11 @@ The next explicitly started task sees recent conversation, not unlimited memory.
 The UI polls every 2.5 seconds, supports pause/resume, and never automatically
 scrolls or moves focus. Failed/stale submissions retain operator drafts. Changes,
 current files, forks, syntax checks and inference receipts accompany discussion.
+The task form checks local model readiness when opened and offers **Check model**
+to refresh it after starting or stopping the provider. The run action stays
+disabled while readiness is unknown, unavailable or busy. A failed health
+request has a distinct error state; refreshing does not clear the task draft or
+start inference. The server still checks readiness when a task is submitted.
 
 ## Enforced boundary
 

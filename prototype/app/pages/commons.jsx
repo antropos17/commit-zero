@@ -61,7 +61,9 @@ function CommonsRoom({
     [error, setError] = useState("");
   const [connectionError, setConnectionError] = useState("");
   const [provider, setProvider] = useState(null),
-    [pending, setPending] = useState(false);
+    [pending, setPending] = useState(false),
+    [checkingProvider, setCheckingProvider] = useState(true),
+    [providerError, setProviderError] = useState("");
   const [draft, setDraft] = useState(""),
     [task, setTask] = useState(
       "Find and fix one concrete edge-case bug. Preserve the public API and explain the change.",
@@ -141,6 +143,21 @@ function CommonsRoom({
     },
     [runId, receive],
   );
+  const checkProvider = useCallback(async (signal) => {
+    setCheckingProvider(true);
+    setProviderError("");
+    try {
+      const next = await request("commons/provider", { signal });
+      if (!signal?.aborted && alive.current) setProvider(next);
+    } catch (e) {
+      if (!signal?.aborted && alive.current) {
+        setProvider(null);
+        setProviderError(e.message);
+      }
+    } finally {
+      if (!signal?.aborted && alive.current) setCheckingProvider(false);
+    }
+  }, []);
   useEffect(() => {
     alive.current = true;
     const controller = new AbortController();
@@ -155,17 +172,13 @@ function CommonsRoom({
       if (!controller.signal.aborted && !paused) timer = setTimeout(load, 2500);
     };
     if (!paused) load();
-    request("commons/provider", { signal: controller.signal })
-      .then((value) => {
-        if (alive.current) setProvider(value);
-      })
-      .catch(() => {});
+    void checkProvider(controller.signal);
     return () => {
       alive.current = false;
       controller.abort();
       clearTimeout(timer);
     };
-  }, [refresh, paused]);
+  }, [refresh, paused, checkProvider]);
   async function act(endpoint, body, onSuccess) {
     if (!data || pending) return;
     setPending(true);
@@ -181,6 +194,7 @@ function CommonsRoom({
       if (alive.current) {
         setError(e.message);
         if (e.status === 409) await refresh().catch(() => {});
+        if (endpoint === "jobs" && e.status === 503) void checkProvider();
       }
     } finally {
       if (alive.current) setPending(false);
@@ -874,6 +888,9 @@ function CommonsRoom({
                       disabled={
                         pending ||
                         Boolean(running) ||
+                        checkingProvider ||
+                        Boolean(provider?.busy) ||
+                        provider?.available !== true ||
                         !task.trim() ||
                         Boolean(current?.archived) ||
                         Boolean(agentId && !selectedAgent)
@@ -881,10 +898,24 @@ function CommonsRoom({
                     >
                       Run agents
                     </button>
-                    <span className="commons-meta">
-                      {provider?.available
-                        ? "Builder → Reviewer · 2 calls max"
-                        : "Model offline · npm run model:start"}
+                    <button
+                      type="button"
+                      className="btn"
+                      disabled={checkingProvider || pending}
+                      onClick={() => void checkProvider()}
+                    >
+                      {checkingProvider ? "Checking model" : "Check model"}
+                    </button>
+                    <span className="commons-meta" role="status">
+                      {checkingProvider
+                        ? "Checking local model."
+                        : providerError
+                          ? `Model status unavailable: ${providerError}`
+                          : provider?.busy
+                            ? "Local model is busy. Check again when it finishes."
+                            : provider?.available
+                            ? "Builder then Reviewer (2 calls max)"
+                            : provider?.reason || "Model offline - npm run model:start"}
                     </span>
                   </div>
                 </form>

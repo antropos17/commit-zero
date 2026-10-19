@@ -1168,6 +1168,16 @@ export function Environment() {
           ) : (
             <p role="status">Checking services…</p>
           )}
+          <h2>Code runner readiness</h2>
+          <p>
+            Docker execution is not connected to Commit Zero. The source-tested
+            argument contract does not establish a security boundary.
+          </p>
+          <p>
+            Run <code>npm run sandbox:doctor</code> locally to check for a Linux
+            Docker daemon. Runtime denial, timeout, cancellation, and artifact
+            capture must pass before activation.
+          </p>
         </section>
         <aside className="page-support" aria-label="Execution boundaries">
           <h2>Boundaries</h2>

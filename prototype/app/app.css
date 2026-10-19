@@ -395,6 +395,12 @@
 .commons-actions .commons-meta {
   margin: 0;
 }
+.commons-actions .btn.green:disabled {
+  background: var(--soft);
+  border-color: var(--border);
+  color: var(--muted);
+  cursor: not-allowed;
+}
 .commons-events {
   padding: 0;
   margin: 0;
@@ -1503,6 +1509,9 @@ textarea::placeholder {
   }
 }
 @media (max-width: 960px) {
+  .agent-catalog-layout > .agent-readiness {
+    order: -1;
+  }
   .network-layout,
   .agent-setup-layout {
     grid-template-columns: minmax(0, 1fr);
