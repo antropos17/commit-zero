@@ -108,11 +108,36 @@ test("two tabs recover a stale Commons write without losing the draft", async ({
 });
 
 test("workspace loads after an initial connection failure and explicit retry", async ({ page }) => {
-  await page.route("**/api/commons?runId=*", (route) => route.abort("failed"));
-  await page.goto("/#/commons/safe-timer");
-  await expect(page.getByRole("button", { name: "Retry", exact: true })).toBeVisible();
-  await page.unrouteAll();
-  await page.getByRole("button", { name: "Retry", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "safe-timer", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Retry", exact: true })).toHaveCount(0);
+  // Freeze polling timers so this journey proves the explicit retry action.
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
+  let attempts = 0, release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  await page.route("**/api/commons?runId=*", async (route) => {
+    if (++attempts === 1) return route.abort("failed");
+    await gate;
+    return route.continue();
+  });
+  try {
+    await page.goto("/#/commons/safe-timer");
+    const failure = page.getByRole("alert").filter({ hasText: "Cannot reach the service." });
+    await expect(failure).toBeVisible();
+    const section = page.locator("main section[aria-busy]");
+    await expect(section).toHaveAttribute("aria-busy", "false");
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    const retry = page.getByRole("button", { name: "Retry", exact: true });
+    await retry.click();
+    await expect(section).toHaveAttribute("aria-busy", "true");
+    await expect(retry).toBeDisabled();
+    expect(attempts).toBe(2);
+    const recovered = page.waitForResponse((response) => response.url().includes("/api/commons?runId=") && response.status() === 200);
+    release();
+    await recovered;
+    await expect(page.getByRole("heading", { name: "safe-timer", exact: true })).toBeVisible();
+    await expect(retry).toHaveCount(0);
+    await page.clock.resume();
+    const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+    expect(axe.violations).toEqual([]);
+  } finally { release(); }
 });

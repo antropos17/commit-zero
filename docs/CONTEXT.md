@@ -82,7 +82,7 @@ and external AI CLIs require a direct user request. Never merge old work implici
 - Existing Commons run 49092854-f9bd-4b7a-8d12-4ac5ea0e5f70 retains the approved,
   unmerged safe-timer change from job 811bdb98-bcbb-4b65-80b9-f19693aef6b4.
   Preserve it. 29 earlier lab experiments were verified before this release work.
-- Public source: antropos17/commit-zero at 746729d (07:12 UTC), CI green; use clean .cache/publication and preserve histories.
+- Public source: antropos17/commit-zero at 5f9f88e; full CI passed, browser retry failed. Repair pending; preserve separate histories.
   README GIF is a 15.8s condensed walkthrough of retained Sequence Kit work,
   not a continuous live recording. Static fallback included; desktop/mobile and all
   three CI jobs passed. Evidence: runtime/verification/github-readme-gif-2026-10-19.json.

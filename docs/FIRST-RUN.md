@@ -49,6 +49,7 @@ do not establish runtime correctness. [Complete workflow](COMMONS.md).
 | --- | --- |
 | Gateway does not open | Run `npm run doctor`; check the terminal that runs `npm run dev`. Port 4173 must be free for this project. Do not remove a database lock to force startup. |
 | Workspace unavailable after the page opens | The initial workspace request failed. Restore the local service, then use **Try again**. The settled error is not marked busy; keyboard retry returns focus to the main content after success. |
+| Commons cannot reach the service | Restore the local gateway, then use **Retry**. The error settles without a busy announcement; Retry is disabled while its request is pending. Background polling can also recover once the service returns. |
 | Built UI is older than source | `npm start` serves `dist`; run `npm run build` after source changes, or use `npm run dev` for development. |
 | **Run agents** is disabled | Check that the task has text, the project is active, no task is running, and **Check model** reports available. Start the local provider if it is offline. |
 | Health request fails | Check gateway and provider terminals, then select **Check model** again. The draft remains in the form. |

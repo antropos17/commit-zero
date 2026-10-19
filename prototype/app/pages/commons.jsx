@@ -59,6 +59,7 @@ function CommonsRoom({
   const account = useAccount();
   const [data, setData] = useState(() => cachedCommons(runId)),
     [error, setError] = useState("");
+  const [loading, setLoading] = useState(!data);
   const [connectionError, setConnectionError] = useState("");
   const [provider, setProvider] = useState(null),
     [pending, setPending] = useState(false),
@@ -141,14 +142,20 @@ function CommonsRoom({
   }, []);
   const refresh = useCallback(
     async (signal) => {
-      const next = await request(`commons?runId=${runId}`, {
-        signal,
-        etag:
-          latestVersion.current === null
-            ? undefined
-            : revisionTag("commons", runId, latestVersion.current),
-      });
-      receive(next);
+      const initialRead = latestVersion.current === null;
+      if (initialRead) setLoading(true);
+      try {
+        const next = await request(`commons?runId=${runId}`, {
+          signal,
+          etag:
+            latestVersion.current === null
+              ? undefined
+              : revisionTag("commons", runId, latestVersion.current),
+        });
+        receive(next);
+      } finally {
+        if (initialRead && !signal?.aborted && alive.current) setLoading(false);
+      }
     },
     [runId, receive],
   );
@@ -211,11 +218,18 @@ function CommonsRoom({
   }
   if (!data)
     return (
-      <section aria-busy="true">
-        <p>{error || connectionError || "Loading workspace…"}</p>
+      <section aria-busy={loading}>
+        <p role={!loading && (error || connectionError) ? "alert" : "status"}>
+          {loading ? "Loading workspace…" : error || connectionError}
+        </p>
         <button
           className="btn"
-          onClick={() => refresh().catch((e) => setError(e.message))}
+          disabled={loading}
+          onClick={() => {
+            setError("");
+            setConnectionError("");
+            void refresh().catch((e) => setError(e.message));
+          }}
         >
           Retry
         </button>

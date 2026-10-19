@@ -86,6 +86,10 @@ output under `.cache/tmp`. Child processes receive TEMP/TMP/TMPDIR explicitly.
   checks that each browser spec is listed exactly once. Playwright global setup
   awaits child-service shutdown after each group; the production limit is not
   changed. Run a focused spec with `npx playwright test tests/browser/<name>.spec.mjs`.
+  Recovery fixtures wait for the actual failed request to settle before retrying.
+  The initial Commons retry test pauses polling with Playwright's clock and holds
+  the retry response until busy/disabled assertions pass. Resume its clock before
+  axe analysis, which needs browser timers; do not add sleeps or automatic retries.
 
 Use `npm run dev` for React Fast Refresh while developing. `npm start` serves
 compiled `dist` and requires a rebuild after UI changes. They share port 4173:

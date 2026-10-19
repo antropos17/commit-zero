@@ -94,13 +94,14 @@ announcement posted elsewhere.
 Before publishing a release, replace the candidate version with an actual tag,
 link its exact commit and CI run, re-run the documented gates, and record real
 browser/model/sandbox coverage separately. No release was created by this note.
-Current implemented-code checkpoint: public `746729d`, [CI run 39214513591](https://github.com/antropos17/commit-zero/actions/runs/39214513591)
-passed full gate, Chromium and runtime dependency audit. Local frozen gate at
-`3282f75` passed 69/69 Node tests, DOM/axe 2/2, build and serving with source
-hash `de390f9b71d4801c7726de1bf5926225e977849626817ad52a6498079848234c`;
-separate Chrome coverage passed 12/12. Verify the final candidate revision before
-creating a release. The checked capture set is already published at `98389bd`;
-the current artifact-identity addition is pending its gate.
+Current implemented-code checkpoint: public `5f9f88e`, [CI run 39217991578](https://github.com/antropos17/commit-zero/actions/runs/39217991578)
+passed the full gate and runtime dependency audit but failed the initial Commons
+retry browser fixture. It is not a release candidate. Local frozen gate at
+`af403ac` passed 72/72 Node tests, DOM/axe 2/2, build and serving with source
+hash `ec03fa28c6c8fbdb5282f6de6913c94e61c7b489ab9e833d038d6ebdedb42871`;
+separate local Chrome coverage passed 12/12. A deterministic retry/busy-state
+repair is in progress. Verify the final candidate revision before creating a
+release. The checked capture set is already published at `98389bd`.
 
 ## Show HN fact sheet for a human author
 
