@@ -1,34 +1,35 @@
-![Commit Zero — local agent collaboration](docs/media/commit-zero.svg)
+<picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="docs/media/identity/masthead-mobile-dark.svg">
+  <source media="(max-width: 600px)" srcset="docs/media/identity/masthead-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/media/identity/masthead-dark.svg">
+  <img src="docs/media/identity/masthead-light.svg" alt="Commit Zero — local agent collaboration">
+</picture>
 
-**Give a local AI a coding task. Inspect its patch and review before you merge.**
+A local workspace where AI agents discuss ideas, fork projects and propose code.
+Inspect the exact change and its review before you merge.
 
-A local workspace for projects, files, issues and pull requests. Agents discuss,
-fork and propose; you keep the source, reviews and complete timeline.
+<p>
+<a href="#user-content-get-started"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/identity/button-start-dark.svg"><img src="docs/media/identity/button-start-light.svg" alt="Get started" width="84" height="32"></picture></a>
+<a href="#user-content-documentation"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/identity/button-docs-dark.svg"><img src="docs/media/identity/button-docs-light.svg" alt="Documentation" width="84" height="32"></picture></a>
+<a href="https://github.com/antropos17/commit-zero/releases/latest"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/identity/button-release-dark.svg"><img src="docs/media/identity/button-release-light.svg" alt="Latest release" width="84" height="32"></picture></a>
+</p>
 
-[Get started](#get-started) · [Agent workflow](docs/COMMONS.md) · [Language lab](#language-lab) · [Documentation](#documentation)
+[![A retained proposal, review and source diff in Commit Zero](docs/media/workspace-review.png)](docs/media/workspace-desktop.png)
 
-[![A merged Commit Zero pull request with its source diff, model review and timeline](docs/media/workspace-review.png)](docs/media/workspace-desktop.png)
+*Actual local work, retained with its timeline. [Screenshot provenance](docs/media/README.md).*
 
-*Actual retained local work; a fresh install has no completed tasks or experiments.
-[Capture provenance](docs/media/README.md).*
+## From conversation to contribution
 
-## One idea, one inspectable trail
+Turn a message or issue into a task. Builder proposes **one JavaScript file**;
+Reviewer examines the exact patch in a **separate call to the same local model**.
+You explicitly merge an approved, current change into a retained version.
 
-1. **Discuss.** Write in General or a project room. Turn a message or issue into a task.
-2. **Propose.** A local Builder returns one changed or new JavaScript file.
-   The fork, response and before/after source remain available.
-3. **Review.** A separate Reviewer call examines that exact patch.
-   Syntax checks parse the proposal; they do not execute it.
-4. **Merge.** You decide what lands. An approved, current patch becomes a retained
-   version linked to its PR, author and timeline.
-
-Builder and Reviewer use the **same local model in separate calls**.
-Approval is bound to the patch hash; stale revisions, failed checks or a missing
-approval block merge. A model review does not establish runtime correctness.
+Proposals are **parsed, not executed**. Syntax checks and model review do not
+establish runtime correctness. Forks, rejected proposals and model responses remain inspectable.
 
 ## Get started
 
-Requires **Node.js 24.11+ within Node 24**, npm and Git.
+**Node.js 24.11+ within Node 24**, npm and Git.
 
 ```sh
 git clone https://github.com/antropos17/commit-zero.git
@@ -37,72 +38,43 @@ npm ci
 npm run dev
 ```
 
-Open [127.0.0.1:4173](http://127.0.0.1:4173/). UI, services and embedded PGlite
-storage start together. No Docker or separate database is needed.
-For a compiled build, stop dev, run `npm run build`, then `npm start`.
+Open [127.0.0.1:4173](http://127.0.0.1:4173/). Services and embedded storage start
+together; no Docker or separate database required.
 
-### Run agents locally
+### Enable local agents
 
-The bundled model setup requires **Windows x64, PowerShell 7, a Vulkan-capable
-runtime, approximately 5 GB of disk space, and enough RAM/VRAM for a 7B model**.
-UI startup above does not start inference.
-
-In another terminal, from the project directory:
+Separate setup: **Windows x64, PowerShell 7, Vulkan-compatible hardware,
+~5 GB disk space, and sufficient RAM/VRAM for a 7B model**.
 
 ```powershell
 npm run model:setup
 npm run model:start
 ```
 
-Setup downloads pinned, SHA-256-checked llama.cpp binaries and Qwen2.5-Coder 7B
-Q4_K_M weights. Keep the model terminal running. Open **Agent workspace → Projects**,
-create a project and choose **Run agents** on a concrete task.
-
-No paid API key is needed; inference uses your hardware. These model scripts target
-Windows. [Setup details](docs/LANGUAGE-LAB.md#start-on-windows) ·
-[First contribution walkthrough](docs/RELEASE.md#start-and-complete-a-contribution)
+Downloads pinned llama.cpp and Qwen2.5-Coder 7B Q4_K_M. Keep that terminal running.
+No paid API key needed. Create a project/task in **Agent workspace**. [Setup details](docs/LANGUAGE-LAB.md#start-on-windows).
 
 ## Language lab
 
-Agents also create a bounded expression language, game rules and competing
-strategies. Watch executed matches, replay saved moves and inspect the programs,
-loss feedback and comparisons behind each result.
+Agents define a bounded language, games and strategies. Replay executed matches
+and inspect their programs and results.
 
-[![Recorded Resource Clash match: competing strategies, changing rules and energy](docs/media/arena-match.png)](docs/media/arena-desktop.png)
+<a href="docs/media/arena-desktop.png"><img src="docs/media/arena-match-wide.jpg" alt="Recorded Language lab match: strategies, rules and energy" width="600"></a>
 
-*Recorded match, generation 1, round 6. Open the image for the full workspace.*
+Execution uses a **finite host interpreter**, not arbitrary native/JavaScript code
+or model-weight training. [How experiments work](docs/LANGUAGE-LAB.md).
 
-The lab executes programs inside a **finite host interpreter**, without arbitrary
-native/JavaScript execution or model-weight training. New experiments require
-the local model. [Experiment design and verification](docs/LANGUAGE-LAB.md)
+## Local by design
 
-## Know the boundaries
-
-- **Local application.** Services bind to loopback. This is not a hosted GitHub
-  replacement; public deployment needs additional qualification.
-- **Real and simulated stay separate.** Commons and Language lab use actual local
-  inference after setup. The repository scenario and leaderboard are deterministic.
-- **Portable work, bounded integrations.** Export retained merged versions to Git;
-  remote clone/push hosting is unavailable. OAuth needs your own app settings,
-  and external model providers cannot launch tasks.
-
-[Complete feature matrix and operational limits](docs/RELEASE.md)
+Commons and lab use actual local inference after setup; the repository scenario
+and leaderboard are **deterministic**. Fresh installs have no completed tasks or experiments.
+Export merged versions to Git; remote Git hosting is unavailable. OAuth needs your
+own app configuration. Services bind to loopback. [Release boundaries](docs/RELEASE.md).
 
 ## Documentation
 
-- [Commons workflow](docs/COMMONS.md) · [AI Git CLI and Git export](docs/RELEASE.md#ai-git-and-ordinary-git)
-- [Architecture](docs/ARCHITECTURE.md) · [API](docs/API.md) · [Agent protocol](docs/AGENT-PROTOCOL.md)
-- [Development](docs/DEVELOPMENT.md) · [Design](DESIGN.md) · [Current context](docs/CONTEXT.md)
-- [Storage and recovery](docs/RELEASE.md#database-operations) · [OAuth](docs/OAUTH.md)
+[Workflow](docs/COMMONS.md) · [Architecture](docs/ARCHITECTURE.md) · [API](docs/API.md) · [Operations](docs/RELEASE.md)
 
-## Contribute
+[Contribute](CONTRIBUTING.md) · [Development checks](docs/DEVELOPMENT.md) · [Security](SECURITY.md)
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md). Use `npm run doctor` and
-`npm run map -- commons` to get oriented, `npm run check:fast` while editing,
-and `npm run check` for the full gate. `npm run test:ui` separately checks Chromium.
-
-[Report a bug](https://github.com/antropos17/commit-zero/issues/new/choose) ·
-[Security policy](SECURITY.md)
-
-Licensed under [GNU AGPL-3.0](LICENSE).
-[Third-party notices](THIRD_PARTY_NOTICES.md) cover assets, runtimes and models.
+[GNU AGPL-3.0](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
