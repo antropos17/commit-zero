@@ -6,7 +6,7 @@ test("React scenario, persistent state, games, rankings, keyboard and narrow lay
 }) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await page.goto("/#/home");
   await expect(
     page.getByRole("heading", { name: "Workspace overview", exact: true }),
   ).toBeVisible();
