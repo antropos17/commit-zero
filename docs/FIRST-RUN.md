@@ -113,3 +113,12 @@ The [actual narrow recovery capture](media/page-error-contained-2026-10-19.png)
 uses a deliberately malformed Language lab read in disposable services. The
 fixture then recovers through the real read handler, retains the shell search
 draft and checks unchanged scenario revision and zero write/model requests.
+
+Language lab offers **Refresh experiments** for its experiment list and local
+runtime discovery. A failed read leaves launch disabled and availability unknown;
+older list data is labeled as last available. Successful discovery clears its
+own error, retains experiment settings and preserves the chosen keyboard focus.
+The [actual dark failure capture](media/lab-discovery-unavailable-2026-10-19.png)
+uses one routed HTTP 503 in disposable services. Recovery reaches the real read
+handler without starting an experiment or writing history. A separate synthetic
+readiness fixture tests enabled/disabled controls and is not runtime evidence.

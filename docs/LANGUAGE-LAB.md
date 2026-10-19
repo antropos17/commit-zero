@@ -1,5 +1,25 @@
 # Local language laboratory
 
+## Discovery and recovery
+
+**Refresh experiments** repeats only experiment-list/runtime discovery reads.
+Pending or failed foreground discovery disables launch; a failed later read
+retains the last available list and reports model availability as unknown.
+Availability must be a boolean. Invalid discovery data stays an inline error,
+and malformed data cannot enable launch. Read errors are scoped separately from
+explicit experiment actions; a successful background read clears its matching
+error. Manual recovery preserves settings and respects another chosen input.
+
+The four browser fixtures in `tests/browser/lab-recovery.spec.mjs` call no model,
+preserve the scenario revision and reject any observed write request. One fixture
+uses explicitly synthetic readiness metadata only to check control states; it
+does not establish actual provider readiness. [Actual failure capture and scope](FIRST-RUN.md).
+
+Unexpected rendering/lifecycle errors still use the page boundary, preserving
+navigation. Its separate browser fixture deliberately corrupts an experiment
+detail response without persisting a fake run. These fallbacks do not replace
+validating future API contracts or runtime qualification.
+
 ## Specialist portfolios (arena v5)
 
 Each strategist can retain up to six original model-written programs that win

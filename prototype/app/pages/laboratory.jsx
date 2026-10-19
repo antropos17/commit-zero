@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { revisionTag } from "../../../shared/revisions.mjs";
 import { request } from "../api.mjs";
 import { PageHeading } from "../components/ui.jsx";
@@ -169,6 +169,10 @@ export function Laboratory({ id }) {
   const [catalog, setCatalog] = useState(null),
     [run, setRun] = useState(null),
     [error, setError] = useState(""),
+    [catalogError, setCatalogError] = useState(""),
+    [runError, setRunError] = useState(""),
+    [catalogPending, setCatalogPending] = useState(true),
+    [catalogRefresh, setCatalogRefresh] = useState(0),
     [busy, setBusy] = useState(false),
     [actor, setActor] = useState(""),
     [eventType, setEventType] = useState("changes"),
@@ -176,23 +180,56 @@ export function Laboratory({ id }) {
     [mode, setMode] = useState("arena"),
     [artifact, setArtifact] = useState("");
   const latest = useRef(null),
-    inspector = useRef(null);
+    inspector = useRef(null),
+    catalogOrigin = useRef(null);
+  useLayoutEffect(() => {
+    if (catalogPending) return;
+    const origin = catalogOrigin.current;
+    catalogOrigin.current = null;
+    if (
+      origin &&
+      origin.hash === location.hash &&
+      (document.activeElement === document.body ||
+        document.activeElement === origin.trigger)
+    )
+      origin.trigger.focus({ preventScroll: true });
+  }, [catalogPending, catalog, catalogError]);
   useEffect(() => {
     const controller = new AbortController();
     let loading = false;
-    const load = async () => {
+    const load = async (foreground = false) => {
       if (loading) return;
       loading = true;
+      if (foreground) setCatalogPending(true);
       try {
         const value = await request("lab", { signal: controller.signal });
-        setCatalog(value);
+        if (
+          !Array.isArray(value?.runs) ||
+          value.runs.some(
+            (item) =>
+              !item ||
+              typeof item.id !== "string" ||
+              typeof item.status !== "string",
+          ) ||
+          typeof value.provider?.available !== "boolean" ||
+          (value.provider.reason !== undefined &&
+            typeof value.provider.reason !== "string")
+        )
+          throw new Error(
+            "The service returned invalid experiment discovery data. Refresh to try again.",
+          );
+        if (!controller.signal.aborted) {
+          setCatalog(value);
+          setCatalogError("");
+        }
       } catch (e) {
-        if (!controller.signal.aborted) setError(e.message);
+        if (!controller.signal.aborted) setCatalogError(e.message);
       } finally {
         loading = false;
+        if (foreground && !controller.signal.aborted) setCatalogPending(false);
       }
     };
-    void load();
+    void load(true);
     const timer = setInterval(() => {
       if (!document.hidden) void load();
     }, 5000);
@@ -200,7 +237,7 @@ export function Laboratory({ id }) {
       controller.abort();
       clearInterval(timer);
     };
-  }, []);
+  }, [catalogRefresh]);
   const selected = id || catalog?.runs[0]?.id;
   useEffect(() => {
     const controller = new AbortController();
@@ -210,6 +247,7 @@ export function Laboratory({ id }) {
     setArtifact("");
     setActor("");
     setError("");
+    setRunError("");
     if (!selected) return () => controller.abort();
     const load = async () => {
       if (loading) return;
@@ -222,14 +260,14 @@ export function Laboratory({ id }) {
             : undefined,
         });
         if (!controller.signal.aborted) {
-          setError("");
+          setRunError("");
           if (value && latest.current?.version !== value.version) {
             latest.current = value;
             setRun(value);
           }
         }
       } catch (e) {
-        if (!controller.signal.aborted) setError(e.message);
+        if (!controller.signal.aborted) setRunError(e.message);
       } finally {
         loading = false;
       }
@@ -304,12 +342,30 @@ export function Laboratory({ id }) {
         title="Language lab"
         actions={
           <div className="lab-launch-actions">
-            {" "}
+            <button
+              className="btn"
+              disabled={catalogPending}
+              onClick={(event) => {
+                catalogOrigin.current = {
+                  trigger: event.currentTarget,
+                  hash: location.hash,
+                };
+                setCatalogPending(true);
+                setCatalogRefresh((value) => value + 1);
+              }}
+            >
+              Refresh experiments
+            </button>
             <button
               className="btn green"
               onClick={() => start()}
               disabled={
-                busy || !catalog?.provider.available || active || running
+                busy ||
+                catalogPending ||
+                Boolean(catalogError) ||
+                catalog?.provider.available !== true ||
+                active ||
+                running
               }
             >
               {busy ? "Working…" : "Start local experiment"}
@@ -318,7 +374,13 @@ export function Laboratory({ id }) {
               <button
                 className="btn"
                 onClick={() => start(true)}
-                disabled={busy || active || !catalog?.provider.available}
+                disabled={
+                  busy ||
+                  catalogPending ||
+                  Boolean(catalogError) ||
+                  active ||
+                  catalog?.provider.available !== true
+                }
               >
                 Continue improving these strategies
               </button>
@@ -328,9 +390,35 @@ export function Laboratory({ id }) {
       >
         Watch matches, inspect losses, improve strategies.
       </PageHeading>
-      {error && (
+      <section
+        className="lab-discovery-status"
+        aria-label="Experiment discovery"
+        aria-busy={catalogPending}
+      >
+        {catalogPending && (
+          <p role="status">Checking experiment list and local model.</p>
+        )}
+        {catalogError && (
+          <p className="inline-error" role="alert">
+            {catalogError}
+          </p>
+        )}
+        {catalogError && catalog && (
+          <p className="small muted">
+            Showing the last available experiment list. Local model availability
+            is unknown.
+          </p>
+        )}
+        {!catalog && !catalogPending && (
+          <p>
+            Experiment discovery is unavailable. Refresh experiments to try
+            again.
+          </p>
+        )}
+      </section>
+      {(error || runError) && (
         <p className="inline-error" role="alert">
-          {error}
+          {error || runError}
         </p>
       )}
       <div className="lab-workbench">
@@ -341,6 +429,7 @@ export function Laboratory({ id }) {
                 Run
                 <select
                   aria-label="Experiment run"
+                  disabled={!catalog?.runs.length}
                   value={selected || ""}
                   onChange={(e) => {
                     location.hash = `/lab/${e.target.value}`;
@@ -393,9 +482,13 @@ export function Laboratory({ id }) {
             )}
           </section>
           {run?.summary.mode === "arena" && (
-            <ArenaTheater key={run.id} run={run} connectionError={error} />
+            <ArenaTheater
+              key={run.id}
+              run={run}
+              connectionError={runError || catalogError || error}
+            />
           )}
-          {!selected && catalog && (
+          {!selected && catalog && !catalogError && (
             <div className="lab-empty">
               <h2>Start with an empty experiment</h2>
               <p>
@@ -445,16 +538,20 @@ export function Laboratory({ id }) {
           <section className="lab-readiness" aria-label="Local runtime">
             <h2>Local runtime</h2>
             <strong>
-              {catalog?.provider.available
-                ? "Local model ready"
-                : catalog
-                  ? "Local model offline"
-                  : "Checking local model…"}
+              {catalogPending
+                ? "Checking local model."
+                : catalogError
+                  ? "Local model availability unknown"
+                  : catalog?.provider.available === true
+                    ? "Local model ready"
+                    : catalog
+                      ? "Local model offline"
+                      : "Checking local model…"}
             </strong>
             <p>Qwen2.5-Coder 7B · separate agent roles · no paid API.</p>
-            {!catalog?.provider.available && catalog && (
-              <p>{catalog.provider.reason}</p>
-            )}
+            {catalog?.provider.available === false &&
+              !catalogError &&
+              !catalogPending && <p>{catalog.provider.reason}</p>}
             <p>
               Bounded interpreter. Strategies evolve; model weights do not.
               Promotions require executed checks.

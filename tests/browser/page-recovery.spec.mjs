@@ -2,6 +2,38 @@ import { mkdir } from "node:fs/promises";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+const malformedId = "00000000-0000-4000-8000-000000000001";
+async function brokenDetail(page) {
+  // Deliberately invalid read-only fixture, never stored or counted as activity.
+  // Discovery validation has its own tests; exercise the remaining page boundary.
+  await page.route(`**/api/lab/runs/${malformedId}`, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: malformedId,
+        version: 1,
+        status: "failed",
+        provenance: "test_fixture",
+        summary: {},
+        events: null,
+      }),
+    }),
+  );
+}
+async function brokenCatalog(route) {
+  const response = await route.fetch();
+  const body = await response.json();
+  body.runs = [
+    {
+      id: malformedId,
+      status: "failed",
+      created_at: "2026-01-01T00:00:00.000Z",
+    },
+  ];
+  return route.fulfill({ response, json: body });
+}
+
 const navigation = (page) =>
   page.getByRole("navigation", { name: "Main navigation", exact: true });
 const failure = (page) =>
@@ -49,14 +81,10 @@ for (const chosenInput of [false, true]) {
       if (request.method() !== "GET") writes.push(request.url());
       if (request.url().endsWith("/api/state")) stateReads++;
     });
+    await brokenDetail(page);
     await page.route("**/api/lab", async (route) => {
       attempts++;
-      if (attempts === 1)
-        return route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({ runs: null }),
-        });
+      if (attempts === 1) return brokenCatalog(route);
       if (attempts === 2) await retryGate;
       return route.continue();
     });
@@ -151,16 +179,11 @@ test("permanent navigation leaves a failed page and a later visit retries only i
   page.on("request", (request) => {
     if (request.method() !== "GET") writes.push(request.url());
   });
+  await brokenDetail(page);
   await page.route("**/api/lab", async (route) => {
     attempts++;
     if (attempts === 1) await initialGate;
-    return attempts <= 2
-      ? route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({ runs: null }),
-        })
-      : route.continue();
+    return attempts <= 2 ? brokenCatalog(route) : route.continue();
   });
   const initial = await openWorkspace(page);
   await navigation(page)
