@@ -29,6 +29,7 @@
     "test:ui": "node scripts/test-ui.mjs",
     "test:browser": "node scripts/browser-runtime.mjs test",
     "browser:doctor": "node scripts/browser-runtime.mjs doctor",
+    "evidence:status": "node scripts/evidence-status.mjs",
     "test:dom": "node --test tests/interface.dom.mjs",
     "test:serve": "node scripts/smoke-build.mjs",
     "test:services": "node --test tests/services.test.mjs",

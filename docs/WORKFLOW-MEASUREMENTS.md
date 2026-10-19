@@ -38,6 +38,23 @@ The profile/path checks establish ordinary tool hygiene, not a security boundary
 
 ### Earlier feedback measurements
 
+The later evidence preflight addresses a repeated reliability cost: manual
+publication checkpoints separately read source status, full-gate hashes, public
+HEAD/tree, copied-file digests and hosted CI. `evidence:status` consolidates the
+read-only parts and leaves copying/commit/push in the established workflow.
+A real run on dirty source returned `blocked`, identified both stale/missing
+receipts, and still correctly recognized matching committed Git trees. Its
+receipt is `runtime/verification/evidence-status-dirty-baseline-2026-10-19.json`.
+This is a reproducibility improvement; no comparable speedup is claimed.
+
+The [Playwright reporter reference](https://playwright.dev/docs/test-reporters#json-reporter),
+accessed 2026-10-19, supports keeping terminal output alongside JSON output.
+Decision: parse actual per-group counts and stamp the whole browser suite before
+and after execution. Seven host-contract tests reject stale/focused/probe-only
+receipts, missing groups, skips, retries and changed Git state; a disposable
+missing-source fixture confirms that an old synthetic green report is replaced.
+These fixtures are not real application/browser/model acceptance results.
+
 | Command | Observed samples | What it covers |
 | --- | --- | --- |
 | `npm run check:fast` | One current run: lint 689 ms, repository 95 ms, pure tests 1,334 ms (9/9) | Useful for quick pure-code feedback; excludes databases, build, DOM and serving. Not acceptance. |

@@ -112,6 +112,22 @@ hash in `.cache/verification/latest-full.json`; retain release evidence separate
 under `runtime/verification`. Browser checks and actual model trials have separate
 receipts; mocked tests never count as inference or runtime test evidence.
 
+The full grouped browser command now writes a separate stable-source receipt at
+`.cache/verification/latest-browser-suite.json`, with actual JSON reporter counts
+for each required group. Preserve both it and `latest-full.json` under
+`runtime/verification`. CI uploads full and browser summaries as separate
+artifacts, including failed/running states when available. A readiness probe,
+focused spec or incomplete group list cannot stand in for the browser suite.
+
+Maintainers using `.cache/publication` can run `npm run evidence:status` to bind
+the current clean source commit/tree to these two receipts and the independent
+public checkout. The tool is read-only apart from its local report; it never
+fetches, copies, commits or pushes. The default reads only cached origin metadata.
+Use `npm run evidence:status -- --github` for fresh public main and Verify status
+for that exact public commit. `current` refers to source/check evidence, not model,
+sandbox or hosted-service qualification. A normal contributor without the
+maintainer's separate publication checkout does not need this publication preflight.
+
 Public hosted deployment is still gated on TLS and account authorization for all shared
 writes, qualified generated-code isolation, provider/OAuth configuration, actual
 external PostgreSQL deployment/load and recovery tests, and native Git hosting if

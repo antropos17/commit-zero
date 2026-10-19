@@ -36,6 +36,21 @@ fresh blank page, verifies its temporary profile is inside `.cache/tmp`, closes
 it and checks profile removal. It reports no application or sandbox qualification.
 No browser is downloaded automatically. The mutable report is
 `.cache/verification/latest-browser.json`; preserve an immutable copy when needed.
+The complete `test:ui` command also writes
+`.cache/verification/latest-browser-suite.json`: source hashes before/after,
+the exact selected groups/specs, process exits and JSON reporter counts. A
+partial, skipped, flaky, failed or source-changing run cannot produce `passed`.
+Focused `test:browser` runs and `browser:doctor` never create that full receipt.
+
+For the maintainer's separate source/publication workflow, run
+`npm run evidence:status` after verification, commit and publication. It compares
+current source with both full receipts, checks clean Git state and compares
+trees across the independent histories. It performs no fetch or write to Git.
+`-- --github` adds fresh public-main and exact-commit Verify reads through `gh`;
+without it, hosted CI is explicitly not queried. `-- --json` prints the full
+report. The report is saved to `.cache/verification/latest-evidence-status.json`.
+Freeze documentation and assets as well as code before the full check and full
+browser suite; editing either afterwards makes their source stamps stale.
 `npm run benchmark:ui -- --history 1000 --samples 5` measures a labelled read-only
 chat fixture in cold browser contexts after `npm run build`. Use the same browser,
 viewport and parameters for comparison; it never opens a retained user store.

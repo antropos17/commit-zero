@@ -38,6 +38,10 @@ export async function browserEnvironment(
   return { ...inherited, TEMP: temporary, TMP: temporary, TMPDIR: temporary };
 }
 
+export async function verificationDirectory(root = projectRoot) {
+  return cacheDirectory(root, "verification");
+}
+
 // Call before importing Playwright: some temporary paths are set at import time.
 // These are process-local settings, not operating-system environment changes.
 export async function browserTools() {
@@ -47,9 +51,10 @@ export async function browserTools() {
   return { chromium, expect, temporaryDirectory: env.TMP };
 }
 
-export async function runBrowserTests(args, outputDirectory) {
+export async function runBrowserTests(args, outputDirectory, reportFile) {
   const env = await browserEnvironment();
   if (outputDirectory) env.CZ_BROWSER_OUTPUT_DIR = outputDirectory;
+  if (reportFile) env.CZ_BROWSER_JSON_OUTPUT = reportFile;
   return new Promise((done, reject) => {
     const child = spawn(
       process.execPath,

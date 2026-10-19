@@ -45,6 +45,16 @@ jobs:
       - run: npm run browser:doctor
       - run: npm run test:ui
       - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: browser-verification-summary
+          path: |
+            .cache/verification/latest-browser-suite.json
+            .cache/verification/latest-browser.json
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: browser-failures
