@@ -40,6 +40,7 @@
     "check:tooling": "node scripts/verify.mjs tooling",
     "doctor": "node scripts/doctor.mjs",
     "benchmark:backend": "node scripts/benchmark-backend.mjs",
+    "benchmark:ui": "node scripts/benchmark-ui.mjs",
     "simulate:commons": "node scripts/simulate-commons.mjs",
     "sandbox:doctor": "node scripts/sandbox-doctor.mjs",
     "map": "node scripts/project-map.mjs",

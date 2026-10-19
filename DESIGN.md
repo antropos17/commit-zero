@@ -146,7 +146,10 @@ identity; no second navigation rail competes with the main workspace rail.
 Scenario repositories reuse their existing supporting column for attribution
 instead of repeating the owner and pushing contribution details below the source.
 Below 900px Commons stacks in DOM order; sections remain open and reachable.
-Chat history scrolls above an always-present composer. Code and diff panels have
+Chat history scrolls above an always-present composer. Initially show the latest
+40 messages with an explicit count and earlier-message action when needed.
+Prepending a batch preserves the reading anchor; new arrivals follow only while
+the reader is at the bottom. Code and diff panels have
 bounded scroll areas; forks and PRs use explicit record selection instead of
 stacking every source snapshot. The Forks tab remains visible. New project and
 fork forms occupy the supporting column in their respective sections. The live

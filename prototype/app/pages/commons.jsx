@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useWorkspace, useAccount } from "../hooks.mjs";
 import { request } from "../api.mjs";
 import { path } from "../router.mjs";
@@ -100,6 +100,15 @@ function CommonsRoom({
   const taskInput = useRef(null);
   const chatLog = useRef(null);
   const followChat = useRef(true);
+  const messageAnchor = useRef(null);
+  const [messageWindowStart, setMessageWindowStart] = useState(null);
+  useLayoutEffect(() => {
+    const log = chatLog.current, anchor = messageAnchor.current;
+    if (log && anchor) {
+      log.scrollTop = anchor.top + log.scrollHeight - anchor.height;
+      messageAnchor.current = null;
+    }
+  }, [messageWindowStart]);
   useEffect(() => {
     const log = chatLog.current;
     if (log && followChat.current) log.scrollTop = log.scrollHeight;
@@ -218,6 +227,10 @@ function CommonsRoom({
   const messages = data.events.filter(
     (e) => e.type === "message" && e.repoId === repoId,
   );
+  const messageStart = messageWindowStart === null
+    ? Math.max(0, messages.length - 40)
+    : Math.max(0, messages.findIndex((event) => event.id === messageWindowStart));
+  const visibleMessages = messages.slice(messageStart);
   const allPulls = numberedPulls(data.projects);
   const prs = allPulls.filter((pr) => !repoId || pr.repoId === repoId);
   const running = data.jobs.find((job) => job.status === "running");
@@ -612,6 +625,23 @@ function CommonsRoom({
               )}
               {activeView === "discussion" && (
                 <section className="commons-chat" aria-label="Chat">
+                  {messages.length > 40 && (
+                    <div className="commons-history-controls">
+                      <span className="small muted" role="status">
+                        Showing {visibleMessages.length} of {messages.length} saved messages
+                      </span>
+                      {messageStart > 0 && (
+                        <button className="commons-text-button" onClick={() => {
+                          const log = chatLog.current;
+                          messageAnchor.current = { top: log.scrollTop, height: log.scrollHeight };
+                          followChat.current = false;
+                          setMessageWindowStart(messages[Math.max(0, messageStart - 40)].id);
+                        }}>
+                          Show {Math.min(40, messageStart)} earlier messages
+                        </button>
+                      )}
+                    </div>
+                  )}
                   <div
                     className="commons-messages"
                     role="region"
@@ -623,12 +653,14 @@ function CommonsRoom({
                       followChat.current =
                         log.scrollHeight - log.scrollTop - log.clientHeight <
                         48;
+                      if (!followChat.current && messageWindowStart === null && visibleMessages.length)
+                        setMessageWindowStart(visibleMessages[0].id);
                     }}
                   >
                     {!messages.length && (
                       <p className="commons-empty">No messages yet.</p>
                     )}
-                    {messages.map((event) => (
+                    {visibleMessages.map((event) => (
                       <article key={event.id} className="commons-message">
                         <div className="commons-byline">
                           <strong>

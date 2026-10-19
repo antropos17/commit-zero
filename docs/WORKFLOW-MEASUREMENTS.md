@@ -64,3 +64,45 @@ preserved. The next performance target, if measurements warrant it, is the
 client's full-snapshot refresh on a changed Commons revision. Event cursor
 reads already exist; switching the UI requires a separate correctness design
 for cache invalidation, revision changes and reading position.
+
+## Chat rendering window
+
+Before changing chat rendering, `npm run benchmark:ui -- --history 1000 --samples 5`
+ran at 06:16 UTC. The same command ran after the change at 06:19 UTC. Each batch
+used one warmup and five fresh browser contexts on this Windows host, Node
+24.11.1, Chrome 155.0.8059.80 and a 1440x900 viewport. The real disposable service
+cluster supplied the shell; a read-only routed Commons snapshot contained 1,000
+explicitly simulated messages. No retained store or model was used. Both batches
+received the same 926,125-byte snapshot.
+
+| Measure | Render all messages | Initial latest-40 window |
+| --- | ---: | ---: |
+| Initial rendered messages | 1,000 | 40 |
+| DOM elements | 8,224 | 547 |
+| Ready time p50, five samples | 228.25 ms | 212.72 ms |
+| Ready time p95, five samples | 232.81 ms | 225.42 ms |
+
+The reproducible result is smaller initial DOM work. These small timing batches
+do not establish a general startup speedup; bootstrap and local scheduling still
+dominate. Response bytes are unchanged. Raw local receipts are
+`runtime/verification/commons-ui-{before,after}-2026-10-19.json`; they include
+individual samples, source hashes and the exact Commons module SHA-256. The
+mutable command output is `.cache/verification/latest-ui-benchmark.json`.
+
+The [React layout-effect reference](https://react.dev/reference/react/useLayoutEffect)
+was checked on 2026-10-19. It supports restoring the prepend anchor before paint
+and warns against broad layout effects. The implementation uses one height delta
+only after an explicit earlier-message action; ordinary polling retains the
+existing effect. The expected benefit is stable reading position, verified by
+the held-out browser fixture rather than inferred from the documentation.
+
+A separate 147-message Chrome fixture tests behavior rather than tuning timings:
+new messages follow at the bottom, earlier batches retain the reading anchor,
+appends do not remove the first visible message, and all 149 messages become
+inspectable after two test appends. The oldest message can still source a task.
+It also checks narrow layout and axe. The production API and export remain full
+snapshots; cursor-driven network reads need a separate consistency design.
+
+After the batches, diagnostics reported 79 GB free and `.cache` 918,822,556 bytes.
+Retained database (81,371,331 bytes), identity (40,165,571), backups (606,429,778)
+and model (4,807,159,778) sizes were unchanged from the earlier mission checks.

@@ -28,8 +28,12 @@ weight training. No scripted dialogue or fake fallback responses are used.
 Raw responses, including rejected/incomplete outputs, remain in the job export.
 The next explicitly started task sees recent conversation, not unlimited memory.
 
-The UI polls every 2.5 seconds, supports pause/resume, and never automatically
-scrolls or moves focus. Failed/stale submissions retain operator drafts. Changes,
+The UI polls every 2.5 seconds and supports pause/resume. Chat follows new messages
+while the reader is at the bottom; reading older messages preserves the anchor.
+It initially renders the latest 40 saved messages. **Show earlier messages** reveals
+up to 40 more without losing the current reading position; all messages remain in
+the full snapshot and export. This bounds initial DOM work, not network transfer.
+Failed/stale submissions retain operator drafts. Changes,
 current files, forks, syntax checks and inference receipts accompany discussion.
 The task form checks local model readiness when opened and offers **Check model**
 to refresh it after starting or stopping the provider. The run action stays

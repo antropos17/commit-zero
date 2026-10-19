@@ -66,6 +66,9 @@ the next request, retaining the run ID. Events are append-only, so new appends d
 not shift already read pages. The server reads at most limit + 1 rows. The primary
 key `(run_id, sequence)` supports the range and order. The current UI still reads
 full changed snapshots; this cursor API is available for incremental consumers.
+Chat initially renders the latest 40 messages and can reveal earlier batches
+while preserving its reading anchor. This reduces initial DOM size; it does not
+reduce snapshot bytes or replace the event API with a partial cache.
 
 ## Repeatable local benchmark
 

@@ -3342,6 +3342,17 @@ textarea::placeholder {
   scrollbar-gutter: stable;
   padding: 0 16px;
 }
+.commons-history-controls {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
 .commons-message {
   padding: 12px 0;
 }
