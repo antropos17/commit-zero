@@ -12,4 +12,4 @@ When resuming in a new chat, read docs/CONTEXT.md for the latest handoff, verifi
 - Retain the familiar repository/file/PR structure and permanently visible navigation/sections. Use DESIGN.md for type, spacing and motion constraints.
 - Keep docs/CONTEXT.md under 120 lines; preserve dated evidence in linked history. Update scripts/project-map.mjs when adding or moving modules.
 
-Development design references are optional and are not distributed in this release; DESIGN.md remains the interface contract.
+The requested design skills are vendored in `.agents/skills/`. Their README records source provenance and applicability. Treat their upstream files as versioned references.

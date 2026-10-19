@@ -7,7 +7,7 @@ Updated: 2026-10-19. Workspace: X:\ai-github.
 Read this file, run git status --short and npm run doctor, then follow the user's
 current request. Use npm run map -- <area> for entry points and focused tests.
 [Development](DEVELOPMENT.md), [architecture](ARCHITECTURE.md), [API](API.md) and
-[design](../DESIGN.md) own their respective contracts. Preserve the dirty checkout.
+[design](../DESIGN.md) own their contracts. Preserve the dirty checkout and history.
 
 ## Direction and preferences
 
@@ -38,21 +38,16 @@ and external AI CLIs require a direct user request. Never merge old work implici
   The older cz-agent/1 scenario query contract remains read-only and compatible.
 - General/project timeline filters expose real author and project activity. Polling
   preserves drafts, reading state and focus; navigation does not hide sections.
-- Model inset links open scenario profiles or /model/<id> for real Commons work.
-  Local profiles separate creation, accepted improvements, forks, PRs and live tasks.
-  Contribution rows link to exact PR IDs and resulting versions; accepted means
-  merged. Scenario creation explicitly labels its unavailable initial diff.
-  Every project exposes creator/origin, model-grouped merged PRs and unmerged
-  proposals with small profile marks and exact diff/version links.
-  Project timelines show compact change/check/review/merge rows with model roles,
-  operator identity, timestamps and exact PR links; pause/queued updates retain reading.
-  Project actions/contributors use a supporting column; lab pairs arena/setup and
-  timeline/artifact inspection, with results below and no collapsed sections.
-  Discover, catalogs, profiles, rankings and service pages use the same main/
-  supporting-column hierarchy. Filters stay with results; all sections stay open.
-  Mobile navigation uses three visible groups; actions lead, code/feeds scroll locally.
-  Cross-page layout receipt: runtime/verification/compact-pages-2026-10-19.json.
-  Fresh page links reset scroll; Back restores it. Commons reuses one run snapshot.
+- Model inset links open scenario profiles or /model/<id> for actual Commons work.
+  Profiles/projects separate creation, merged improvements, forks and unmerged PRs;
+  contribution rows link to exact changes and versions. Accepted means merged.
+  Scenario creation labels its unavailable initial diff. Project timelines expose
+  model roles, operator decisions, timestamps and exact PR links; queued updates
+  retain reading position. Fresh links reset scroll; Back restores it.
+- Layout uses a main work area and supporting column, with permanently open
+  sections. Mobile keeps three navigation groups and local code/feed scrolling.
+  DESIGN.md owns the composition; cross-page evidence is in
+  runtime/verification/compact-pages-2026-10-19.json. Commons caches one run snapshot.
 - Language lab uses actual inference and a bounded host interpreter for evolving
   games/strategies, loss feedback, specialists and live spectator replays. It is not
   arbitrary native/JavaScript execution or model-weight training.
@@ -81,6 +76,8 @@ Recheck these observations before acting:
 - Compiled gateway 4173, development gateway 4174, dependencies 4185-4187. Services
   start identity before workspace so owned-agent resolution uses its actual port.
   Avoid simultaneous supervisors. npm start serves dist; build after UI edits.
+- Latest doctor check: no healthy gateway at 4173; source newer than dist. Dependencies
+  and disk pass. Check processes/ports before starting; inference was not re-probed.
 - Stores: runtime/database and runtime/identity. Preserve .env, accounts, runs,
   backups and verification receipts. .env is not automatically read.
 - Local llama.cpp 8199: cz-local-coder, Qwen2.5-Coder 7B Q4_K_M. Model readiness
@@ -88,11 +85,14 @@ Recheck these observations before acting:
 - Existing Commons run 49092854-f9bd-4b7a-8d12-4ac5ea0e5f70 retains the approved,
   unmerged safe-timer change from job 811bdb98-bcbb-4b65-80b9-f19693aef6b4.
   Preserve it. 29 earlier lab experiments were verified before this release work.
-- Earlier backend receipt: runtime/verification/backend-optimization-2026-10-18T20-47-54.987Z.json.
-  Current release evidence is stored separately under runtime/verification.
-- Docker engine was unavailable; C: had approximately 4 GB free. No Docker data
-  move, global setting change or startup was performed. Arbitrary-code execution
-  remains unavailable. OAuth requires the user's GitHub/Google app configuration.
+- Public source: antropos17/commit-zero at f225a75; studio profile at 2f3bdd4.
+  Publish through clean .cache/publication/main; preserve the dirty root checkout.
+  README GIF is a 15.8s condensed walkthrough of retained Sequence Kit work,
+  not a continuous live recording. Static fallback included; desktop/mobile and all
+  three CI jobs passed. Evidence: runtime/verification/github-readme-gif-2026-10-19.json.
+- Signal Kit: four tasks/seven calls, no merge; archived v0. Preserve failed attempts.
+  Temporary GIF copies remain after policy-blocked cleanup; see today's history.
+- Arbitrary-code execution remains unavailable. OAuth needs the user's app settings.
 - Public TLS, shared-write account authorization, external PostgreSQL load/HA and
   remote Git hosting are outside the explicitly selected local release.
 
@@ -114,6 +114,6 @@ Retention applies only to disposable qa-* diagnostic files (7 days / 50 MB).
 
 ## Historical context
 
-[Earlier handoff](CONTEXT-HISTORY-2026-10-18.md) preserves prior experiments and
-superseded choices. Read it only for a specific historical fact. Current rules and
-[release operations](RELEASE.md) take precedence.
+[Dot continuation](DOT-HANDOFF.md) has both source locations and restart steps.
+[Publication/GIF history](CONTEXT-HISTORY-2026-10-19.md) and [earlier history](CONTEXT-HISTORY-2026-10-18.md)
+preserve evidence and prior experiments. [Release operations](RELEASE.md) take precedence.
