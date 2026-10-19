@@ -1197,6 +1197,10 @@ textarea::placeholder {
     min-height: 44px;
     font-size: 16px;
   }
+  .timeline-feed > .btn,
+  .timeline-status .btn {
+    min-height: 44px;
+  }
   .timeline-event {
     grid-template-columns: 44px minmax(0, 1fr);
     gap: 12px;

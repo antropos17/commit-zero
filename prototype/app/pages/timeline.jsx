@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useWorkspace } from "../hooks.mjs";
 import { request } from "../api.mjs";
 import { Avatar, Empty, PageHeading } from "../components/ui.jsx";
@@ -26,8 +26,9 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
   const [agent, setAgent] = useState(actor),
     [repo, setRepo] = useState(repository),
     [kind, setKind] = useState("");
-  const [result, setResult] = useState(null),
-    [error, setError] = useState(""),
+  const [snapshot, setSnapshot] = useState(null),
+    [readError, setReadError] = useState(null),
+    [olderError, setOlderError] = useState(""),
     [paused, setPaused] = useState(false),
     [pending, setPending] = useState(null),
     [loading, setLoading] = useState(false);
@@ -35,7 +36,10 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
     feed = useRef(null),
     generation = useRef(0),
     pausedRef = useRef(false),
-    refreshRef = useRef(null);
+    refreshRef = useRef(null),
+    olderRequest = useRef(null),
+    operationOrigin = useRef(null),
+    recorded = useRef(null);
   useEffect(() => {
     pausedRef.current = paused;
   }, [paused]);
@@ -45,10 +49,42 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
     ...(repository || repo ? { repo: repository || repo } : {}),
     ...(kind ? { kind } : {}),
   }).toString();
+  const result = snapshot?.query === query ? snapshot.value : null;
+  const error = readError?.query === query ? readError.message : "";
+  function setError(message) {
+    setReadError({ query, message });
+  }
+  function setResult(value) {
+    setSnapshot({ query, value });
+  }
+  function cancelOlder() {
+    olderRequest.current?.abort();
+    olderRequest.current = null;
+    operationOrigin.current = null;
+    setLoading(false);
+    setOlderError("");
+  }
+  useLayoutEffect(() => {
+    if (loading) return;
+    const origin = operationOrigin.current;
+    operationOrigin.current = null;
+    if (
+      origin &&
+      origin.generation === generation.current &&
+      origin.runId === current.current?.runId &&
+      (document.activeElement === document.body ||
+        document.activeElement === origin.trigger)
+    )
+      (origin.trigger.isConnected && !origin.trigger.disabled
+        ? origin.trigger
+        : recorded.current
+      )?.focus({ preventScroll: true });
+  }, [loading, result, olderError]);
   useEffect(() => {
     const controller = new AbortController();
     const version = ++generation.current;
     let running = false;
+    cancelOlder();
     current.current = null;
     setResult(null);
     setPending(null);
@@ -82,6 +118,11 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
           setPending(next);
           return;
         }
+        if (current.current) {
+          const origin = operationOrigin.current;
+          cancelOlder();
+          if (origin?.runId === next.runId) operationOrigin.current = origin;
+        }
         current.current = next;
         setResult(next);
         setPending(null);
@@ -103,6 +144,9 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
     }, 3000);
     return () => {
       controller.abort();
+      olderRequest.current?.abort();
+      olderRequest.current = null;
+      operationOrigin.current = null;
       clearInterval(timer);
       refreshRef.current = null;
     };
@@ -110,36 +154,64 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
   useEffect(() => {
     if (!pausedRef.current) void refreshRef.current?.();
   }, [workspace.version]);
-  async function older() {
-    if (loading || !result?.nextBefore) return;
+  async function older(event) {
+    if (loading || olderRequest.current || !result?.nextBefore) return;
+    const controller = new AbortController();
+    olderRequest.current = controller;
+    operationOrigin.current = {
+      trigger: event.currentTarget,
+      generation: generation.current,
+      runId: result.runId,
+    };
+    setOlderError("");
     setLoading(true);
     const version = generation.current;
     try {
       const next = await request(
         `timeline?${query}&runId=${result.runId}&before=${result.nextBefore}`,
+        { signal: controller.signal },
       );
       if (
+        controller.signal.aborted ||
+        controller !== olderRequest.current ||
         version !== generation.current ||
         current.current?.runId !== next.runId
       )
         return;
-      setResult((old) => {
-        const seen = new Set(old.items.map((e) => e.id));
-        const merged = {
-          ...old,
-          items: [...old.items, ...next.items.filter((e) => !seen.has(e.id))],
-          nextBefore: next.nextBefore,
-        };
-        current.current = merged;
-        return merged;
-      });
+      const old = current.current;
+      if (!old || old.runId !== next.runId) return;
+      const seen = new Set(old.items.map((e) => e.id));
+      const merged = {
+        ...old,
+        items: [...old.items, ...next.items.filter((e) => !seen.has(e.id))],
+        nextBefore: next.nextBefore,
+      };
+      current.current = merged;
+      setResult(merged);
     } catch (err) {
-      if (version === generation.current) setError(err.message);
+      if (
+        !controller.signal.aborted &&
+        controller === olderRequest.current &&
+        version === generation.current
+      )
+        setOlderError(err.message);
     } finally {
-      setLoading(false);
+      if (
+        controller === olderRequest.current &&
+        version === generation.current
+      ) {
+        olderRequest.current = null;
+        setLoading(false);
+      }
     }
   }
-  const showPending = () => {
+  const showPending = (event) => {
+    cancelOlder();
+    operationOrigin.current = {
+      trigger: event.currentTarget,
+      generation: generation.current,
+      runId: pending.runId,
+    };
     current.current = pending;
     setResult(pending);
     setPending(null);
@@ -150,6 +222,7 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
       className={`timeline-feed${compact ? " compact" : ""}`}
       aria-label={actor ? "Agent timeline" : "Activity timeline"}
       ref={feed}
+      aria-busy={loading || (!result && !error)}
     >
       {!compact && (
         <div className="timeline-filters">
@@ -201,21 +274,23 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
               : "Live updates · every 3 seconds"}
           {result ? ` · ${result.total} events` : ""}
         </span>
-        <button
-          className="btn"
-          aria-pressed={paused}
-          onClick={() => setPaused((value) => !value)}
-        >
+        <button className="btn" onClick={() => setPaused((value) => !value)}>
           {paused ? "Resume updates" : "Pause updates"}
         </button>
       </div>
       {error && (
         <p className="inline-error" role="alert">
           {error} {result ? "Saved events remain visible. " : ""}Updates retry
-          automatically.
+          {paused ? "after you resume updates." : "automatically."}
         </p>
       )}
-      {pending && (
+      {olderError && result && (
+        <p className="inline-error" role="alert">
+          {olderError} Older activity was not loaded. Use Load older activity to
+          try again.
+        </p>
+      )}
+      {pending && result && (
         <button className="btn timeline-new" onClick={showPending}>
           Show new activity
         </button>
@@ -226,6 +301,7 @@ export function TimelineFeed({ actor = "", repository = "", compact = false }) {
       )}
       <ol
         className="event-timeline"
+        ref={recorded}
         tabIndex={0}
         aria-label="Recorded activity"
       >

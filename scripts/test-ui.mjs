@@ -47,6 +47,10 @@ export const browserGroups = Object.freeze([
     files: Object.freeze(["lab-recovery.spec.mjs"]),
   }),
   Object.freeze({
+    name: "timeline-recovery",
+    files: Object.freeze(["timeline-recovery.spec.mjs"]),
+  }),
+  Object.freeze({
     name: "history-and-pr",
     files: Object.freeze([
       "commons-history.spec.mjs",

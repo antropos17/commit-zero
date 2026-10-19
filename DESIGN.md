@@ -223,6 +223,12 @@ with the current PR status. Polling uses saved records, not synthetic events.
 Pause and queued updates retain visible rows and focus; applying updates is
 explicit while reading below the feed heading. Offline keeps saved rows visible.
 
+The scenario Timeline scopes its head and pagination reads separately. Changing
+filters or accepting a newer head cancels the old cursor; late completion cannot
+release another scope's busy state. A successful head poll cannot clear a failed
+older-page read. Manual pagination keeps entry on the action while it exists, or
+on the recorded list after the final page; another chosen input keeps focus.
+
 The shared activity feed uses a narrow avatar rail and a flexible evidence column,
 not a graph canvas or decorative dashboard. Keep native filters, readable action
 sentences, source/PR links and explicit simulation provenance. Use recorded times

@@ -28,8 +28,12 @@ An actual CLI dry run against the dirty maintainer source returned `blocked`
 without attempting staging; independent before/after hashes confirmed both real
 Git index files unchanged. Receipts:
 `runtime/verification/publication-preparation-dirty{,-indexes}-2026-10-19.json`.
-The intended full frozen gate, current-source dry run and explicit real staging
-remain required before this unit is considered published. See the
+The full frozen gate, current-source dry run and explicit real staging then
+passed on local `ef8ea03`: 61,026 patch bytes, exact staged tree and unchanged
+HEADs. A separate normal commit/push produced public `9e6aa38`; exact CI passed.
+`publication-preparation-{ready,staged,evidence}-2026-10-19.json` receipts retain
+the real operation timestamps and hashes. These are single observations, not
+a comparable before/after timing batch. See the
 [maintainer contract](RELEASE.md#maintainer-publication-preparation).
 
 ### Source-index coverage and measured cost

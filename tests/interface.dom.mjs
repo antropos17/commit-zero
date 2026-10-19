@@ -628,7 +628,8 @@ test("React workspace preserves reading state, completes the scenario, and suppo
   );
   const pause = doc.querySelector(".timeline-status button");
   pause.click();
-  await until(() => pause.getAttribute("aria-pressed") === "true");
+  await until(() => pause.textContent === "Resume updates");
+  assert.equal(pause.getAttribute("aria-pressed"), null);
   assert.match(
     doc.querySelector(".timeline-status").textContent,
     /Updates paused/,

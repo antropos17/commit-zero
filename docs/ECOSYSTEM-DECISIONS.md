@@ -5,6 +5,20 @@ below were checked or attempted on 2026-10-19; documentation does not establish 
 capabilities or provider entitlement. The [mission log](MISSION-2026-10-19.md)
 records implementation and verification timestamps.
 
+## Keep pagination independent from head polling
+
+Actual Timeline fixtures exposed stale busy state across filters, terminal focus
+loss and a successful head read erasing an older-page failure. Decision: keep
+separate request/error lifecycles, abort old cursors on context replacement and
+restore manual entry only when another input has not been chosen. A further
+new-head fixture checks complete event IDs against the actual handler so a
+cursor from an old first page cannot create gaps. Expected benefit: readable,
+recoverable history under concurrent updates. Seven focused Chrome cases passed.
+The [Playwright clock reference](https://playwright.dev/docs/clock), accessed
+2026-10-19, supports installing timer control before page scripts. It is used
+only in explicit timer cases; HTTP handlers and scenario transactions still run.
+This avoids artificial wall-time waits without making a performance claim.
+
 ## Contain a failed page within the workspace
 
 The [React error-boundary reference](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)

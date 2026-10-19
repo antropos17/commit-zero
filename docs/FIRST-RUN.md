@@ -122,3 +122,13 @@ The [actual dark failure capture](media/lab-discovery-unavailable-2026-10-19.png
 uses one routed HTTP 503 in disposable services. Recovery reaches the real read
 handler without starting an experiment or writing history. A separate synthetic
 readiness fixture tests enabled/disabled controls and is not runtime evidence.
+
+In Timeline, **Load older activity** retries a failed page while preserving the
+events already loaded. Head polling and older-page errors are separate; paused
+updates say that resuming is required. Changing filters cancels old pagination.
+The [actual narrow failure capture](media/timeline-page-unavailable-2026-10-19.png)
+shows a routed HTTP 503 after reading two real records from disposable scenario
+data. The fixture changes only the GET page size to two and uses no invented
+rows; every action remains labeled simulated. A successful retry reaches the
+real handler. The separate update tests advance only the disposable scenario;
+they neither change retained user history nor call a model.

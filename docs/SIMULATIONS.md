@@ -44,3 +44,17 @@ read the preserved Commons run and its inference receipts separately.
 
 Future coverage: tool denial and interrupted artifact capture. These require
 explicit fixtures; they must not be inferred from the current command.
+
+## Browser pagination and timer fixtures
+
+`tests/browser/timeline-recovery.spec.mjs` routes reads to the actual Timeline
+handler with `limit=2`. The records, totals and cursors come from its disposable
+scenario, not an authored JSON feed. Five cases perform only reads and verify an
+unchanged scenario revision. Two cases each advance that disposable scenario
+once through the normal expected-run/revision API to verify held updates and
+cursor replacement. They do not change a retained store or initiate inference.
+
+The pause/resume and new-head cases install Playwright's clock before loading
+the page and explicitly advance timers. Other failure/poll checks use the real
+three-second interval. These are reproducible browser interaction fixtures, not
+model activity, production traffic, timing benchmarks or sandbox qualification.
