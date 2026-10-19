@@ -42,9 +42,11 @@ Moonshot API ID and account access. No silent substitute is allowed.
 ## Contracts and activation
 
 Every candidate receives a bounded task, project/run ID, source revision and
-untrusted references. The output envelope requires matching profile and artifact
-types, an integer source revision, a bounded summary, evidence references and
-uncertainties. It must state `runtimeVerified: false` and `merged: false`.
+untrusted references. Host validation compares the output's run ID, project ID
+and source revision with the exact expected context, rejects unknown fields,
+and requires matching profile and artifact types, a bounded summary, evidence
+references and uncertainties. It must state `runtimeVerified: false` and
+`merged: false`.
 `shared/agent-evaluation.mjs` contains task fixtures for conflict, stale base,
 disagreement, invalid output, missing documents, and large repository context.
 They define validation inputs, not scored model results.

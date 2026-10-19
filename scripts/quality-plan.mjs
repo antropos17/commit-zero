@@ -50,7 +50,11 @@ export function qualityPlan(mode) {
     ];
   if (mode === "ui") return [lint, structure, ...ui];
   if (Object.hasOwn(areas, mode))
-    return [lint, structure, test(mode, areas[mode].tests)];
+    return [
+      lint,
+      structure,
+      test(mode, areas[mode].tests.filter((file) => file.endsWith(".test.mjs"))),
+    ];
   throw new Error(
     `Unknown suite: ${mode}. Choose full, fast, lint, ${Object.keys(areas).join(", ")}.`,
   );

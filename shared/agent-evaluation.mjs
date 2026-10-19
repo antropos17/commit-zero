@@ -14,13 +14,25 @@ export const evaluationFixtures = Object.freeze({
   "large-repository-map": { task: "Map a large repository with bounded context.", type: "map" },
 });
 
-export function validateAgentOutput(profile, envelope) {
+const envelopeFields = new Set([
+  "profileId", "runId", "projectId", "artifactType", "sourceRevision",
+  "summary", "evidence", "uncertainties", "runtimeVerified", "merged",
+]);
+
+export function validateAgentOutput(profile, expected, envelope) {
+  if (!expected || typeof expected.runId !== "string" || !expected.runId ||
+      typeof expected.projectId !== "string" || !expected.projectId ||
+      !Number.isInteger(expected.sourceRevision) || expected.sourceRevision < 0)
+    return { ok: false, reason: "Expected run, project, and revision are required." };
   if (!envelope || typeof envelope !== "object" || Array.isArray(envelope))
     return { ok: false, reason: "Expected an object envelope." };
+  if (Object.keys(envelope).some((key) => !envelopeFields.has(key)))
+    return { ok: false, reason: "Unknown output fields are not accepted." };
   if (envelope.profileId !== profile.id || envelope.artifactType !== profile.artifactType)
     return { ok: false, reason: "Profile or artifact type mismatch." };
-  if (!Number.isInteger(envelope.sourceRevision) || envelope.sourceRevision < 0)
-    return { ok: false, reason: "Source revision is required." };
+  if (envelope.runId !== expected.runId || envelope.projectId !== expected.projectId ||
+      envelope.sourceRevision !== expected.sourceRevision)
+    return { ok: false, reason: "Output does not match the expected run, project, and revision." };
   if (typeof envelope.summary !== "string" || !envelope.summary.trim() || envelope.summary.length > 8000)
     return { ok: false, reason: "A bounded summary is required." };
   if (!Array.isArray(envelope.evidence) || envelope.evidence.length > 20 ||

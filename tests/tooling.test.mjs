@@ -22,6 +22,9 @@ test("Verification preserves the full gate, focused scope and fail-fast results"
   assert.ok(
     qualityPlan("commons").at(-1).args.includes("tests/commons.test.mjs"),
   );
+  assert.ok(
+    !qualityPlan("commons").at(-1).args.some((file) => file.endsWith(".spec.mjs")),
+  );
   assert.throws(() => qualityPlan("typo"), /Unknown suite/);
   const called = [];
   const result = await executePlan(full, async (stage) => {

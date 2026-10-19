@@ -29,6 +29,8 @@
 | `npm run check` | Full local gate, including every `tests/*.test.mjs`; unchanged required acceptance scope plus repository checks |
 
 Append `-- --plan` to any suite to inspect its exact commands without running them.
+Area maps also list Playwright `.spec.mjs` files for navigation; area checks run
+only Node `.test.mjs` files. Run `npm run test:ui` for real browser coverage.
 Focused suites are explicitly labeled feedback, not full acceptance. Select an area
 deliberately: changed-file inference is unreliable in this dirty checkout and can
 miss integration dependencies. The full gate remains serial to bound PGlite memory.

@@ -14,26 +14,34 @@ test("proposed agent catalog has distinct disabled roles and source-backed model
 
 test("host contract rejects stale, mismatched, oversized and fabricated output claims", () => {
   for (const profile of agentCatalog) {
+    const expected = { runId: "fixture-run", projectId: "fixture-project", sourceRevision: 4 };
     const valid = {
       profileId: profile.id,
+      runId: expected.runId,
+      projectId: expected.projectId,
       artifactType: profile.artifactType,
-      sourceRevision: 4,
+      sourceRevision: expected.sourceRevision,
       summary: "Proposal with explicit uncertainty.",
       evidence: ["project/readme.md:4"],
       uncertainties: ["No runtime check was performed."],
       runtimeVerified: false,
       merged: false,
     };
-    assert.deepEqual(validateAgentOutput(profile, valid), { ok: true });
+    assert.deepEqual(validateAgentOutput(profile, expected, valid), { ok: true });
     for (const changed of [
       { sourceRevision: -1 },
+      { sourceRevision: 3 },
+      { runId: "other-run" },
+      { projectId: "other-project" },
       { profileId: "someone-else" },
       { artifactType: "different" },
       { summary: "x".repeat(8001) },
       { evidence: [false] },
       { runtimeVerified: true },
       { merged: true },
+      { toolCalls: [] },
     ])
-      assert.equal(validateAgentOutput(profile, { ...valid, ...changed }).ok, false);
+      assert.equal(validateAgentOutput(profile, expected, { ...valid, ...changed }).ok, false);
+    assert.equal(validateAgentOutput(profile, { ...expected, sourceRevision: -1 }, valid).ok, false);
   }
 });
