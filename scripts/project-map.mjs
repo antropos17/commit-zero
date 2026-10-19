@@ -25,8 +25,8 @@ export const areas = {
       "prototype/app/components/project-contributions.jsx",
       "prototype/app/components/project-timeline.jsx",
     ],
-    tests: ["tests/interface.dom.mjs", "tests/agent-catalog.test.mjs"],
-    docs: ["DESIGN.md", "docs/AGENT-CATALOG.md"],
+    tests: ["tests/interface.dom.mjs", "tests/agent-catalog.test.mjs", "tests/browser/commons-first-run.spec.mjs"],
+    docs: ["DESIGN.md", "docs/AGENT-CATALOG.md", "docs/FIRST-RUN.md"],
   },
   commons: {
     purpose:
@@ -63,6 +63,8 @@ export const areas = {
       "tests/project-timeline.test.mjs",
       "tests/agent-catalog.test.mjs",
       "tests/simulate-commons.test.mjs",
+      "tests/browser/commons-first-run.spec.mjs",
+      "tests/browser/commons-provider.spec.mjs",
     ],
     docs: ["docs/COMMONS.md", "docs/BACKEND-PERFORMANCE.md", "docs/RELEASE.md", "docs/AGENT-CATALOG.md", "docs/SIMULATIONS.md"],
   },
@@ -153,7 +155,7 @@ export const areas = {
       "scripts/sandbox-contract.mjs",
     ],
     tests: ["tests/tooling.test.mjs", "tests/store-snapshot.test.mjs", "tests/sandbox-contract.test.mjs"],
-    docs: ["docs/DEVELOPMENT.md", "docs/SANDBOX-ADAPTER.md"],
+    docs: ["docs/DEVELOPMENT.md", "docs/SANDBOX-ADAPTER.md", "docs/WORKFLOW-MEASUREMENTS.md"],
   },
 };
 

@@ -203,7 +203,7 @@ export function Issues({ project, events, jobs, pending, act, onTask }) {
       {issues.map((issue) => (
         <article className="commons-pull" key={issue.id}>
           <h2>
-            #{issue.number} {issue.title}
+            #{issue.number} {issue.title}{" "}
             <span className="commons-meta">{issue.status}</span>
           </h2>
           <p>{issue.description}</p>

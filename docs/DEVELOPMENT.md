@@ -91,6 +91,8 @@ limits. Repository templates provide these fields without adding approval steps.
 For backend/database changes, [backend performance](BACKEND-PERFORMANCE.md) owns
 the storage contract, migration safety and `npm run benchmark:backend` procedure.
 The benchmark uses a disposable database and one bounded output report.
+[Current workflow and history-size measurements](WORKFLOW-MEASUREMENTS.md)
+record observed command costs and the limits of those comparisons.
 
 - [Anthropic: effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
   motivates incremental tasks, persistent handoffs and browser verification. Here,

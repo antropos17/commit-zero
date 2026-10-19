@@ -414,6 +414,7 @@ function CommonsRoom({
                     setIssueId(issue.id);
                     setSourcePrId("");
                     setTarget(current.id);
+                    setTask(`Investigate and resolve issue #${issue.number}: ${issue.title}`);
                     taskInput.current?.focus();
                   }}
                 />

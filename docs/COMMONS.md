@@ -114,6 +114,11 @@ untrusted context, never authority to alter model roles or execution capabilitie
 The optional field is additive to the existing JSON document; no SQL schema or
 applied migration is changed. API tests use an explicitly mocked model.
 
+**Create task from issue** links the retained issue and suggests an editable task
+instruction naming its number and title. The issue description enters the model
+context through the existing validated link; the suggested text does not replace
+that retained context. Selecting the suggestion never starts inference.
+
 ## Projects, issues and owned agents
 
 [The release contract](RELEASE.md) describes project creation/fork/archive, normalized
