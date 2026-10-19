@@ -132,3 +132,12 @@ data. The fixture changes only the GET page size to two and uses no invented
 rows; every action remains labeled simulated. A successful retry reaches the
 real handler. The separate update tests advance only the disposable scenario;
 they neither change retained user history nor call a model.
+
+Commons **Check model** reads health metadata only. Malformed readiness remains
+unknown, and an older check cannot overwrite a newer result or release its busy
+state. The task draft and chosen keyboard input survive recovery. The
+[actual unknown-status capture](media/commons-readiness-unknown-2026-10-19.png)
+uses malformed read-only metadata in disposable services; the subsequent retry
+reaches the real handler. Run agents is never pressed in those fixtures.
+A successful health check alone does not qualify inference, tool access, model
+quality or any of the disabled Proposed roles.

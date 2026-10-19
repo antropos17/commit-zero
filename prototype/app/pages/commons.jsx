@@ -132,6 +132,8 @@ function CommonsRoom({
   ]);
   const [paused, setPaused] = useState(false);
   const alive = useRef(true);
+  const providerRequest = useRef(null);
+  const providerOrigin = useRef(null);
   const latestVersion = useRef(null);
   const receive = useCallback((next) => {
     if (!next) return;
@@ -159,21 +161,47 @@ function CommonsRoom({
     },
     [runId, receive],
   );
-  const checkProvider = useCallback(async (signal) => {
+  const checkProvider = useCallback(async (signal, trigger) => {
+    if (!alive.current || signal?.aborted) return;
+    const controller = new AbortController();
+    providerRequest.current?.abort();
+    providerRequest.current = controller;
+    providerOrigin.current = trigger ? { trigger, hash: location.hash } : null;
+    const linked = signal
+      ? AbortSignal.any([signal, controller.signal])
+      : controller.signal;
     setCheckingProvider(true);
     setProviderError("");
     try {
-      const next = await request("commons/provider", { signal });
-      if (!signal?.aborted && alive.current) setProvider(next);
+      const next = await request("commons/provider", { signal: linked });
+      if (
+        typeof next?.available !== "boolean" ||
+        typeof next?.busy !== "boolean" ||
+        (next.reason !== undefined && typeof next.reason !== "string")
+      )
+        throw new Error("The service returned invalid model status. Check model to try again.");
+      // Only the current check can update status or settle its busy state.
+      if (!linked.aborted && providerRequest.current === controller && alive.current) setProvider(next);
     } catch (e) {
-      if (!signal?.aborted && alive.current) {
+      if (!linked.aborted && providerRequest.current === controller && alive.current) {
         setProvider(null);
         setProviderError(e.message);
       }
     } finally {
-      if (!signal?.aborted && alive.current) setCheckingProvider(false);
+      if (providerRequest.current === controller) {
+        providerRequest.current = null;
+        if (!linked.aborted && alive.current) setCheckingProvider(false);
+      }
     }
   }, []);
+  useLayoutEffect(() => {
+    if (checkingProvider) return;
+    const origin = providerOrigin.current;
+    providerOrigin.current = null;
+    if (origin && origin.hash === location.hash && origin.trigger.isConnected &&
+        (document.activeElement === document.body || document.activeElement === origin.trigger))
+      origin.trigger.focus({ preventScroll: true });
+  }, [checkingProvider, provider, providerError]);
   useEffect(() => {
     alive.current = true;
     const controller = new AbortController();
@@ -192,6 +220,9 @@ function CommonsRoom({
     return () => {
       alive.current = false;
       controller.abort();
+      providerRequest.current?.abort();
+      providerRequest.current = null;
+      providerOrigin.current = null;
       clearTimeout(timer);
     };
   }, [refresh, paused, checkProvider]);
@@ -929,7 +960,12 @@ function CommonsRoom({
                     value={task}
                     onChange={(e) => setTask(e.target.value)}
                   />
-                  <div className="commons-actions">
+                  <div
+                    className="commons-actions"
+                    role="group"
+                    aria-label="Model readiness"
+                    aria-busy={checkingProvider}
+                  >
                     <button
                       className="btn green"
                       disabled={
@@ -949,7 +985,7 @@ function CommonsRoom({
                       type="button"
                       className="btn"
                       disabled={checkingProvider || pending}
-                      onClick={() => void checkProvider()}
+                      onClick={(event) => void checkProvider(undefined, event.currentTarget)}
                     >
                       {checkingProvider ? "Checking model" : "Check model"}
                     </button>
@@ -958,9 +994,9 @@ function CommonsRoom({
                         ? "Checking local model."
                         : providerError
                           ? `Model status unavailable: ${providerError}`
-                          : provider?.busy
+                          : provider?.busy === true
                             ? "Local model is busy. Check again when it finishes."
-                            : provider?.available
+                            : provider?.available === true
                             ? "Builder then Reviewer (2 calls max)"
                             : provider?.reason || "Model offline - npm run model:start"}
                     </span>

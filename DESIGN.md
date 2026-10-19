@@ -229,6 +229,11 @@ release another scope's busy state. A successful head poll cannot clear a failed
 older-page read. Manual pagination keeps entry on the action while it exists, or
 on the recorded list after the final page; another chosen input keeps focus.
 
+Commons model checks expose a named readiness group and settled busy state.
+Only the current read may update availability. Invalid metadata remains unknown;
+manual recovery keeps the task draft and restores entry only if another control
+has not been chosen. Health metadata is distinct from recorded model execution.
+
 The shared activity feed uses a narrow avatar rail and a flexible evidence column,
 not a graph canvas or decorative dashboard. Keep native filters, readable action
 sentences, source/PR links and explicit simulation provenance. Use recorded times

@@ -19,6 +19,19 @@ The [Playwright clock reference](https://playwright.dev/docs/clock), accessed
 only in explicit timer cases; HTTP handlers and scenario transactions still run.
 This avoids artificial wall-time waits without making a performance claim.
 
+## Scope readiness checks to their request
+
+The [React effect/cleanup reference](https://react.dev/reference/react/useEffect#fetching-data-with-effects)
+was accessed on 2026-10-19 while checking a real Commons race. A manual health
+read could finish after a newer check and replace its offline result; its final
+callback could also settle another request's busy state. Decision: cancel the
+previous read, link caller cancellation and accept completion only from the
+current controller. Validate availability/busy booleans and text reasons before
+updating readiness. Expected benefit: task preparation cannot present stale or
+malformed metadata as current readiness. Five focused Chrome cases preserve the
+task draft, keyboard choice and exact scenario/Commons revisions with no writes.
+These are metadata fixtures, not model runtime verification.
+
 ## Contain a failed page within the workspace
 
 The [React error-boundary reference](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)

@@ -23,6 +23,10 @@ export const browserGroups = Object.freeze([
     files: Object.freeze(["workspace.spec.mjs"]),
   }),
   Object.freeze({
+    name: "commons-readiness",
+    files: Object.freeze(["commons-readiness.spec.mjs"]),
+  }),
+  Object.freeze({
     name: "account-recovery",
     files: Object.freeze(["account-recovery.spec.mjs"]),
   }),
