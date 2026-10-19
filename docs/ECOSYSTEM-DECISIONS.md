@@ -189,3 +189,18 @@ without automatic write retry, and pause with/without another focus choice.
 | Browser startup and temporary files | Reuse installed Playwright 1.64.1, apply workspace temporary variables before import/spawn, and inspect/remove a fresh Chrome profile in a separate readiness probe. [Primary launch reference, baseline and actual receipt](WORKFLOW-MEASUREMENTS.md#browser-temporary-paths-and-readiness). No new dependency or sandbox is introduced. |
 | Source-bound release evidence | Use the existing Playwright JSON reporter and Git tree comparison to correlate full local/browser receipts without merging histories. [Primary reporter reference, observed manual friction and rejection fixtures](WORKFLOW-MEASUREMENTS.md#earlier-feedback-measurements). The preflight never publishes or claims provider/sandbox qualification. |
 | Open-source distribution | Prepare real captures and channel-specific material, respect channel restrictions, and publish only source/docs. [Rules, drafts and assets](DISTRIBUTION.md). |
+
+### Saved-author recovery (accessed 2026-10-19)
+
+The existing [React effect cleanup guidance](https://react.dev/reference/react/useEffect#fetching-data-with-effects)
+also applies to owner-scoped configuration reads. An actual Chrome baseline
+showed a false sign-in instruction and a native select visually falling back to
+Workspace Builder after HTTP 503. Decision: keep owner-scoped read state, validate
+rendered fields and IDs, cancel replaced reads, retain the intended selection
+with an unavailable option, and offer explicit read-only refresh. Last-available
+choices stay qualified and cannot authorize a submission until refreshed.
+Expected benefit: a failed discovery read cannot silently change task attribution.
+Four browser cases exercise actual disposable account/configuration endpoints,
+failed and malformed reads, recovery, missing selection, focus and narrow axe.
+Configuration creation is explicitly non-executable; no job is submitted and no
+model or catalog role is activated. No dependency or third-party code is added.

@@ -27,7 +27,7 @@ and external AI CLIs require a direct user request. Never merge old work implici
   and previous PRs. Merging closes a linked issue transactionally. PRs support
   discussion, close/reopen and revision tasks; duplicate retained code is rejected.
 - Saved local agents can author proposals through owner-checked profile lookup.
-  Configuration/version/instructions are frozen per task. Project scope, local
+  Read-only discovery preserves selected IDs and offers explicit retry. Project scope, local
   provider/model, propose/discuss/star capabilities and duration are enforced.
   Reviewer is host-controlled; merge remains explicit. Instructions are not secrets.
 - Source changes modify or add one bounded JavaScript file; parser checks never

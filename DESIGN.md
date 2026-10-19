@@ -245,6 +245,12 @@ scrolling to fresh events is an explicit reader action.
 
 ## Compact working surfaces
 
+Saved-author discovery preserves the selected ID while loading or unavailable.
+It never silently substitutes Workspace Builder. Explicit read recovery retains
+the task draft, qualifies last-available configurations and restores keyboard
+entry without overriding another chosen input. Unknown configurations cannot
+be submitted as the selected author.
+
 Mobile navigation retains every labeled destination in three parallel groups.
 Tabs wrap rather than placing sections outside the visible strip. Primary preview,
 experiment launch and refresh controls belong in the page heading; PR status

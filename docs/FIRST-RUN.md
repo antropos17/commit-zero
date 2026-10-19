@@ -141,3 +141,12 @@ uses malformed read-only metadata in disposable services; the subsequent retry
 reaches the real handler. Run agents is never pressed in those fixtures.
 A successful health check alone does not qualify inference, tool access, model
 quality or any of the disabled Proposed roles.
+
+For a saved task author, **Refresh saved agents** retries the signed-in account's
+configuration list. A failed read preserves the selected ID and task draft;
+it does not silently choose Workspace Builder or ask an already signed-in owner
+to sign in again. Last-available configurations remain visible but cannot be
+used until refreshed successfully. A confirmed missing author requires an
+explicit author choice. [Actual narrow failure capture](media/commons-saved-agents-unavailable-2026-10-19.png)
+uses a configuration-only fixture and a routed HTTP 503. Recovery reads the
+actual owner endpoint; no task, agent or model is started.

@@ -24,6 +24,7 @@ import { Projects, ProjectForm, Issues } from "./commons-projects.jsx";
 import { cachedCommons, retainCommons } from "./commons-cache.mjs";
 import { ProjectContributions } from "../components/project-contributions.jsx";
 import { LocalProjectTimeline } from "../components/project-timeline.jsx";
+import { useCommonsAgents } from "./commons-agents.mjs";
 
 export function Commons({
   repoId = "",
@@ -82,22 +83,12 @@ function CommonsRoom({
   const [sourceMessageId, setSourceMessageId] = useState("");
   const [issueId, setIssueId] = useState("");
   const [sourcePrId, setSourcePrId] = useState("");
-  const [agents, setAgents] = useState([]);
+  const savedAgents = useCommonsAgents(account.user?.id);
+  const { agents } = savedAgents;
   const [agentId, setAgentId] = useState(
     () =>
       new URLSearchParams(location.hash.split("?")[1] || "").get("agent") || "",
   );
-  useEffect(() => {
-    if (!account.user) {
-      setAgents([]);
-      return;
-    }
-    const controller = new AbortController();
-    request("account/agents", { signal: controller.signal })
-      .then((value) => setAgents(value.agents))
-      .catch(() => {});
-    return () => controller.abort();
-  }, [account.user?.id]);
   const taskInput = useRef(null);
   const chatLog = useRef(null);
   const followChat = useRef(true);
@@ -287,6 +278,7 @@ function CommonsRoom({
   );
   const history = current ? projectHistory(current, data.events) : null;
   const selectedAgent = agents.find((agent) => agent.id === agentId);
+  const agentReady = selectedAgent && savedAgents.known && !savedAgents.loading && !savedAgents.error;
   const linkedIssue = (
     data.projects.find((p) => p.id === target)?.issues || []
   ).find((issue) => issue.id === issueId);
@@ -838,6 +830,7 @@ function CommonsRoom({
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
+                    if (agentId && !agentReady) return;
                     act(
                       "jobs",
                       {
@@ -890,18 +883,36 @@ function CommonsRoom({
                     onChange={(e) => setAgentId(e.target.value)}
                   >
                     <option value="">Workspace Builder</option>
+                    {agentId && !selectedAgent && (
+                      <option value={agentId} disabled>
+                        {savedAgents.loading ? "Loading selected saved agent" : "Selected saved agent unavailable"}
+                      </option>
+                    )}
                     {agents.map((agent) => (
                       <option value={agent.id} key={agent.id}>
                         {agent.name} · {agent.provider}/{agent.model}
                       </option>
                     ))}
                   </select>
-                  {agentId && !selectedAgent && (
+                  {account.user && (
+                    <div role="group" aria-label="Saved agents" aria-busy={savedAgents.loading}>
+                      <button type="button" className="btn" disabled={savedAgents.loading}
+                        onClick={(event) => savedAgents.refresh(event.currentTarget)}>
+                        {savedAgents.loading ? "Refreshing saved agents" : "Refresh saved agents"}
+                      </button>
+                      <p role={savedAgents.error ? "alert" : "status"} className="commons-meta">
+                        {savedAgents.loading ? "Reading saved configurations. No agent is started." : savedAgents.error
+                          ? `${savedAgents.error}${savedAgents.known ? " Showing the last available configurations; refresh before using a saved author." : " Saved configurations are unknown."}`
+                          : agents.length ? "Saved configurations loaded. Selection does not start an agent." : "No saved configurations in this account."}
+                      </p>
+                    </div>
+                  )}
+                  {agentId && !selectedAgent && !savedAgents.loading && !savedAgents.error && (
                     <p role="alert">
-                      Sign in to the agent owner account and reload this page.
+                      {account.user ? "The selected saved agent is unavailable in this account. Choose another author or sign in to its owner account." : "Sign in to the agent owner account to load the selected saved configuration."}
                     </p>
                   )}
-                  {selectedAgent && (
+                  {agentReady && (
                     <p className="commons-meta">
                       Uses configuration v{selectedAgent.version}. Its name,
                       instructions and allowed actions are retained with this
@@ -976,7 +987,7 @@ function CommonsRoom({
                         provider?.available !== true ||
                         !task.trim() ||
                         Boolean(current?.archived) ||
-                        Boolean(agentId && !selectedAgent)
+                        Boolean(agentId && !agentReady)
                       }
                     >
                       Run agents

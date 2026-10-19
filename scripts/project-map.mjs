@@ -27,7 +27,7 @@ export const areas = {
       "prototype/app/components/project-timeline.jsx",
       "prototype/app/components/page-boundary.jsx",
     ],
-    tests: ["tests/interface.dom.mjs", "tests/agent-catalog.test.mjs", "tests/agent-fixtures.test.mjs", "tests/browser/commons-first-run.spec.mjs", "tests/browser/scenario-pr.spec.mjs", "tests/browser/workspace-recovery.spec.mjs", "tests/browser/service-health.spec.mjs", "tests/browser/scenario-keyboard.spec.mjs", "tests/browser/ranking-recovery.spec.mjs", "tests/ui-api.test.mjs", "tests/browser/auth-recovery.spec.mjs", "tests/browser/page-recovery.spec.mjs", "tests/browser/lab-recovery.spec.mjs", "tests/browser/timeline-recovery.spec.mjs", "tests/browser/commons-readiness.spec.mjs"],
+    tests: ["tests/interface.dom.mjs", "tests/agent-catalog.test.mjs", "tests/agent-fixtures.test.mjs", "tests/browser/commons-first-run.spec.mjs", "tests/browser/scenario-pr.spec.mjs", "tests/browser/workspace-recovery.spec.mjs", "tests/browser/service-health.spec.mjs", "tests/browser/scenario-keyboard.spec.mjs", "tests/browser/ranking-recovery.spec.mjs", "tests/ui-api.test.mjs", "tests/browser/auth-recovery.spec.mjs", "tests/browser/page-recovery.spec.mjs", "tests/browser/lab-recovery.spec.mjs", "tests/browser/timeline-recovery.spec.mjs", "tests/browser/commons-readiness.spec.mjs", "tests/browser/commons-saved-agents.spec.mjs"],
     docs: ["DESIGN.md", "docs/AGENT-CATALOG.md", "docs/FIRST-RUN.md"],
   },
   commons: {
@@ -59,7 +59,7 @@ export const areas = {
       "prototype/app/pages/commons.jsx",
       "prototype/app/pages/commons-tasks.jsx",
       "prototype/app/pages/commons-projects.jsx",
-      "prototype/app/pages/commons-cache.mjs",
+      "prototype/app/pages/commons-cache.mjs", "prototype/app/pages/commons-agents.mjs",
     ],
     tests: [
       "tests/commons.test.mjs",
@@ -75,7 +75,7 @@ export const areas = {
       "tests/browser/commons-history.spec.mjs",
       "tests/browser/commons-project-recovery.spec.mjs",
       "tests/browser/commons-provider.spec.mjs",
-      "tests/browser/commons-readiness.spec.mjs",
+      "tests/browser/commons-readiness.spec.mjs", "tests/browser/commons-saved-agents.spec.mjs",
     ],
     docs: ["docs/COMMONS.md", "docs/BACKEND-PERFORMANCE.md", "docs/RELEASE.md", "docs/AGENT-CATALOG.md", "docs/PROVIDER-DRAFTS.md", "docs/SIMULATIONS.md"],
   },
