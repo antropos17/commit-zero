@@ -13,6 +13,14 @@ or normal user database write was part of these measurements.
 | `npm run check` | Four milestone receipts: 107.4, 132.6, 122.3 and 137.2 s; the first had 60 Node tests, later runs 64 | Serial PGlite/integration tests and DOM dominate. These runs have different source and test counts, so they do not measure a speedup or regression. |
 | `npm run test:ui` with `CZ_BROWSER_EXECUTABLE` | Post-setup runs observed at 14.3, 15.1 and 15.4 s for the then-current 4- or 5-test suite | Real Chrome desktop and narrow layout. Playwright global setup now awaits child-service shutdown; before that change, a successful assertion left the Windows process attached and the command did not exit in the observation window. There is no comparable old completion time, so only reliable termination is established. |
 
+After adding the eighth browser journey, one shared disposable cluster returned
+HTTP 429 on the final bookmark action in two full runs (7/8 passed). The same
+test passed alone. Splitting the suite into two serial fresh-cluster groups
+passed 8/8 while keeping the 180/minute application limit. That first grouped
+run took about 50 seconds versus 20–27 seconds for the two failed shared-cluster
+runs, with different outcomes and source. This is a reliability correction,
+not a speedup measurement; further timing claims need comparable repeated runs.
+
 The full gate remains serial to bound embedded database memory. Replacing it
 with focused results or parallelizing shared-port suites solely for a shorter
 number would lose coverage or isolation. `npm run map -- <area>` and one focused

@@ -66,6 +66,7 @@ export const areas = {
       "tests/provider-drafts.test.mjs",
       "tests/simulate-commons.test.mjs",
       "tests/browser/commons-first-run.spec.mjs",
+      "tests/browser/commons-project-recovery.spec.mjs",
       "tests/browser/commons-provider.spec.mjs",
     ],
     docs: ["docs/COMMONS.md", "docs/BACKEND-PERFORMANCE.md", "docs/RELEASE.md", "docs/AGENT-CATALOG.md", "docs/PROVIDER-DRAFTS.md", "docs/SIMULATIONS.md"],
@@ -152,6 +153,7 @@ export const areas = {
     entries: [
       "scripts/doctor.mjs",
       "scripts/verify.mjs",
+      "scripts/test-ui.mjs",
       "scripts/repo-check.mjs",
       "scripts/sandbox-doctor.mjs",
       "scripts/sandbox-contract.mjs",

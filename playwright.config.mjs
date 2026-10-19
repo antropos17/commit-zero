@@ -6,7 +6,7 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   timeout: 45000,
-  outputDir: "runtime/browser-results",
+  outputDir: process.env.CZ_BROWSER_OUTPUT_DIR || "runtime/browser-results",
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:4190",

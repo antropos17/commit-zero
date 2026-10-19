@@ -35,6 +35,13 @@ test("disabled role catalog stays inspectable at desktop and narrow widths", asy
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator(".agent-readiness h2").first()).toHaveText("Fable Architect");
+  await page.getByRole("link", { name: "Llama Librarian", exact: true }).click();
+  await expect(page.locator(".agent-readiness h2").first()).toHaveText("Llama Librarian");
+  await expect(page.locator(".agent-readiness h2").first()).toBeFocused();
+  expect(await page.locator(".agent-readiness h2").first().evaluate((heading) => {
+    const rect = heading.getBoundingClientRect();
+    return rect.top >= 0 && rect.top < window.innerHeight;
+  })).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   const narrow = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   expect(narrow.violations).toEqual([]);

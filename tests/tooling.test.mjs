@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ESLint } from "eslint";
 import { qualityPlan, executePlan } from "../scripts/quality-plan.mjs";
+import { assertBrowserCoverage } from "../scripts/test-ui.mjs";
 import { localLinks } from "../scripts/repo-check.mjs";
 import { localBase, diagnose } from "../scripts/doctor.mjs";
 import { inside } from "../scripts/project-files.mjs";
@@ -10,6 +11,7 @@ import { mkdir, mkdtemp, cp, writeFile, readFile, rm } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 
 test("Verification preserves the full gate, focused scope and fail-fast results", async () => {
+  await assertBrowserCoverage();
   const full = qualityPlan("full");
   assert.deepEqual(
     full.map((s) => s.name),

@@ -7,7 +7,9 @@ instructions, expected output, model family, future tool grants, limits, fixture
 and activation requirement. A display name is never treated as an API model ID.
 Search by name, purpose or provider, and filter by documented or unresolved model
 ID; an empty result is explicit. Filtering never activates a role or changes
-saved agent configurations.
+saved agent configurations. On narrow screens, details appear above the list;
+selecting a role moves focus and the viewport back to those details. Desktop
+selection keeps its side-by-side layout.
 
 ## Evidence vocabulary
 

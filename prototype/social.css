@@ -556,6 +556,11 @@ p {
   display: flex;
   gap: 8px;
 }
+.repo-save-error {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--red);
+}
 .repo-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 245px;

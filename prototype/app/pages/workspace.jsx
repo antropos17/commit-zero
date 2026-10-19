@@ -528,6 +528,7 @@ export function Repository({ id, tab = "code", file, preview, notify }) {
   const { data } = useWorkspace();
   const account = useAccount();
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const r = data.repos.find((x) => x.id === id);
   if (!r) return <NotFound />;
   const prs = data.prs.filter((p) => p.repo === id),
@@ -545,10 +546,13 @@ export function Repository({ id, tab = "code", file, preview, notify }) {
   }
   async function save() {
     setSaving(true);
+    setSaveError("");
     try {
       await account.bookmark(id, !account.bookmarks.includes(id));
     } catch (e) {
-      notify(e.message);
+      setSaveError(e.status === 429
+        ? "Too many requests. Wait a moment, then select Save again."
+        : e.message);
     } finally {
       setSaving(false);
     }
@@ -706,6 +710,7 @@ export function Repository({ id, tab = "code", file, preview, notify }) {
             <span className="count">{r.stars.length}</span>
           </a>
         </div>
+        {saveError && <p className="repo-save-error" role="alert">{saveError}</p>}
       </div>
       <Tabs
         selected={tab}

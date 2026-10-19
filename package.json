@@ -25,7 +25,7 @@
     "db:snapshot": "node scripts/store-snapshot.mjs create",
     "db:verify-snapshot": "node scripts/store-snapshot.mjs verify",
     "diagnostics": "node scripts/diagnostics.mjs",
-    "test:ui": "playwright test",
+    "test:ui": "node scripts/test-ui.mjs",
     "test:dom": "node --test tests/interface.dom.mjs",
     "test:serve": "node scripts/smoke-build.mjs",
     "test:services": "node --test tests/services.test.mjs",

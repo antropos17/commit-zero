@@ -45,6 +45,8 @@ do not establish runtime correctness. [Complete workflow](COMMONS.md).
 | Built UI is older than source | `npm start` serves `dist`; run `npm run build` after source changes, or use `npm run dev` for development. |
 | **Run agents** is disabled | Check that the task has text, the project is active, no task is running, and **Check model** reports available. Start the local provider if it is offline. |
 | Health request fails | Check gateway and provider terminals, then select **Check model** again. The draft remains in the form. |
+| Project address is already in use | The form retains its name and description; choose another address and submit again. No duplicate project is created. |
+| Saving a scenario repository is rate limited | The repository shows a persistent message beside **Save**. Wait briefly and select **Save** again; a failed request does not add a bookmark. |
 | Task fails or is cancelled | Inspect its retained timeline and raw receipt. Retry by explicitly starting a new task; a restarted server does not silently retry jobs. |
 | Provider setup is unavailable | Continue exploring the deterministic example and model-free Commons forms. Do not interpret these as actual model contributions. |
 
@@ -53,3 +55,9 @@ it preserves databases, backups and verification receipts. For code changes, fol
 the focused and full gates in [development](DEVELOPMENT.md). Public hosted service
 and arbitrary generated-code execution are outside the current release scope;
 see [release boundaries](RELEASE.md).
+
+The [narrow bookmark error capture](media/bookmark-rate-limit-2026-10-19.png)
+comes from a real Chrome run against disposable services with one routed HTTP
+429 fixture. It shows the visible recovery message; the fixture then retried
+against the local service and received HTTP 200. It is not a production load
+test or evidence of a model run.

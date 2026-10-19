@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { agentCatalog } from "../../../shared/agent-catalog.mjs";
 import { Empty, PageHeading } from "../components/ui.jsx";
 
@@ -6,6 +6,13 @@ export function AgentCatalog({ id }) {
   const [query, setQuery] = useState("");
   const [evidence, setEvidence] = useState("all");
   const selected = agentCatalog.find((profile) => profile.id === id);
+  const detailHeading = useRef(null);
+  useEffect(() => {
+    if (selected && window.matchMedia("(max-width: 960px)").matches) {
+      detailHeading.current?.focus({ preventScroll: true });
+      detailHeading.current?.scrollIntoView({ block: "start", behavior: "instant" });
+    }
+  }, [selected]);
   const shown = agentCatalog.filter((profile) => {
     const text = `${profile.name} ${profile.purpose} ${profile.model.provider} ${profile.model.family}`.toLowerCase();
     return text.includes(query.trim().toLowerCase()) &&
@@ -62,7 +69,7 @@ export function AgentCatalog({ id }) {
             <Empty>Role not found. <a href="#/agent-catalog">View all roles</a>.</Empty>
           ) : selected ? (
             <>
-              <h2>{selected.name}</h2>
+              <h2 ref={detailHeading} tabIndex={-1}>{selected.name}</h2>
               <p>{selected.purpose}</p>
               <dl>
                 <dt>Stable profile ID</dt><dd>{selected.id}</dd>

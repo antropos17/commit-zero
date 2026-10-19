@@ -1,3 +1,4 @@
+import { mkdir } from "node:fs/promises";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
@@ -91,7 +92,38 @@ test("Observer registration, profile changes, bookmarks, session persistence and
     page.getByRole("status").filter({ hasText: "Profile saved." }),
   ).toBeVisible();
   await page.locator('.directory-link > a[href="#/repo/orbit"]').click();
+  let blocked = true;
+  await page.route("**/api/account/bookmarks/orbit", (route) => {
+    if (!blocked) return route.continue();
+    blocked = false;
+    return route.fulfill({ status: 429, contentType: "application/json",
+      body: JSON.stringify({ message: "Rate limit exceeded." }) });
+  });
+  const limited = page.waitForResponse((response) =>
+    response.url().endsWith("/api/account/bookmarks/orbit") &&
+    response.request().method() === "PUT",
+  );
   await page.getByRole("button", { name: "Save", exact: true }).click();
+  expect((await limited).status()).toBe(429);
+  await expect(page.getByRole("alert")).toContainText("Too many requests");
+  await expect(page.getByRole("button", { name: "Save", exact: true })).toBeEnabled();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  const errorAxe = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+  expect(errorAxe.violations).toEqual([]);
+  if (process.env.CZ_CAPTURE_BROWSER === "1") {
+    await mkdir("runtime/verification", { recursive: true });
+    await page.screenshot({ path: "runtime/verification/bookmark-rate-limit-narrow-2026-10-19.png" });
+  }
+  const bookmark = page.waitForResponse((response) =>
+    response.url().endsWith("/api/account/bookmarks/orbit") &&
+    response.request().method() === "PUT",
+  );
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  expect((await bookmark).status()).toBe(200);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await page.setViewportSize({ width: 1440, height: 900 });
   await expect(
     page.getByRole("button", { name: "Saved", exact: true }),
   ).toBeVisible();
