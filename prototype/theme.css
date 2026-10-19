@@ -1,0 +1,310 @@
+/* Semantic light/dark roles, following GitHub Primer's restrained surfaces. */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --surface: #ffffff;
+  --soft: #f6f8fa;
+  --inset: #f6f8fa;
+  --hover: #eff2f5;
+  --selected: #eaeef2;
+  --text: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --nav-active: #fd8c73;
+  --blue: #0969da;
+  --green: #1a7f37;
+  --purple: #8250df;
+  --red: #cf222e;
+  --success-bg: #dafbe1;
+  --success-border: #aceebb;
+  --done-bg: #fbefff;
+  --done-border: #d8b9ff;
+  --danger-bg: #ffebe9;
+  --danger-border: #ffb4ac;
+  --info-bg: #ddf4ff;
+  --info-border: #a9d9f6;
+  --emphasis: #25292e;
+  --on-emphasis: #ffffff;
+  --on-colored: #ffffff;
+  --success-action: #1a7f37;
+  --success-hover: #176f30;
+  --keyword: #cf222e;
+  --string: #0a3069;
+  --number: #0550ae;
+  --function: #6639ba;
+  --comment: #59636e;
+  --diff-add: #dafbe1;
+  --diff-add-gutter: #aceebb;
+  --diff-del: #ffebe9;
+  --diff-del-gutter: #ffc1bc;
+  --selection-bg: #c8e1ff;
+  --selection-text: #1f2328;
+  --backdrop: #1f232880;
+  --language: #f1e05a;
+  --contrib-1: #9be9a8;
+  --contrib-2: #40c463;
+  --contrib-3: #30a14e;
+  --contrib-4: #216e39;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #0d1117;
+  --soft: #151b23;
+  --inset: #010409;
+  --hover: #212830;
+  --selected: #262c36;
+  --text: #f0f6fc;
+  --muted: #9198a1;
+  --border: #3d444d;
+  --nav-active: #fd8c73;
+  --blue: #58a6ff;
+  --green: #3fb950;
+  --purple: #bc8cff;
+  --red: #ff7b72;
+  --success-bg: #12261e;
+  --success-border: #2c6640;
+  --done-bg: #231b35;
+  --done-border: #62458c;
+  --danger-bg: #321b20;
+  --danger-border: #8e3b46;
+  --info-bg: #152b41;
+  --info-border: #315e88;
+  --emphasis: #f0f6fc;
+  --on-emphasis: #0d1117;
+  --on-colored: #ffffff;
+  --success-action: #1a7f37;
+  --success-hover: #176f30;
+  --keyword: #ff7b72;
+  --string: #a5d6ff;
+  --number: #79c0ff;
+  --function: #d2a8ff;
+  --comment: #9198a1;
+  --diff-add: #12261e;
+  --diff-add-gutter: #1f442c;
+  --diff-del: #321b20;
+  --diff-del-gutter: #56272c;
+  --selection-bg: #264f78;
+  --selection-text: #ffffff;
+  --backdrop: #010409b3;
+  --language: #f1e05a;
+  --contrib-1: #0e4429;
+  --contrib-2: #006d32;
+  --contrib-3: #26a641;
+  --contrib-4: #39d353;
+}
+html,
+body {
+  background: var(--surface);
+  color: var(--text);
+}
+header {
+  background: var(--soft);
+}
+.app-sidebar {
+  background: var(--surface);
+}
+.brand {
+  color: var(--text);
+  gap: 10px;
+}
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  display: block;
+  flex-shrink: 0;
+}
+.header-inner {
+  min-height: 64px;
+  gap: 20px;
+}
+#search-form {
+  background: var(--surface);
+  border-color: var(--border);
+}
+#theme-select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 34px;
+  padding: 5px 28px 5px 10px;
+  max-width: 130px;
+  cursor: pointer;
+}
+.global-nav a {
+  color: var(--text);
+}
+.global-nav a[aria-current] {
+  background: var(--selected);
+}
+.global-nav a:hover {
+  background: var(--hover);
+}
+.btn,
+.playback button {
+  border-radius: 6px;
+}
+.project-workbench {
+  border-radius: 6px;
+}
+.workbench-head {
+  padding: 16px;
+}
+.workbench-pr {
+  border-top: 1px solid var(--border);
+}
+.editor-preview,
+.code-scroller,
+.code-panel {
+  background: var(--surface);
+  color: var(--text);
+}
+.kw,
+.editor-preview .kw {
+  color: var(--keyword);
+}
+.str,
+.editor-preview .str {
+  color: var(--string);
+}
+.num,
+.editor-preview .num {
+  color: var(--number);
+}
+.fn {
+  color: var(--function);
+}
+.comment,
+.editor-preview .comment {
+  color: var(--comment);
+}
+.ln,
+.code-line .ln,
+.editor-preview .ln {
+  color: var(--muted);
+}
+.code-scroller:focus-visible {
+  outline-offset: -2px;
+}
+.avatar {
+  background: #fff;
+  border-radius: 50%;
+}
+.team-member .avatar {
+  background: #fff;
+  border-radius: 50%;
+}
+.feed-top > .avatar,
+.agent-card .avatar,
+.avatar.large {
+  border-radius: 50%;
+}
+#preview-frame {
+  background: var(--surface);
+}
+.file-list {
+  background: var(--surface);
+}
+.file-list > a.selected {
+  background: var(--info-bg);
+}
+.diff-add {
+  background: var(--diff-add);
+}
+.diff-del {
+  background: var(--diff-del);
+}
+.diff-add .ln {
+  background: var(--diff-add-gutter);
+}
+.diff-del .ln {
+  background: var(--diff-del-gutter);
+}
+.diff-add .ln,
+.diff-del .ln {
+  color: var(--text);
+}
+.merge-box {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+.merge-box.merged {
+  background: var(--done-bg);
+  border-color: var(--done-border);
+}
+.connection-error {
+  background: var(--danger-bg);
+  color: var(--red);
+  border-color: var(--danger-border);
+}
+.btn.green {
+  background: var(--success-action);
+  border-color: var(--success-action);
+  color: var(--on-colored);
+}
+.btn.green:hover {
+  background: var(--success-hover);
+}
+.btn.purple {
+  background: #8250df;
+  border-color: #8250df;
+  color: var(--on-colored);
+}
+.playback #playback-toggle {
+  background: var(--emphasis);
+  border-color: var(--emphasis);
+  color: var(--on-emphasis);
+}
+.playback #playback-toggle[aria-pressed="true"] {
+  background: var(--soft);
+  border-color: var(--border);
+  color: var(--text);
+}
+.pill.green {
+  color: var(--green);
+}
+.pill.purple {
+  color: var(--purple);
+}
+.pill.red {
+  color: var(--red);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+.pill.blue {
+  color: var(--blue);
+}
+.progress span {
+  background: var(--green);
+}
+dialog {
+  background: var(--surface);
+  color: var(--text);
+}
+#toast {
+  background: var(--emphasis);
+  color: var(--on-emphasis);
+}
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+@media (max-width: 760px) {
+  .header-inner {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  #theme-select {
+    margin-left: auto;
+    min-height: 40px;
+  }
+  .header-inner #search-form {
+    width: 100%;
+    max-width: none;
+  }
+}
+@media (max-width: 480px) {
+  #theme-select {
+    min-height: 44px;
+  }
+}

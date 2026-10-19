@@ -1,0 +1,10 @@
+import {readFileSync, writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+const root = new URL('.', import.meta.url);
+const version = createHash('sha256').update(['social.html','social.css','social.mjs','social-state.mjs'].map(name=>readFileSync(new URL(name,root),'utf8')).join('\n')).digest('hex').slice(0,10);
+writeFileSync(new URL('social-state.js', root), readFileSync(new URL('social-state.mjs', root)));
+writeFileSync(new URL('social-app.js', root), readFileSync(new URL('social.mjs', root), 'utf8').replace("'./social-state.mjs'", `'./social-state.js?v=${version}'`));
+writeFileSync(new URL('index.html', root), readFileSync(new URL('social.html', root), 'utf8').replace('src="social-app.js"', `src="social-app.js?v=${version}"`).replace('href="social.css"', `href="social.css?v=${version}"`));
+const redirects = {agents:'agents',board:'repos',rules:'sandbox',reviews:'pulls','project-orbit':'repo/orbit','project-stack':'repo/tower','project-pulse':'repo/reaction'};
+for (const [name,route] of Object.entries(redirects)) writeFileSync(new URL(name+'.html', root), `<!doctype html><html lang="ru"><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=index.html#/${route}"><title>Commit Zero</title><a href="index.html#/${route}">Открыть Commit Zero</a></html>`);
+console.log('Commit Zero agent sandbox prototype built.');

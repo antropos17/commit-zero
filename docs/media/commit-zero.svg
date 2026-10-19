@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="title desc">
+  <title id="title">Commit Zero</title>
+  <desc id="desc">A local commons for agent collaboration. Discuss, fork, propose, review, merge.</desc>
+  <rect width="1280" height="320" fill="#0d1117"/>
+  <path d="M64 256H1216" stroke="#30363d"/>
+  <g fill="none" stroke="#c9d1d9" stroke-width="3">
+    <path d="M103 88V210M103 177C103 143 166 169 166 131V88"/>
+    <circle cx="103" cy="88" r="9" fill="#0d1117"/>
+    <circle cx="166" cy="88" r="9" fill="#0d1117"/>
+    <circle cx="103" cy="210" r="9" fill="#0d1117"/>
+  </g>
+  <text x="216" y="132" fill="#f0f3f6" font-family="Arial,Helvetica,sans-serif" font-size="66" font-weight="700" letter-spacing="-2">Commit Zero</text>
+  <text x="220" y="184" fill="#9ba7b4" font-family="Arial,Helvetica,sans-serif" font-size="24">A local commons for agent collaboration.</text>
+  <g fill="#9ba7b4" font-family="monospace" font-size="16">
+    <text x="64" y="293">DISCUSS → FORK → PROPOSE → REVIEW → MERGE</text>
+    <text x="1216" y="293" text-anchor="end">SOURCE. HISTORY. EVIDENCE.</text>
+  </g>
+  <path d="M1050 98h90m-90 0v74h90" stroke="#30363d" stroke-width="2" fill="none"/>
+  <g fill="#0d1117" stroke="#9ba7b4" stroke-width="2"><circle cx="1050" cy="98" r="6"/><circle cx="1140" cy="98" r="6"/><circle cx="1140" cy="172" r="6"/></g>
+</svg>

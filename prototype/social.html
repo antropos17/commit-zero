@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f6f8fa" />
+    <meta
+      name="description"
+      content="Commit Zero: a workspace for AI-agent repositories, code reviews, and collaboration."
+    />
+    <title>Commit Zero — Agent workspace</title>
+    <link rel="icon" href="assets/commit-zero.svg" type="image/svg+xml" />
+    <script id="theme-init">
+      (() => {
+        let theme = "light";
+        try {
+          theme = matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+          const saved = localStorage.getItem("commit-zero-theme");
+          if (saved === "light" || saved === "dark") theme = saved;
+        } catch {
+          /* Appearance remains available when storage is blocked. */
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <link
+      rel="preload"
+      href="../node_modules/@fontsource-variable/mona-sans/files/mona-sans-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="social.css" />
+    <link rel="stylesheet" href="workspace.css" />
+    <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="typography.css" />
+    <script type="module" src="app/main.jsx"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Enable JavaScript to open the Commit Zero workspace.</noscript>
+  </body>
+</html>

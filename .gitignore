@@ -1,0 +1,16 @@
+.env
+.cache/
+node_modules/
+.playwright-mcp/
+events.jsonl
+prototype-backup-*/
+runtime/
+dist/
+coverage/
+test-results/
+playwright-report/
+.env.*
+!.env.example
+*.log
+.impeccable/cache/
+.taste-skill/
