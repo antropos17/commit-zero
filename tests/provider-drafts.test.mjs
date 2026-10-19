@@ -45,6 +45,7 @@ test("hosted request drafts stay bounded, credential-free, and disconnected", ()
     assert.ok(JSON.stringify(draft.body).includes("fixture-run"));
   }
   assert.throws(() => draftProviderExchange(profiles.local, expected, "Task"), /documented/);
+  assert.throws(() => draftProviderExchange(agentCatalog.find((profile) => profile.id === "qwen-local-builder"), expected, "Task"), /hosted/);
   assert.throws(() => draftProviderExchange(profiles.openai, expected, "x".repeat(24000)), /ceiling/);
   assert.throws(() => draftProviderExchange(profiles.openai, { ...expected, sourceRevision: -1 }, "Task"), /context/);
   assert.throws(() => draftProviderExchange(profiles.openai, expected, "Task", ["unknown.md:1"]), /reference/);

@@ -16,19 +16,21 @@ it starts no model, tool, task or account write.
 
 ## Evidence vocabulary
 
-- **Documented**: an exact API ID appears in the linked provider's own catalog.
+- **Documented**: an exact API ID appears in the linked provider's own catalog,
+  or a local candidate has a pinned repository revision, file and digest.
   This does not show account access, adapter behavior, or suitability for the role.
 - **Unresolved model ID**: no exact API ID or chosen local artifact has been
   verified. `cz-local-coder` on Qwen roles is the existing application's local
-  alias, not a Qwen upstream model ID.
+  alias, separate from their upstream repository/file identity.
 - **Contract tested**: `node --test tests/agent-catalog.test.mjs` checks unique,
   disabled definitions and rejects mismatched, stale, oversized, or fabricated
   output envelopes. This is deterministic host validation, not model evaluation.
 - **Configured / runtime verified**: neither applies to the new catalog. The
   existing saved local agent path is separate and retains its earlier evidence.
 
-As of 2026-10-19, 12 entries reference documented API IDs and six need exact
-model selection. All 18 remain disabled. No access to Anthropic, OpenAI, Google,
+As of 2026-10-19, 12 entries reference documented API IDs, two Qwen roles share
+one pinned local artifact, and four need exact model selection. All 18 remain
+disabled. No access to Anthropic, OpenAI, Google,
 Mistral, Moonshot, or open-model inference was tested in this mission.
 
 ## Sources and decisions
@@ -39,10 +41,26 @@ Mistral, Moonshot, or open-model inference was tested in this mission.
 | [OpenAI API models](https://developers.openai.com/api/docs/models) | Luna, Sol, and Astra IDs. Record them as documented only; no API credential or availability is inferred. |
 | [Gemini API models](https://ai.google.dev/gemini-api/docs/models) | Gemini 3.8 Flash endpoint for Explorer. The role remains disabled until adapter and evaluation work. |
 | [Mistral Small 4](https://docs.mistral.ai/models/mistral-small-4-0-26-03) | Current `mistral-small-2603` ID for Editor. Earlier `mistral-small-2503` was rejected because it appears under deprecated models. |
+| [Pinned Qwen GGUF](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/blob/13fb94bfda8c8cf22497dc57b78f391a9acb426a/qwen2.5-coder-7b-instruct-q4_k_m.gguf) and [model card/license](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF) | Explicitly choose the application's existing Qwen2.5-Coder 7B Q4_K_M candidate for both local roles. Record the official revision, file SHA-256 and Apache-2.0 license. Reuse the established pin; do not download or substitute new weights. File identity is independent of role or runtime qualification. |
 
-Local Qwen, Llama, Gemma, and DeepSeek roles need an explicitly selected model
+Local Llama, Gemma, and DeepSeek roles still need an explicitly selected model
 artifact, license, hardware check, and qualified adapter. Kimi needs a verified
 Moonshot API ID and account access. No silent substitute is allowed.
+
+The two Qwen roles declare repository `Qwen/Qwen2.5-Coder-7B-Instruct-GGUF`,
+revision `13fb94bfda8c8cf22497dc57b78f391a9acb426a`, file
+`qwen2.5-coder-7b-instruct-q4_k_m.gguf` and digest
+`509287f78cb4d4cf6b3843734733b914b2c158e43e22a7f4bf5e963800894d3c`.
+The file is 4,683,073,536 bytes; runtime assets and KV-cache/compute overhead are
+additional. Actual RAM/VRAM fit remains unqualified. The starter's 4,096-token
+window motivates a planned 2,496-token complete-input / 1,600-token output budget
+and a 6,000-character outer input ceiling. Character count does not prove token
+fit: a later host must tokenize the entire formatted prompt before activation.
+The catalog shows declared identity only and never inspects the user's files.
+`npm run model:inspect -- --hash` performs the separate read-only byte check;
+it does not read credentials, launch the provider, or qualify either role.
+The selected candidate is versioned; changing an installer pin requires an
+explicit role/fixture review and does not silently replace this identity.
 
 ## Contracts and activation
 
@@ -113,6 +131,10 @@ An [actual browser capture of the proposed-role view](media/agent-catalog-2026-1
 shows the source-controlled catalog in a disposable scenario fixture. The
 scenario badge is part of the deterministic example; none of the proposed roles
 ran to produce this image.
+
+The [narrow Qwen details capture](media/qwen-identity-2026-10-19.png) is an actual
+Chrome element capture of declared artifact, alias, license and planned limits.
+It reports no local file availability or runtime qualification.
 
 The [fixture-section capture](media/agent-fixture-2026-10-19.png) is a real Chrome
 element capture from Fable Architect's read-only details. It shows authored input,

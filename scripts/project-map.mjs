@@ -39,6 +39,7 @@ export const areas = {
       "shared/agent-catalog.mjs",
       "shared/agent-evaluation.mjs",
       "shared/agent-fixtures.mjs",
+      "shared/local-model-artifact.mjs",
       "shared/provider-drafts.mjs",
       "shared/commons-fixture-seed17.json",
       "db/migrations/003_commons.sql",
@@ -78,17 +79,19 @@ export const areas = {
   lab: {
     purpose:
       "Local inference, bounded language interpreter, rules, strategies and recorded matches",
-    paths: ["server/lab", "db/migrations/002_experiments.sql"],
+    paths: ["server/lab", "shared/local-model-artifact.mjs", "db/migrations/002_experiments.sql"],
     entries: [
       "server/lab/app.mjs",
       "server/lab/arena-runner.mjs",
       "server/lab/language.mjs",
       "prototype/app/pages/laboratory.jsx",
+      "scripts/model-identity.mjs",
     ],
     tests: [
       "tests/arena-decoder.test.mjs",
       "tests/arena.test.mjs",
       "tests/laboratory.test.mjs",
+      "tests/model-identity.test.mjs",
     ],
     docs: ["docs/LANGUAGE-LAB.md"],
   },
@@ -166,7 +169,7 @@ export const areas = {
       "scripts/sandbox-contract.mjs",
     ],
     tests: ["tests/tooling.test.mjs", "tests/store-snapshot.test.mjs", "tests/sandbox-contract.test.mjs"],
-    docs: ["docs/DEVELOPMENT.md", "docs/SANDBOX-ADAPTER.md", "docs/WORKFLOW-MEASUREMENTS.md"],
+    docs: ["docs/DEVELOPMENT.md", "docs/SANDBOX-ADAPTER.md", "docs/WORKFLOW-MEASUREMENTS.md", "docs/ECOSYSTEM-DECISIONS.md"],
   },
 };
 

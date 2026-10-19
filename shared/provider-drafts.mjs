@@ -9,8 +9,10 @@ const endpoints = Object.freeze({
 });
 
 export function draftProviderExchange(profile, expected, task, references = []) {
-  if (!profile || profile.enabled || !profile.model?.id || !validAgentContext(expected))
-    throw new Error("A disabled, documented profile and exact context are required.");
+  if (!profile || profile.enabled !== false || profile.model?.provider === "local" || !profile.model?.id ||
+      !Number.isInteger(profile.limits?.outputTokens) || profile.limits.outputTokens < 1 || profile.limits.outputTokens > 1600 ||
+      !validAgentContext(expected))
+    throw new Error("A disabled, documented hosted profile and exact context are required.");
   if (typeof task !== "string" || !task.trim() || !Array.isArray(references) ||
       references.length > 20 || references.some((item) => typeof item !== "string" || !expected.allowedEvidence.includes(item)))
     throw new Error("A bounded text task and reference list are required.");
@@ -24,7 +26,7 @@ export function draftProviderExchange(profile, expected, task, references = []) 
   const system = `${profile.instructions} Return only a JSON object with profileId, runId, projectId, artifactType, sourceRevision, summary, evidence, uncertainties, runtimeVerified:false, merged:false. Evidence must use only allowedEvidence reference IDs supplied by the host. Do not call tools.`;
   const provider = profile.model.provider;
   const model = profile.model.id;
-  const maxTokens = 1600;
+  const maxTokens = profile.limits.outputTokens;
   let url = endpoints[provider];
   let body;
   if (provider === "anthropic")

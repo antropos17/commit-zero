@@ -8,6 +8,9 @@ export function AgentCatalog({ id }) {
   const [evidence, setEvidence] = useState("all");
   const selected = agentCatalog.find((profile) => profile.id === id);
   const fixture = selected ? createAgentFixture(selected) : null;
+  const documentedApi = agentCatalog.filter((profile) => profile.evidence === "documented" && profile.model.provider !== "local").length;
+  const pinnedLocal = agentCatalog.filter((profile) => profile.model.artifact).length;
+  const unresolved = agentCatalog.filter((profile) => profile.evidence === "unresolved-model-id").length;
   const detailHeading = useRef(null);
   useEffect(() => {
     if (selected && window.matchMedia("(max-width: 960px)").matches) {
@@ -23,7 +26,7 @@ export function AgentCatalog({ id }) {
   return (
     <>
       <PageHeading title="Proposed agent roles">
-        Eighteen disabled role proposals. Model documentation and contract checks do
+        {agentCatalog.length} disabled role proposals. Model documentation and contract checks do
         not prove account access or runtime behavior.
       </PageHeading>
       <div className="agent-catalog-filters">
@@ -37,10 +40,10 @@ export function AgentCatalog({ id }) {
           />
         </label>
         <label>
-          Model ID evidence
+          Model identity evidence
           <select value={evidence} onChange={(event) => setEvidence(event.target.value)}>
             <option value="all">All evidence states</option>
-            <option value="documented">Documented ID</option>
+            <option value="documented">Documented identity</option>
             <option value="unresolved-model-id">Unresolved ID</option>
           </select>
         </label>
@@ -59,7 +62,7 @@ export function AgentCatalog({ id }) {
               <p>{profile.purpose}</p>
               <div className="network-repo-detail">
                 <span>{profile.model.provider} / {profile.model.id || "Model ID unresolved"}</span>
-                <span>{profile.evidence === "documented" ? "Model documented" : "Model unresolved"}</span>
+                <span>{profile.model.artifact ? "Artifact documented" : profile.evidence === "documented" ? "Model documented" : "Model unresolved"}</span>
                 <a href={`#/agent-catalog/${profile.id}`}>Inspect role</a>
               </div>
             </article>
@@ -75,7 +78,8 @@ export function AgentCatalog({ id }) {
               <p>{selected.purpose}</p>
               <dl>
                 <dt>Stable profile ID</dt><dd>{selected.id}</dd>
-                <dt>Provider / model ID</dt><dd>{selected.model.provider} / {selected.model.id || "Unresolved"}</dd>
+                <dt>Provider / model identity</dt><dd>{selected.model.provider} / {selected.model.id || "Unresolved"}</dd>
+                <dt>Identity kind</dt><dd>{selected.model.artifact ? "Pinned local artifact" : selected.model.id ? "Provider API ID" : "Unresolved selection"}</dd>
                 <dt>Model evidence</dt><dd>{selected.model.source ? <a href={selected.model.source}>{selected.model.source}</a> : "No exact model ID verified"}{selected.model.verifiedAt && ` · checked ${selected.model.verifiedAt}`}</dd>
                 <dt>Requirements</dt><dd>{selected.requirements}</dd>
                 <dt>Future tool grants</dt><dd>{selected.tools.join(", ")}</dd>
@@ -83,9 +87,18 @@ export function AgentCatalog({ id }) {
                 <dt>Expected output</dt><dd>{selected.output}</dd>
                 <dt>Evaluation fixture</dt><dd>{selected.fixture} (contract only)</dd>
                 <dt>Limits</dt><dd>{selected.limits.timeoutSeconds}s timeout; {selected.limits.contextCharacters} input characters; {selected.limits.outputCharacters} output characters; future cost ceiling {selected.limits.futureCostCents} cents</dd>
+                {selected.model.artifact && <>
+                  <dt>Artifact file</dt><dd>{selected.model.artifact.filename} · {selected.model.artifact.bytes.toLocaleString("en-US")} bytes</dd>
+                  <dt>Pinned revision</dt><dd><code>{selected.model.artifact.revision}</code></dd>
+                  <dt>Artifact SHA-256</dt><dd><code>{selected.model.artifact.sha256}</code></dd>
+                  <dt>License</dt><dd><a href={selected.model.artifact.licenseSource}>{selected.model.artifact.license}</a></dd>
+                  <dt>Local alias</dt><dd>{selected.model.localAlias} (application alias, not an upstream model ID)</dd>
+                  <dt>Planned local token budget</dt><dd>{selected.limits.contextTokens} context; {selected.limits.inputTokens} complete input; {selected.limits.outputTokens} output. Tokenizer and hardware fit remain unverified.</dd>
+                </>}
                 <dt>Cancellation</dt><dd>{selected.limits.cancellation}</dd>
                 <dt>Activation</dt><dd>{selected.activation}</dd>
               </dl>
+              {selected.model.artifact && <p>Pinned identity only. This page does not inspect local files or verify provider readiness.</p>}
               <h2>Working instructions</h2>
               <p>{selected.instructions}</p>
               <section aria-label="Deterministic host fixture">
@@ -109,7 +122,7 @@ export function AgentCatalog({ id }) {
           ) : (
             <>
               <h2>Readiness</h2>
-              <p>Roles and output contracts are prepared. All 18 are disabled. Twelve model IDs are documented; six need an exact API ID or local artifact selection. No hosted adapter, account access, model call, or arbitrary-code runner is verified here.</p>
+              <p>Roles and output contracts are prepared. All {agentCatalog.length} are disabled. {documentedApi} profiles have documented API IDs; {pinnedLocal} have a pinned local artifact; {unresolved} need an exact selection. No account access, model call, hardware fit or arbitrary-code runner is verified here.</p>
               <p>The existing <a href="#/my-agents">account configurations</a> and real local Builder/Reviewer workflow are separate from these proposals.</p>
             </>
           )}

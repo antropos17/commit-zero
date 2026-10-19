@@ -1,4 +1,5 @@
 // Proposal catalog only. These definitions never authorize a model call or a tool.
+import { qwenArtifact } from "./local-model-artifact.mjs";
 const checked = "2026-10-19";
 const sources = {
   anthropic: "https://platform.claude.com/docs/en/models/overview",
@@ -15,7 +16,7 @@ const models = {
   luna: ["openai", "gpt-6-luna"],
   sol: ["openai", "gpt-6.1-sol"],
   astra: ["openai", "gpt-6-astra"],
-  qwen: ["local", null],
+  qwen: ["local", qwenArtifact.id],
   llama: ["local", null],
   gemma: ["local", null],
   mistral: ["mistral", "mistral-small-2603"],
@@ -57,13 +58,16 @@ function profile(id, name, modelKey, purpose, output, tools, fixture) {
       provider,
       id: modelId,
       family: modelKey,
-      source: sources[provider] || null,
+      source: modelKey === "qwen" ? qwenArtifact.source : sources[provider] || null,
       verifiedAt: modelId ? checked : null,
       localAlias: modelKey === "qwen" ? "cz-local-coder" : null,
+      artifact: modelKey === "qwen" ? qwenArtifact : null,
     },
     requirements: hosted
       ? "Provider account, explicit API access, secret storage, billing ceiling, and a qualified adapter."
-      : "Explicit model artifact, license review, sufficient RAM/VRAM, and a qualified local adapter.",
+      : modelKey === "qwen"
+        ? "Pinned 4.68 GB GGUF plus runtime; RAM/VRAM for weights, KV cache and overhead must be qualified. The existing starter uses 4096 context tokens; a future host must count the complete formatted prompt and reserve output tokens."
+        : "Explicit model artifact, license review, sufficient RAM/VRAM, and a qualified local adapter.",
     tools: [...toolSets[tools]],
     input: "A project/run ID, bounded task, selected source revision, and host-provided evidence IDs with untrusted context references.",
     output: outputContracts[output],
@@ -71,7 +75,10 @@ function profile(id, name, modelKey, purpose, output, tools, fixture) {
     fixture,
     limits: {
       timeoutSeconds: output === "decision" ? 240 : 120,
-      contextCharacters: 24000,
+      contextCharacters: modelKey === "qwen" ? 6000 : 24000,
+      contextTokens: modelKey === "qwen" ? 4096 : null,
+      inputTokens: modelKey === "qwen" ? 2496 : null,
+      outputTokens: 1600,
       outputCharacters: 8000,
       futureCostCents: hosted ? 100 : 0,
       cancellation: "Host abort signal and an immutable terminal event are required before activation.",
@@ -79,7 +86,9 @@ function profile(id, name, modelKey, purpose, output, tools, fixture) {
     evidence: modelId ? "documented" : "unresolved-model-id",
     enabled: false,
     activation: modelId
-      ? "Qualify provider access, adapter, permissions, cost enforcement, cancellation, and runtime fixtures."
+      ? hosted
+        ? "Qualify provider access, adapter, permissions, cost enforcement, cancellation, and runtime fixtures."
+        : "Qualify artifact bytes, hardware/token fit, loopback adapter, permissions, cancellation and runtime fixtures."
       : "Verify an exact model artifact/API ID, then qualify adapter, permissions, cancellation, and runtime fixtures.",
   };
 }
@@ -120,8 +129,15 @@ export function validateAgentCatalog(catalog = agentCatalog) {
       throw new Error(`${agent.id}: model ID lacks evidence`);
     if (!agent.model.id && agent.evidence !== "unresolved-model-id")
       throw new Error(`${agent.id}: unresolved model is mislabeled`);
+    if (agent.model.provider === "local" && agent.model.id &&
+        (!agent.model.artifact || agent.model.id !== agent.model.artifact.id || !/^[a-f0-9]{64}$/.test(agent.model.artifact.sha256) ||
+         !/^[a-f0-9]{40}$/.test(agent.model.artifact.revision) || !agent.model.artifact.license))
+      throw new Error(`${agent.id}: local identity requires pinned artifact evidence`);
     if (agent.limits.timeoutSeconds > 240 || agent.limits.contextCharacters > 24000 || agent.limits.futureCostCents > 100)
       throw new Error(`${agent.id}: limit exceeds catalog ceiling`);
+    if (!Number.isInteger(agent.limits.outputTokens) || agent.limits.outputTokens < 1 || agent.limits.outputTokens > 1600 ||
+        (agent.limits.contextTokens && agent.limits.inputTokens + agent.limits.outputTokens > agent.limits.contextTokens))
+      throw new Error(`${agent.id}: invalid future token budget`);
   }
   return { count: catalog.length, documented: catalog.filter((p) => p.model.id).length, enabled: 0 };
 }

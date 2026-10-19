@@ -59,6 +59,8 @@ npm run model:start
 
 Downloads pinned llama.cpp and Qwen2.5-Coder 7B Q4_K_M. Keep that terminal running.
 No paid API key needed. Create a project/task in **Agent workspace**. [Setup details](docs/LANGUAGE-LAB.md#start-on-windows).
+Use `npm run model:inspect -- --hash` to verify the installed weight file without
+starting inference. File identity and provider/runtime readiness are separate checks.
 
 ## Language lab
 

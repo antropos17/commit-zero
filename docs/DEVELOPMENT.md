@@ -40,6 +40,11 @@ Review the actual images before copying them into source; see [distribution](DIS
 `npm run agents:fixtures` checks authored host envelopes for all disabled roles;
 `-- --profile <stable-id>` selects one. It performs no inference and reports no
 model-quality score. [Fixture and holdout scope](AGENT-CATALOG.md#reproduce-host-contracts).
+The [ecosystem decisions](ECOSYSTEM-DECISIONS.md) connect adopted/deferred tools
+and provider choices to primary sources, tests and exact activation blockers.
+`npm run model:inspect` checks declared local artifact metadata; `-- --hash`
+streams its bytes without starting a provider or reading a token. Metadata-only,
+digest identity and runtime readiness remain distinct. [Local setup](LANGUAGE-LAB.md#start-on-windows).
 Focused suites are explicitly labeled feedback, not full acceptance. Select an area
 deliberately: changed-file inference is unreliable in this dirty checkout and can
 miss integration dependencies. The full gate remains serial to bound PGlite memory.

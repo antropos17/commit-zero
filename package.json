@@ -10,6 +10,7 @@
   "scripts": {
     "model:setup": "pwsh -NoProfile -File scripts/setup-local-model.ps1",
     "model:start": "node scripts/start-local-model.mjs",
+    "model:inspect": "node scripts/model-identity.mjs",
     "lab:verify": "node scripts/verify-lab.mjs",
     "agent": "node scripts/agent.mjs",
     "aigit": "node scripts/aigit.mjs",

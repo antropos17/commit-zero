@@ -60,6 +60,23 @@ checks the model hash again before launch; download URLs and digests are in
 - Weights: <https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/tree/13fb94bfda8c8cf22497dc57b78f391a9acb426a>
 - Weight SHA-256: `509287f78cb4d4cf6b3843734733b914b2c158e43e22a7f4bf5e963800894d3c`
 
+Inspect the declared artifact without starting a model:
+
+```powershell
+npm run model:inspect
+npm run model:inspect -- --hash
+```
+
+The first command checks the expected file and size only. `--hash` streams all
+4.68 GB and compares SHA-256; Ctrl+C requests cancellation. The command reads no
+access token, starts no provider or model, and writes only a bounded report at
+`.cache/verification/latest-model-identity.json`. Missing, wrong-size, mismatched,
+escaping and cancelled inputs have explicit states and recovery advice. A matching
+digest proves artifact identity, not hardware fit, tokenizer limits, model quality
+or successful inference. Synthetic tests cover those host-side state distinctions;
+they do not execute a GGUF model. The declared identity is shared with the two
+disabled Qwen catalog roles in `shared/local-model-artifact.mjs`.
+
 The provider binds to `127.0.0.1:8199`, with a locally generated access token in
 ignored `runtime/local-model/server-token`. It is a local process credential, not
 a paid API key, and is never sent to the browser. The UI is disabled and CORS is
