@@ -139,38 +139,107 @@ export function WorkspaceProvider({ children }) {
 export function AccountProvider({ children }) {
   const [user, setUser] = useState(null),
     [bookmarks, setBookmarks] = useState([]),
+    [bookmarksKnown, setBookmarksKnown] = useState(false),
+    [bookmarksLoading, setBookmarksLoading] = useState(false),
+    [bookmarksError, setBookmarksError] = useState(""),
     [checked, setChecked] = useState(false);
-  const refresh = useCallback(async () => {
-    const session = await request("auth/session");
-    setUser(session.user);
-    if (session.user) setBookmarks((await request("account")).bookmarks);
-    else setBookmarks([]);
+  const currentUser = useRef(null),
+    identityVersion = useRef(0),
+    bookmarkVersion = useRef(0);
+  const installIdentity = useCallback((next) => {
+    identityVersion.current++;
+    bookmarkVersion.current++;
+    currentUser.current = next;
+    setUser(next);
+    setBookmarks([]);
+    setBookmarksKnown(false);
+    setBookmarksLoading(false);
+    setBookmarksError("");
     setChecked(true);
   }, []);
+  const refreshBookmarks = useCallback(async () => {
+    const owner = currentUser.current?.id;
+    if (!owner) return { applied: false };
+    const identity = identityVersion.current,
+      revision = ++bookmarkVersion.current;
+    const isCurrent = () =>
+      currentUser.current?.id === owner &&
+      identityVersion.current === identity &&
+      bookmarkVersion.current === revision;
+    setBookmarksLoading(true);
+    setBookmarksError("");
+    try {
+      const result = await request("account");
+      if (!isCurrent()) return { applied: false };
+      if (result.user?.id !== owner || !Array.isArray(result.bookmarks))
+        throw new Error(
+          "The account response does not match this session. Sign in again.",
+        );
+      setBookmarks(result.bookmarks);
+      setBookmarksKnown(true);
+      setBookmarksLoading(false);
+      return { applied: true, ok: true };
+    } catch (error) {
+      if (!isCurrent()) return { applied: false };
+      setBookmarksError(error.message);
+      setBookmarksLoading(false);
+      return { applied: true, ok: false };
+    }
+  }, []);
   useEffect(() => {
-    refresh().catch(() => setChecked(true));
-  }, [refresh]);
+    let active = true;
+    const identity = identityVersion.current;
+    request("auth/session")
+      .then((session) => {
+        if (!active || identityVersion.current !== identity) return;
+        installIdentity(session.user);
+        if (session.user) void refreshBookmarks();
+      })
+      .catch(() => {
+        if (active && identityVersion.current === identity) setChecked(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [installIdentity, refreshBookmarks]);
   const authenticate = async (action, body) => {
     const result = await request(`auth/${action}`, { method: "POST", body });
-    setUser(result.user);
-    setChecked(true);
-    setBookmarks((await request("account")).bookmarks);
+    installIdentity(result.user);
+    // Authentication succeeds independently of the optional saved-list read.
+    void refreshBookmarks();
   };
   const logout = async () => {
+    const identity = identityVersion.current;
     await request("auth/logout", { method: "POST" });
-    setUser(null);
-    setBookmarks([]);
+    if (identityVersion.current === identity) installIdentity(null);
   };
   const saveProfile = async (body) => {
+    const identity = identityVersion.current,
+      owner = currentUser.current?.id;
     const result = await request("account", { method: "PATCH", body });
+    if (identityVersion.current !== identity || result.user?.id !== owner)
+      return;
+    currentUser.current = result.user;
     setUser(result.user);
   };
   const bookmark = async (repo, saved) => {
+    const identity = identityVersion.current,
+      owner = currentUser.current?.id;
     const result = await request(
       `account/bookmarks/${encodeURIComponent(repo)}`,
       { method: "PUT", body: { saved } },
     );
+    if (
+      identityVersion.current !== identity ||
+      currentUser.current?.id !== owner
+    )
+      return;
+    // A read captured before this completed write must never replace its result.
+    bookmarkVersion.current++;
     setBookmarks(result.bookmarks);
+    setBookmarksKnown(true);
+    setBookmarksLoading(false);
+    setBookmarksError("");
   };
   return (
     <Account.Provider
@@ -178,6 +247,10 @@ export function AccountProvider({ children }) {
         user,
         checked,
         bookmarks,
+        bookmarksKnown,
+        bookmarksLoading,
+        bookmarksError,
+        refreshBookmarks,
         authenticate,
         logout,
         saveProfile,

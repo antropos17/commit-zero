@@ -16,6 +16,7 @@ export const browserGroups = Object.freeze([
     ]),
   }),
   Object.freeze({ name: "workspace", files: Object.freeze(["workspace.spec.mjs"]) }),
+  Object.freeze({ name: "account-recovery", files: Object.freeze(["account-recovery.spec.mjs"]) }),
   Object.freeze({ name: "history-and-pr", files: Object.freeze([
     "commons-history.spec.mjs", "scenario-pr.spec.mjs", "workspace-recovery.spec.mjs",
   ]) }),

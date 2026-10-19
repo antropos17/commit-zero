@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { useAccount, useWorkspace, useResource } from "../hooks.mjs";
 import { request } from "../api.mjs";
 import { PageHeading, Repositories } from "../components/ui.jsx";
@@ -261,6 +261,19 @@ export function MyProfile({ notify }) {
     { data } = useWorkspace();
   const [tab, setTab] = useState("saved"),
     [signingOut, setSigningOut] = useState(false);
+  const refreshTrigger = useRef(null);
+  useLayoutEffect(() => {
+    if (account.bookmarksLoading) return;
+    const pending = refreshTrigger.current;
+    refreshTrigger.current = null;
+    if (
+      pending &&
+      pending.owner === account.user?.id &&
+      pending.node.isConnected &&
+      document.activeElement === document.body
+    )
+      pending.node.focus({ preventScroll: true });
+  }, [account.bookmarksLoading, account.user?.id]);
   if (!account.checked)
     return (
       <>
@@ -321,7 +334,9 @@ export function MyProfile({ notify }) {
               onClick={() => setTab("saved")}
             >
               Saved repositories{" "}
-              <span className="count">{account.bookmarks.length}</span>
+              {account.bookmarksKnown && (
+                <span className="count">{account.bookmarks.length}</span>
+              )}
             </button>
             <button
               className="btn"
@@ -339,7 +354,28 @@ export function MyProfile({ notify }) {
               <p className="page-intro">
                 Save a repository from its code page to find it here.
               </p>
-              {data && (
+              <button
+                className="btn"
+                disabled={account.bookmarksLoading}
+                onClick={(event) => {
+                  refreshTrigger.current = {
+                    node: event.currentTarget,
+                    owner: account.user.id,
+                  };
+                  void account.refreshBookmarks();
+                }}
+              >
+                Refresh saved repositories
+              </button>
+              {account.bookmarksLoading && (
+                <p role="status">Loading saved repositories…</p>
+              )}
+              {account.bookmarksError && (
+                <p className="inline-error" role="alert">
+                  Saved repositories are unavailable. {account.bookmarksError}
+                </p>
+              )}
+              {data && account.bookmarksKnown && (
                 <Repositories
                   repos={data.repos.filter((r) =>
                     account.bookmarks.includes(r.id),
@@ -353,6 +389,7 @@ export function MyProfile({ notify }) {
                 </p>
               )}
               {data &&
+                account.bookmarksKnown &&
                 account.bookmarks.some(
                   (id) => !data.repos.some((r) => r.id === id),
                 ) && (

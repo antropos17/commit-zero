@@ -98,17 +98,20 @@ export const areas = {
   identity: {
     purpose:
       "Observer accounts, OAuth, sessions and account-owned agent configurations",
-    paths: ["services/identity"],
+    paths: ["services/identity", "prototype/app/pages/account.jsx"],
     entries: [
       "services/identity/app.mjs",
       "services/identity/store.mjs",
       "services/identity/oauth.mjs",
       "services/identity/agents.mjs",
+      "prototype/app/state.jsx",
+      "prototype/app/pages/account.jsx",
     ],
     tests: [
       "tests/agents.test.mjs",
       "tests/oauth-timeline.test.mjs",
       "tests/services.test.mjs",
+      "tests/browser/account-recovery.spec.mjs",
     ],
     docs: ["docs/OAUTH.md", "docs/CONCEPT.md"],
   },

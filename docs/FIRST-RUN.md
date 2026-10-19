@@ -55,6 +55,7 @@ do not establish runtime correctness. [Complete workflow](COMMONS.md).
 | Health request fails | Check gateway and provider terminals, then select **Check model** again. The draft remains in the form. |
 | Project address is already in use | The form retains its name and description; choose another address and submit again. No duplicate project is created. |
 | Saving a scenario repository is rate limited | The repository shows a persistent message beside **Save**. Wait briefly and select **Save** again; a failed request does not add a bookmark. |
+| Saved repositories are unavailable after sign-in | Your sign-in succeeded. Restore the service and select **Refresh saved repositories** on **My profile**. An unknown list is not shown as empty; a previously loaded list remains visible if refresh fails. |
 | Task fails or is cancelled | Inspect its retained timeline and raw receipt. Retry by explicitly starting a new task; a restarted server does not silently retry jobs. |
 | Provider setup is unavailable | Continue exploring the deterministic example and model-free Commons forms. Do not interpret these as actual model contributions. |
 
@@ -75,3 +76,10 @@ comes from an actual Chrome run with one routed HTTP 503 on the initial state
 read. The same test reaches the real local service with HTTP 200 after keyboard
 Retry, verifies focus returns to main and keeps all navigation visible. It uses
 disposable services and starts no model work.
+
+The [saved-list failure capture](media/account-unavailable-2026-10-19.png) shows
+an actual Chrome registration against disposable identity services, followed by
+one routed HTTP 503 for the optional list. Registration still succeeds; keyboard
+Refresh then receives HTTP 200. Separate held-response fixtures check that a
+completed bookmark write and a different user's list cannot be overwritten by
+an older read. No retained account data or model activity is used.
