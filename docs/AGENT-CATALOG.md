@@ -10,6 +10,9 @@ ID; an empty result is explicit. Filtering never activates a role or changes
 saved agent configurations. On narrow screens, details appear above the list;
 selecting a role moves focus and the viewport back to those details. Desktop
 selection keeps its side-by-side layout.
+Each selected role also shows concrete synthetic fixture inputs and unscored
+future evaluation criteria. **Download fixture JSON** exports that packet locally;
+it starts no model, tool, task or account write.
 
 ## Evidence vocabulary
 
@@ -49,9 +52,40 @@ and source revision with the exact expected context, rejects unknown fields,
 and requires matching profile and artifact types, a bounded summary, evidence
 references and uncertainties. It must state `runtimeVerified: false` and
 `merged: false`.
+The expected host context includes a bounded `allowedEvidence` list. Outputs may
+cite only those exact IDs; the output cannot grant itself new evidence. This
+checks reference provenance, not whether the summary correctly understands a
+source. A future web tool must supply observed source IDs through the host.
 `shared/agent-evaluation.mjs` contains task fixtures for conflict, stale base,
 disagreement, invalid output, missing documents, and large repository context.
 They define validation inputs, not scored model results.
+
+### Reproduce host contracts
+
+```powershell
+npm run agents:fixtures
+npm run agents:fixtures -- --profile qwen-local-reviewer
+```
+
+`shared/agent-fixtures.mjs` supplies 12 concrete input packs shared by the 18
+roles: source disagreements, missing reproduction steps, stale code, test cases,
+narrow focus, review disagreement, migration decisions, missing documents,
+malformed content, outdated startup, complexity and bounded repository mapping.
+Each has supplied text/reference IDs, future acceptance criteria and an authored
+example envelope. The runner checks that envelope and seven invalid variants
+per role: stale revision, wrong run/project, invented reference, claimed runtime
+verification, claimed merge and empty output. It writes a host-only report to
+`.cache/verification/latest-agent-fixtures.json`. These are synthetic fixtures,
+not conversations, model contributions, benchmark scores or runtime receipts.
+The browser download contains the same declared scope and zero model calls.
+
+The independent [future evaluation set](../tests/fixtures/agent-evaluation-holdout.json)
+contains 12 different cases and no example outputs. It is not imported by the
+demo exporter or contract runner. A later evaluation host must keep criteria and
+demonstration answers out of provider input, supply only the selected case's
+input references, and restrict repository tools accordingly. This versioned
+public set is separate from the examples; it does not prove a model has never
+seen similar material. No role-quality evaluation ran during this mission.
 
 Tool grants in the catalog are proposed permissions. `repository.read`,
 `proposal.read`, `proposal.write`, and `web.read` have no catalog executor yet.
@@ -65,6 +99,12 @@ request shapes and inspect offline response fixtures for four documented
 families. They supply no credential or transport and do not change the disabled
 or runtime-unverified status of any role.
 
+All nine distinct documented API IDs were rechecked in their primary catalogs
+during this mission; twelve role entries refer to them. Mistral now links directly
+to its model page rather than the overview. A documented API identifier is not an
+immutable weight digest, account entitlement or successful response. Recheck
+model lifecycle, exact response identity and access before a later activation.
+
 The existing Commons Builder/Reviewer workflow is a separate, locally configured
 path and still does not execute generated JavaScript. Its parser and review do
 not establish runtime correctness.
@@ -73,3 +113,7 @@ An [actual browser capture of the proposed-role view](media/agent-catalog-2026-1
 shows the source-controlled catalog in a disposable scenario fixture. The
 scenario badge is part of the deterministic example; none of the proposed roles
 ran to produce this image.
+
+The [fixture-section capture](media/agent-fixture-2026-10-19.png) is a real Chrome
+element capture from Fable Architect's read-only details. It shows authored input,
+unscored future criteria and the local JSON download; it is not model output.

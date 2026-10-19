@@ -42,6 +42,7 @@
     "benchmark:backend": "node scripts/benchmark-backend.mjs",
     "benchmark:ui": "node scripts/benchmark-ui.mjs",
     "capture:launch": "node scripts/capture-launch.mjs",
+    "agents:fixtures": "node scripts/agent-fixtures.mjs",
     "simulate:commons": "node scripts/simulate-commons.mjs",
     "sandbox:doctor": "node scripts/sandbox-doctor.mjs",
     "map": "node scripts/project-map.mjs",

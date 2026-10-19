@@ -1,10 +1,14 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 test("disabled role catalog stays inspectable at desktop and narrow widths", async ({ page }) => {
   const errors = [];
+  const writes = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("request", (request) => {
+    if (!["GET", "HEAD", "OPTIONS"].includes(request.method())) writes.push(request.url());
+  });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/#/agent-catalog");
   await expect(page.getByRole("heading", { name: "Proposed agent roles" })).toBeVisible();
@@ -26,6 +30,24 @@ test("disabled role catalog stays inspectable at desktop and narrow widths", asy
   await page.getByRole("link", { name: "Fable Architect", exact: true }).click();
   await expect(page.locator(".agent-readiness")).toContainText("claude-fable-5-1");
   await expect(page.locator(".agent-readiness button")).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Deterministic host fixture" }))
+    .toContainText("Migration 001 is applied");
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Download fixture JSON", exact: true }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("fable-architect-fixture.json");
+  await mkdir(".cache/tmp", { recursive: true });
+  await download.saveAs(".cache/tmp/catalog-fixture-download.json");
+  const fixture = JSON.parse(await readFile(".cache/tmp/catalog-fixture-download.json", "utf8"));
+  expect(fixture.profileId).toBe("fable-architect");
+  expect(fixture.modelCalls).toBe(0);
+  expect(fixture.exampleOutput.runtimeVerified).toBe(false);
+  expect(fixture.expected.allowedEvidence).toEqual(["fixture/storage.md:1"]);
+  if (process.env.CZ_CAPTURE_AGENT_FIXTURE === "1") {
+    await mkdir("runtime/verification", { recursive: true });
+    await page.getByRole("region", { name: "Deterministic host fixture" })
+      .screenshot({ path: "runtime/verification/agent-fixture-section-2026-10-19.png" });
+  }
   const desktop = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   expect(desktop.violations).toEqual([]);
   if (process.env.CZ_CAPTURE_BROWSER === "1") {
@@ -58,4 +80,5 @@ test("disabled role catalog stays inspectable at desktop and narrow widths", asy
   if (process.env.CZ_CAPTURE_BROWSER === "1")
     await page.screenshot({ path: "runtime/verification/environment-fixture-narrow-2026-10-19.png", fullPage: true });
   expect(errors).toEqual([]);
+  expect(writes).toEqual([]);
 });

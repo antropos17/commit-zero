@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { agentCatalog } from "../shared/agent-catalog.mjs";
 import { draftProviderExchange, inspectProviderExchange } from "../shared/provider-drafts.mjs";
 
-const expected = { runId: "fixture-run", projectId: "fixture-project", sourceRevision: 4 };
+const expected = { runId: "fixture-run", projectId: "fixture-project", sourceRevision: 4,
+  allowedEvidence: ["README.md:4"] };
 const profiles = Object.fromEntries(agentCatalog.map((profile) => [profile.model.provider, profile]));
 
 function envelope(profile, changes = {}) {
@@ -46,6 +47,7 @@ test("hosted request drafts stay bounded, credential-free, and disconnected", ()
   assert.throws(() => draftProviderExchange(profiles.local, expected, "Task"), /documented/);
   assert.throws(() => draftProviderExchange(profiles.openai, expected, "x".repeat(24000)), /ceiling/);
   assert.throws(() => draftProviderExchange(profiles.openai, { ...expected, sourceRevision: -1 }, "Task"), /context/);
+  assert.throws(() => draftProviderExchange(profiles.openai, expected, "Task", ["unknown.md:1"]), /reference/);
 });
 
 test("offline response contracts reject stale, incomplete, tool, and false verification output", () => {
@@ -57,6 +59,8 @@ test("offline response contracts reject stale, incomplete, tool, and false verif
       response(profile, envelope(profile, { sourceRevision: 3 }))).ok, false, provider);
     assert.equal(inspectProviderExchange(profile, expected,
       response(profile, envelope(profile, { runtimeVerified: true }))).ok, false, provider);
+    assert.equal(inspectProviderExchange(profile, expected,
+      response(profile, envelope(profile, { evidence: ["unknown.md:1"] }))).ok, false, provider);
     assert.equal(inspectProviderExchange(profile, expected,
       response(profile, "```json\n{}\n```")).ok, false, provider);
     assert.equal(inspectProviderExchange(profile, expected,

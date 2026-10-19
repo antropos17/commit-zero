@@ -14,7 +14,8 @@ test("proposed agent catalog has distinct disabled roles and source-backed model
 
 test("host contract rejects stale, mismatched, oversized and fabricated output claims", () => {
   for (const profile of agentCatalog) {
-    const expected = { runId: "fixture-run", projectId: "fixture-project", sourceRevision: 4 };
+    const expected = { runId: "fixture-run", projectId: "fixture-project", sourceRevision: 4,
+      allowedEvidence: ["project/readme.md:4"] };
     const valid = {
       profileId: profile.id,
       runId: expected.runId,
@@ -37,6 +38,7 @@ test("host contract rejects stale, mismatched, oversized and fabricated output c
       { artifactType: "different" },
       { summary: "x".repeat(8001) },
       { evidence: [false] },
+      { evidence: ["project/invented.md:1"] },
       { runtimeVerified: true },
       { merged: true },
       { toolCalls: [] },

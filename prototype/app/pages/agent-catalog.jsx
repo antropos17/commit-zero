@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { agentCatalog } from "../../../shared/agent-catalog.mjs";
+import { createAgentFixture } from "../../../shared/agent-fixtures.mjs";
 import { Empty, PageHeading } from "../components/ui.jsx";
 
 export function AgentCatalog({ id }) {
   const [query, setQuery] = useState("");
   const [evidence, setEvidence] = useState("all");
   const selected = agentCatalog.find((profile) => profile.id === id);
+  const fixture = selected ? createAgentFixture(selected) : null;
   const detailHeading = useRef(null);
   useEffect(() => {
     if (selected && window.matchMedia("(max-width: 960px)").matches) {
@@ -86,6 +88,23 @@ export function AgentCatalog({ id }) {
               </dl>
               <h2>Working instructions</h2>
               <p>{selected.instructions}</p>
+              <section aria-label="Deterministic host fixture">
+                <h2>Host contract fixture</h2>
+                <p>Authored inputs and example output. No model ran; future role criteria are not scored.</p>
+                <p>{fixture.input.task}</p>
+                {fixture.input.references.map((reference) => (
+                  <div key={reference.id}>
+                    <h3 className="small">{reference.id}</h3>
+                    <p>{reference.text}</p>
+                  </div>
+                ))}
+                <h3>Future evaluation criteria</h3>
+                <ul>{fixture.futureEvaluationCriteria.map((criterion) => <li key={criterion}>{criterion}</li>)}</ul>
+                <a className="btn" download={`${selected.id}-fixture.json`}
+                  href={`data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(fixture, null, 2))}`}>
+                  Download fixture JSON
+                </a>
+              </section>
             </>
           ) : (
             <>

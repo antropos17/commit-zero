@@ -37,6 +37,9 @@ viewport and parameters for comparison; it never opens a retained user store.
 `npm run capture:launch` performs disposable model-free journeys and captures
 ready-size launch images with provenance under `runtime/verification/launch-assets`.
 Review the actual images before copying them into source; see [distribution](DISTRIBUTION.md).
+`npm run agents:fixtures` checks authored host envelopes for all disabled roles;
+`-- --profile <stable-id>` selects one. It performs no inference and reports no
+model-quality score. [Fixture and holdout scope](AGENT-CATALOG.md#reproduce-host-contracts).
 Focused suites are explicitly labeled feedback, not full acceptance. Select an area
 deliberately: changed-file inference is unreliable in this dirty checkout and can
 miss integration dependencies. The full gate remains serial to bound PGlite memory.

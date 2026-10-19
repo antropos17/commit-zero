@@ -8,8 +8,11 @@ cost. Local and unresolved model selections fail before a draft is produced.
 
 `inspectProviderExchange` uses offline response shapes to refuse truncated,
 refused, non-text and tool-call outcomes, parses one JSON envelope, and checks its
-exact run, project and source revision. These are host contract checks; they do
-not establish that any real API response will have this shape or that the model
+exact run, project and source revision. It also requires a host-supplied evidence
+allowlist and rejects invented source IDs.
+The request draft passes that list in its bounded context; references outside it
+fail before a draft is produced. These host checks do not establish that any
+real API response will have this shape or that the model
 will follow the instructions. Tests use handwritten schema fixtures, never a model.
 
 ## Sources and decisions

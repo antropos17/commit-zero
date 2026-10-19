@@ -19,11 +19,18 @@ const envelopeFields = new Set([
   "summary", "evidence", "uncertainties", "runtimeVerified", "merged",
 ]);
 
+export function validAgentContext(expected) {
+  return Boolean(expected && typeof expected.runId === "string" && expected.runId &&
+    typeof expected.projectId === "string" && expected.projectId &&
+    Number.isInteger(expected.sourceRevision) && expected.sourceRevision >= 0 &&
+    Array.isArray(expected.allowedEvidence) && expected.allowedEvidence.length <= 20 &&
+    expected.allowedEvidence.every((item) => typeof item === "string" && item.trim() && item.length <= 500) &&
+    new Set(expected.allowedEvidence).size === expected.allowedEvidence.length);
+}
+
 export function validateAgentOutput(profile, expected, envelope) {
-  if (!expected || typeof expected.runId !== "string" || !expected.runId ||
-      typeof expected.projectId !== "string" || !expected.projectId ||
-      !Number.isInteger(expected.sourceRevision) || expected.sourceRevision < 0)
-    return { ok: false, reason: "Expected run, project, and revision are required." };
+  if (!validAgentContext(expected))
+    return { ok: false, reason: "Expected run, project, revision and evidence allowlist are required." };
   if (!envelope || typeof envelope !== "object" || Array.isArray(envelope))
     return { ok: false, reason: "Expected an object envelope." };
   if (Object.keys(envelope).some((key) => !envelopeFields.has(key)))
@@ -38,6 +45,8 @@ export function validateAgentOutput(profile, expected, envelope) {
   if (!Array.isArray(envelope.evidence) || envelope.evidence.length > 20 ||
       envelope.evidence.some((item) => typeof item !== "string" || !item.trim() || item.length > 500))
     return { ok: false, reason: "Evidence must be bounded source references." };
+  if (envelope.evidence.some((item) => !expected.allowedEvidence.includes(item)))
+    return { ok: false, reason: "Evidence includes a reference not supplied by the host." };
   if (!Array.isArray(envelope.uncertainties) || envelope.uncertainties.length > 20 ||
       envelope.uncertainties.some((item) => typeof item !== "string" || !item.trim() || item.length > 500))
     return { ok: false, reason: "Uncertainties must be bounded statements." };

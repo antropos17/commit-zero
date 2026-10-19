@@ -1,4 +1,4 @@
-import { validateAgentOutput } from "./agent-evaluation.mjs";
+import { validAgentContext, validateAgentOutput } from "./agent-evaluation.mjs";
 
 // Pure, disconnected contract drafts. No credential, transport, tool executor or
 // activation path is provided here. A future host must qualify all of those.
@@ -8,25 +8,20 @@ const endpoints = Object.freeze({
   mistral: "https://api.mistral.ai/v1/chat/completions",
 });
 
-function validContext(expected) {
-  return expected && typeof expected.runId === "string" && expected.runId.length > 0 &&
-    typeof expected.projectId === "string" && expected.projectId.length > 0 &&
-    Number.isInteger(expected.sourceRevision) && expected.sourceRevision >= 0;
-}
-
 export function draftProviderExchange(profile, expected, task, references = []) {
-  if (!profile || profile.enabled || !profile.model?.id || !validContext(expected))
+  if (!profile || profile.enabled || !profile.model?.id || !validAgentContext(expected))
     throw new Error("A disabled, documented profile and exact context are required.");
   if (typeof task !== "string" || !task.trim() || !Array.isArray(references) ||
-      references.length > 20 || references.some((item) => typeof item !== "string"))
+      references.length > 20 || references.some((item) => typeof item !== "string" || !expected.allowedEvidence.includes(item)))
     throw new Error("A bounded text task and reference list are required.");
   const input = JSON.stringify({
     task, references, runId: expected.runId, projectId: expected.projectId,
     sourceRevision: expected.sourceRevision, profileId: profile.id,
+    allowedEvidence: expected.allowedEvidence,
   });
   if (input.length > profile.limits.contextCharacters)
     throw new Error("Input exceeds the profile context ceiling.");
-  const system = `${profile.instructions} Return only a JSON object with profileId, runId, projectId, artifactType, sourceRevision, summary, evidence, uncertainties, runtimeVerified:false, merged:false. Do not call tools.`;
+  const system = `${profile.instructions} Return only a JSON object with profileId, runId, projectId, artifactType, sourceRevision, summary, evidence, uncertainties, runtimeVerified:false, merged:false. Evidence must use only allowedEvidence reference IDs supplied by the host. Do not call tools.`;
   const provider = profile.model.provider;
   const model = profile.model.id;
   const maxTokens = 1600;
@@ -96,7 +91,7 @@ function providerText(profile, response) {
 
 export function inspectProviderExchange(profile, expected, response) {
   try {
-    if (!profile?.model?.id || !validContext(expected))
+    if (!profile?.model?.id || !validAgentContext(expected))
       throw new Error("A documented profile and exact context are required.");
     const text = providerText(profile, response);
     if (typeof text !== "string" || !text.trim() || text.length > profile.limits.outputCharacters)

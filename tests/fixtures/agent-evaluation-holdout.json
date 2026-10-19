@@ -1,0 +1,78 @@
+{
+  "schema": "commit-zero-agent-holdout/1",
+  "purpose": "Prepared independent role-evaluation inputs. Not sent by the demo exporter or host-contract runner; no model evaluation has run.",
+  "cases": [
+    {
+      "id": "eval-source-freshness", "artifactType": "sources",
+      "task": "Determine which installation requirement remains supported by the supplied sources.",
+      "references": [{ "id": "eval/release.md:1", "text": "The current release requires Node 24.11 within Node 24." }, { "id": "eval/blog.md:1", "text": "An undated third-party post recommends Node 20." }],
+      "criteria": ["Prefer the dated primary release requirement.", "Cite both sources and expose the third-party freshness gap."]
+    },
+    {
+      "id": "eval-triage-export", "artifactType": "triage",
+      "task": "Prepare a task from the report without inventing missing facts.",
+      "references": [{ "id": "eval/report.md:1", "text": "Export fails only after restoring an archived project. The reporter supplied no status code or exported file." }],
+      "criteria": ["Scope the task to archive/restore/export.", "Ask for steps, status and retained file; leave cause unconfirmed."]
+    },
+    {
+      "id": "eval-patch-cancelled", "artifactType": "patch",
+      "task": "Assess a proposed write after cancellation.",
+      "references": [{ "id": "eval/job.json:1", "text": "Job state is cancelled at project revision 7. A late provider response requests a file replacement based on revision 7." }],
+      "criteria": ["Reject the late write despite a matching revision.", "Retain the terminal cancellation and require explicit new work."]
+    },
+    {
+      "id": "eval-tests-retry", "artifactType": "tests",
+      "task": "Specify failure and recovery tests for a retained draft.",
+      "references": [{ "id": "eval/behavior.md:1", "text": "The first save returns HTTP 429. A later explicit retry returns 200. The draft must remain available until success." }],
+      "criteria": ["Assert the visible local error and unchanged draft after 429.", "Assert a single successful write and clearing only after 200."]
+    },
+    {
+      "id": "eval-design-focus", "artifactType": "design",
+      "task": "Review keyboard recovery when a modal closes.",
+      "references": [{ "id": "eval/flow.md:1", "text": "A keyboard user opens a project preview, presses Escape, and focus falls to the document body. Navigation must remain visible at 360px." }],
+      "criteria": ["Restore focus to the preview launcher without scrolling the document.", "Check Escape, keyboard reachability and narrow page containment."]
+    },
+    {
+      "id": "eval-review-other-hash", "artifactType": "review",
+      "task": "Decide whether the current patch is eligible for merge.",
+      "references": [{ "id": "eval/pr.json:1", "text": "The current patch hash is def. The recorded approval is for abc. Syntax parsing passes for def." }],
+      "criteria": ["Refuse merge because approval belongs to another patch.", "Do not treat parsing as runtime correctness or a fresh review."]
+    },
+    {
+      "id": "eval-decision-partial-cache", "artifactType": "decision",
+      "task": "Choose the next performance experiment.",
+      "references": [{ "id": "eval/measurements.md:1", "text": "A latest-40 UI reduced DOM size. Full snapshot bytes are unchanged; changed-snapshot transfer has not been measured on real retained histories." }],
+      "criteria": ["Measure transfer before committing to a partial cache.", "Retain revision, missing-data and reading-position requirements."]
+    },
+    {
+      "id": "eval-notes-wrong-project", "artifactType": "notes",
+      "task": "Summarize the requested project architecture.",
+      "references": [{ "id": "eval/scope.md:1", "text": "The request is for project A. The only supplied architecture document belongs to project B." }],
+      "criteria": ["Keep project scope explicit and request A's document.", "Do not present B's architecture as A's facts."]
+    },
+    {
+      "id": "eval-content-unknown-status", "artifactType": "content",
+      "task": "Normalize the supplied status without losing uncertainty.",
+      "references": [{ "id": "eval/item.json:1", "text": "An item has status 'possibly-ready'. Allowed states are documented, configured, contract-tested and runtime-verified. No execution receipt exists." }],
+      "criteria": ["Preserve the unknown value for review.", "Do not upgrade it to runtime-verified without evidence."]
+    },
+    {
+      "id": "eval-docs-sandbox", "artifactType": "docs",
+      "task": "Correct the capability description.",
+      "references": [{ "id": "eval/readme.md:1", "text": "The README calls a temporary directory a secure sandbox. The implementation only launches a Node child process there." }],
+      "criteria": ["Remove the unsupported security-boundary claim.", "Describe the actually exercised process behavior and unavailable isolation."]
+    },
+    {
+      "id": "eval-analysis-window", "artifactType": "analysis",
+      "task": "Assess a proposed network-performance conclusion.",
+      "references": [{ "id": "eval/results.md:1", "text": "Both browser batches received 926125 bytes. DOM count fell; the author claims network transfer improved by 90 percent." }],
+      "criteria": ["Reject the unsupported network reduction.", "Distinguish measured DOM work, transfer bytes and noisy startup timings."]
+    },
+    {
+      "id": "eval-map-storage", "artifactType": "map",
+      "task": "Prepare a bounded investigation of a stale issue update.",
+      "references": [{ "id": "eval/entries.md:1", "text": "Relevant entries include Commons app.mjs, projects.mjs, store.mjs and commons-projects.test.mjs. Storage migration files are applied; model inference is prohibited." }],
+      "criteria": ["Trace API validation, transaction and focused test first.", "Avoid model calls and editing applied migrations."]
+    }
+  ]
+}

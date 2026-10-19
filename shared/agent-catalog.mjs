@@ -4,7 +4,7 @@ const sources = {
   anthropic: "https://platform.claude.com/docs/en/models/overview",
   openai: "https://developers.openai.com/api/docs/models",
   google: "https://ai.google.dev/gemini-api/docs/models",
-  mistral: "https://docs.mistral.ai/models",
+  mistral: "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
 };
 
 const models = {
@@ -65,7 +65,7 @@ function profile(id, name, modelKey, purpose, output, tools, fixture) {
       ? "Provider account, explicit API access, secret storage, billing ceiling, and a qualified adapter."
       : "Explicit model artifact, license review, sufficient RAM/VRAM, and a qualified local adapter.",
     tools: [...toolSets[tools]],
-    input: "A project/run ID, bounded task, selected source revision, and untrusted context references.",
+    input: "A project/run ID, bounded task, selected source revision, and host-provided evidence IDs with untrusted context references.",
     output: outputContracts[output],
     artifactType: output,
     fixture,
