@@ -201,6 +201,11 @@ test("source indexing ignores ambient Git redirects and leaves both indexes unch
     GIT_COMMON_DIR: join(other, ".git"),
     GIT_WORK_TREE: other,
     GIT_INDEX_FILE: join(other, ".git/index"),
+    GIT_OBJECT_DIRECTORY: join(other, ".git/objects"),
+    GIT_CONFIG_COUNT: "1",
+    GIT_CONFIG_KEY_0: "core.worktree",
+    GIT_CONFIG_VALUE_0: other,
+    GIT_TRACE: join(other, "unexpected-trace.log"),
   };
   const original = Object.fromEntries(
     Object.keys(overrides).map((key) => [key, process.env[key]]),
@@ -210,6 +215,9 @@ test("source indexing ignores ambient Git redirects and leaves both indexes unch
     assert.equal(await fingerprint(root), before);
     assert.deepEqual(await readFile(join(root, ".git/index")), ownIndex);
     assert.deepEqual(await readFile(join(other, ".git/index")), otherIndex);
+    await assert.rejects(readFile(join(other, "unexpected-trace.log")), {
+      code: "ENOENT",
+    });
   } finally {
     for (const [key, value] of Object.entries(original)) {
       if (value === undefined) delete process.env[key];

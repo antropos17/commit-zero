@@ -3,7 +3,12 @@ import { readFile, realpath, writeFile } from "node:fs/promises";
 import { relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { fingerprint, inside, sourceIndexVersion } from "./project-files.mjs";
+import {
+  fingerprint,
+  inside,
+  sourceIndexVersion,
+  gitEnvironment,
+} from "./project-files.mjs";
 import { verificationDirectory } from "./browser-runtime.mjs";
 import { browserGroups, browserStats } from "./test-ui.mjs";
 import { qualityPlan } from "./quality-plan.mjs";
@@ -26,6 +31,46 @@ function stamped(report, hash) {
     Number.isFinite(finished) &&
     finished >= started
   );
+}
+
+export function evaluateLocalChecks({ full, browser, sourceHash }) {
+  const requiredStages = qualityPlan("full").map((stage) => stage.name);
+  const fullGateCurrent =
+    stamped(full, sourceHash) &&
+    full.mode === "full" &&
+    full.fullGate === true &&
+    Array.isArray(full.stages) &&
+    full.stages.every(
+      (stage) => stage?.code === 0 && typeof stage.name === "string",
+    ) &&
+    JSON.stringify(full.stages?.map((stage) => stage.name)) ===
+      JSON.stringify(requiredStages) &&
+    full.stages.every((stage) => stage.code === 0);
+  let browserSuiteCurrent =
+    stamped(browser, sourceHash) &&
+    browser.fullBrowserSuite === true &&
+    Array.isArray(browser.groups) &&
+    browser.groups?.length === browserGroups.length;
+  if (browserSuiteCurrent) {
+    browserSuiteCurrent = browser.groups.every((group, index) => {
+      const expected = browserGroups[index];
+      try {
+        return (
+          group.name === expected.name &&
+          JSON.stringify(group.files) === JSON.stringify(expected.files) &&
+          group.exitCode === 0 &&
+          group.complete === true &&
+          browserStats({ stats: group }).complete
+        );
+      } catch {
+        return false;
+      }
+    });
+  }
+  return {
+    fullGateCurrent: Boolean(fullGateCurrent),
+    browserSuiteCurrent: Boolean(browserSuiteCurrent),
+  };
 }
 
 export function evaluateEvidence(input) {
@@ -64,47 +109,17 @@ export function evaluateEvidence(input) {
       "Source changed or could not be read consistently.",
       "Stop editing briefly and rerun this read-only preflight.",
     );
-
-  const requiredStages = qualityPlan("full").map((stage) => stage.name);
-  const fullGateCurrent =
-    stamped(full, sourceHash) &&
-    full.mode === "full" &&
-    full.fullGate === true &&
-    Array.isArray(full.stages) &&
-    full.stages.every(
-      (stage) => stage?.code === 0 && typeof stage.name === "string",
-    ) &&
-    JSON.stringify(full.stages?.map((stage) => stage.name)) ===
-      JSON.stringify(requiredStages) &&
-    full.stages.every((stage) => stage.code === 0);
+  const { fullGateCurrent, browserSuiteCurrent } = evaluateLocalChecks({
+    full,
+    browser,
+    sourceHash,
+  });
   if (!fullGateCurrent)
     add(
       "full-gate-not-current",
       "The full-gate receipt is missing, stale, incomplete or failed.",
       "Freeze source and run npm run check. Focused suites do not replace it.",
     );
-
-  let browserSuiteCurrent =
-    stamped(browser, sourceHash) &&
-    browser.fullBrowserSuite === true &&
-    Array.isArray(browser.groups) &&
-    browser.groups?.length === browserGroups.length;
-  if (browserSuiteCurrent) {
-    browserSuiteCurrent = browser.groups.every((group, index) => {
-      const expected = browserGroups[index];
-      try {
-        return (
-          group.name === expected.name &&
-          JSON.stringify(group.files) === JSON.stringify(expected.files) &&
-          group.exitCode === 0 &&
-          group.complete === true &&
-          browserStats({ stats: group }).complete
-        );
-      } catch {
-        return false;
-      }
-    });
-  }
   if (!browserSuiteCurrent)
     add(
       "browser-suite-not-current",
@@ -187,14 +202,7 @@ export function evaluateEvidence(input) {
 }
 
 async function git(root, args) {
-  const env = { ...process.env, GIT_OPTIONAL_LOCKS: "0" };
-  for (const key of [
-    "GIT_DIR",
-    "GIT_WORK_TREE",
-    "GIT_INDEX_FILE",
-    "GIT_COMMON_DIR",
-  ])
-    delete env[key];
+  const env = gitEnvironment();
   const stdout = (
     await execute(
       "git",
@@ -203,6 +211,8 @@ async function git(root, args) {
         "core.excludesFile=",
         "-c",
         "core.fsmonitor=false",
+        "-c",
+        `safe.directory=${root}`,
         "-C",
         root,
         ...args,

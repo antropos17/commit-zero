@@ -77,10 +77,27 @@ The read-only inspection tool adds no provider, model execution or security sand
 Git's [commit-tree](https://git-scm.com/docs/git-commit-tree),
 [hash-object](https://git-scm.com/docs/git-hash-object) and
 [compare-and-swap ref update](https://git-scm.com/docs/git-update-ref) documentation
-were also reviewed for a reversible publication preparer. Decision: defer that
-command until source evidence is complete and qualified; continue the established
-explicit copy/tree-compare/normal-push workflow. No new publication executor,
-release or tag was created by this research.
+were also reviewed for a reversible publication preparer. The initial decision
+was to defer until source-index v2 was qualified. After that gate, the simpler
+[binary diff](https://git-scm.com/docs/git-diff) and
+[checked index application](https://git-scm.com/docs/git-apply) contracts were
+selected (accessed 2026-10-19): prepare and explicitly stage an exact patch while
+leaving both commit histories intact. Commit and ordinary push remain separate.
+No commit-tree/ref-update executor, release or tag was added. Expected benefit:
+replace repeated handwritten per-file transfer logic, including binary/mode and
+deletion handling, with reproducible checks. Eight disposable Git fixtures cover
+unchanged dry runs, exact staging and refusal; actual maintainer staging still
+requires the frozen full/browser gate and a clean verified commit.
+
+The [Git environment reference](https://git-scm.com/docs/git) was also checked
+for disabling lazy object fetch, replacement refs and optional index writes.
+Source, preflight and preparation commands share a process-local environment
+that clears inherited Git overrides/tracing. A live Windows check exposed the
+platform's ownership exception being cleared as well. Decision: pass
+`safe.directory` for the exact checked root on each command after ordinary-path
+checks; do not change global settings. Actual `check:fast` and the source/preflight
+fixtures passed after this correction. This is predictable maintainer behavior,
+not a security boundary or proof against another process writing concurrently.
 
 ### Workspace and environment boundaries
 

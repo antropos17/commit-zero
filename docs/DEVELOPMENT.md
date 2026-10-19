@@ -51,6 +51,12 @@ without it, hosted CI is explicitly not queried. `-- --json` prints the full
 report. The report is saved to `.cache/verification/latest-evidence-status.json`.
 Freeze documentation and assets as well as code before the full check and full
 browser suite; editing either afterwards makes their source stamps stale.
+After verification and commit, maintainers with the independent publication
+checkout can use `npm run publication:prepare -- --base-local <full-sha>
+--expected-public <full-sha>` for a dry run, then explicitly `--stage`. Follow
+[the publication contract](RELEASE.md#maintainer-publication-preparation) for
+fresh fetches, matching bases, patch review, ordinary commits/push and exact CI.
+The preparer never fetches, commits, pushes or creates a release/tag.
 `npm run benchmark:ui -- --history 1000 --samples 5` measures a labelled read-only
 chat fixture in cold browser contexts after `npm run build`. Use the same browser,
 viewport and parameters for comparison; it never opens a retained user store.

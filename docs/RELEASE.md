@@ -133,7 +133,45 @@ writes, qualified generated-code isolation, provider/OAuth configuration, actual
 external PostgreSQL deployment/load and recovery tests, and native Git hosting if
 remote clone/push is required. Earlier qualification recorded an unavailable Docker
 runtime and approximately 4 GB free on C:. The 2026-10-19 mission recheck found
-80.6 GB free on the X: workspace volume; Docker execution remains unqualified.
+80.6 GB free initially on the X: workspace volume (74 GB at the 11:35 UTC check);
+Docker execution remains unqualified.
 No Docker startup, data relocation or global configuration changes were performed.
 Publishing source on GitHub does not establish
 these deployment guarantees. No hosted application service was created.
+
+## Maintainer publication preparation
+
+The local and public histories are intentionally independent. The maintainer-only
+`npm run publication:prepare` command prepares the fixed `.cache/publication`
+checkout; ordinary contributors do not need it. Use a full local base SHA whose
+tree matches the last published public SHA. Both working trees must be clean,
+the public branch must be `main`, and complete current full/browser receipts
+must match this source and source-index version. Fetch separately and stop if it
+fails; the tool reads cached refs and does not establish fresh remote state.
+
+```powershell
+git -C .cache/publication fetch origin main
+if ($LASTEXITCODE -ne 0) { throw 'Inspect the failed fetch before continuing' }
+# Replace these with the exact matching pair recorded in the latest handoff.
+$baseLocal = '<full previous local commit SHA>'
+$expectedPublic = '<full fetched public commit SHA>'
+npm run publication:prepare -- --base-local $baseLocal --expected-public $expectedPublic
+```
+
+The default creates a bounded content-addressed binary patch and a report under
+`.cache/verification`, checks applicability, and verifies unchanged index bytes
+and source state. Review that report and patch. Repeat the same command with
+`--stage` only when ready to stage the exact tree. The command refuses redirected
+paths, private/runtime inputs, changed heads, mismatched bases and incomplete
+evidence. It uses eight-second Git deadlines and a 16 MiB patch ceiling. It is
+an ordinary maintainer tool, not code isolation or a concurrent-writer lock.
+
+After successful staging, review `git -C .cache/publication diff --cached`,
+compare `git -C .cache/publication write-tree` with the source `HEAD^{tree}`,
+create a normal public commit, then `git -C .cache/publication push origin HEAD:main`.
+A push rejection requires inspecting the newer remote work. Preserve a partial
+or uncertain preparation and inspect both Git states; the tool never resets,
+merges, commits, pushes, fetches or creates a release/tag. The mutable report
+is `.cache/verification/latest-publication-preparation.json`; retain a copy under
+`runtime/verification` with the unit's receipts. Finish with exact-commit CI and
+`npm run evidence:status -- --github`.

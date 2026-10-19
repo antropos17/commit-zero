@@ -6,6 +6,32 @@ or normal user database write was part of these measurements.
 
 ## Feedback loop
 
+### Maintainer transfer friction and reproducible preparation
+
+Repeated mission publications used handwritten path-copy/stage/tree-compare
+scripts between independent histories. Their ordinary source/doc changes passed,
+but each script repeated path and revision handling and did not generalize to
+removals or executable modes. There is no comparable before/after timing batch;
+this change makes no speedup claim.
+
+`npm run publication:prepare` now checks a committed binary patch with the same
+full/browser receipt validator as the source preflight; only explicit `--stage`
+applies it. A separate 884-byte primitive probe preserved exact trees across
+binary/addition/deletion/mode changes with both indexes unchanged in dry mode.
+Receipt: `runtime/verification/publication-patch-probe-2026-10-19.json`, Git
+2.52.0.windows.1. The versioned eight-fixture suite additionally checks dirty
+drafts, stale bases/heads, wrong origin, incomplete receipts, private input,
+redirected paths and all-or-nothing Git rejection. Its timings in the test log
+are fixture observations, not an application or publication benchmark.
+
+An actual CLI dry run against the dirty maintainer source returned `blocked`
+without attempting staging; independent before/after hashes confirmed both real
+Git index files unchanged. Receipts:
+`runtime/verification/publication-preparation-dirty{,-indexes}-2026-10-19.json`.
+The intended full frozen gate, current-source dry run and explicit real staging
+remain required before this unit is considered published. See the
+[maintainer contract](RELEASE.md#maintainer-publication-preparation).
+
 ### Source-index coverage and measured cost
 
 At 10:47 UTC, an actual input inventory found 147 tracked paths outside v1's

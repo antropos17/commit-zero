@@ -47,6 +47,18 @@ export const rootFiles = [
 export const sourceIndexVersion = 2;
 const execute = promisify(execFile);
 
+export function gitEnvironment(inherited = process.env) {
+  const env = { ...inherited };
+  for (const key of Object.keys(env))
+    if (key.toUpperCase().startsWith("GIT_")) delete env[key];
+  return {
+    ...env,
+    GIT_OPTIONAL_LOCKS: "0",
+    GIT_NO_LAZY_FETCH: "1",
+    GIT_NO_REPLACE_OBJECTS: "1",
+  };
+}
+
 function validateSourcePath(root, path) {
   if (
     !path ||
@@ -86,14 +98,7 @@ async function trackedInputs(root) {
   }
   if (marker.isSymbolicLink())
     throw new Error("Source index refuses redirected Git metadata.");
-  const env = { ...process.env, GIT_OPTIONAL_LOCKS: "0" };
-  for (const key of [
-    "GIT_DIR",
-    "GIT_WORK_TREE",
-    "GIT_INDEX_FILE",
-    "GIT_COMMON_DIR",
-  ])
-    delete env[key];
+  const env = gitEnvironment();
   const git = (args) =>
     execute(
       "git",
@@ -102,6 +107,8 @@ async function trackedInputs(root) {
         "core.excludesFile=",
         "-c",
         "core.fsmonitor=false",
+        "-c",
+        `safe.directory=${root}`,
         "-C",
         root,
         ...args,
