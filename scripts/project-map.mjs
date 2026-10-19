@@ -173,6 +173,8 @@ export const areas = {
       "scripts/project-files.mjs",
       "scripts/source-inspect.mjs",
       "scripts/prepare-publication.mjs",
+        "scripts/verify-vendored-skills.mjs",
+        "shared/vendored-skills.json",
       "scripts/benchmark-ui.mjs",
       "scripts/capture-launch.mjs",
       "scripts/agent-fixtures.mjs",
@@ -180,8 +182,8 @@ export const areas = {
       "scripts/sandbox-doctor.mjs",
       "scripts/sandbox-contract.mjs",
     ],
-    tests: ["tests/tooling.test.mjs", "tests/project-files.test.mjs", "tests/browser-runtime.test.mjs", "tests/browser-evidence.test.mjs", "tests/evidence-status.test.mjs", "tests/publication-preparation.test.mjs", "tests/store-snapshot.test.mjs", "tests/sandbox-contract.test.mjs"],
-    docs: ["docs/DEVELOPMENT.md", "docs/SANDBOX-ADAPTER.md", "docs/WORKFLOW-MEASUREMENTS.md", "docs/ECOSYSTEM-DECISIONS.md"],
+    tests: ["tests/tooling.test.mjs", "tests/project-files.test.mjs", "tests/browser-runtime.test.mjs", "tests/browser-evidence.test.mjs", "tests/evidence-status.test.mjs", "tests/publication-preparation.test.mjs", "tests/vendored-skills.test.mjs", "tests/store-snapshot.test.mjs", "tests/sandbox-contract.test.mjs"],
+    docs: ["docs/DEVELOPMENT.md", "docs/SANDBOX-ADAPTER.md", "docs/WORKFLOW-MEASUREMENTS.md", "docs/VENDORED-SKILLS.md", "docs/ECOSYSTEM-DECISIONS.md"],
   },
 };
 

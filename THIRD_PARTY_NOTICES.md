@@ -47,10 +47,14 @@ included in this source release. Their upstream licenses apply to those download
 
 ## Optional local development skills
 
-Optional agent skills used during local development are separate third-party
-tools, not part of the published application source snapshot. A local checkout may
-retain `.agents/skills` for the operator. Those copies are excluded from source
-publication because their complete version-specific redistribution notices and
-provenance were not established. This includes their bundled scripts and data.
-They are not required to install, build, check or run Commit Zero. AGPL-3.0 does not
-grant redistribution rights to omitted upstream tools.
+The existing `.agents/skills` reference folders are included in this repository.
+The earlier claim that they were excluded was stale. All 93 retained upstream
+files match pinned Impeccable, Taste Skill and Animate snapshots. Their original
+license texts and Impeccable NOTICE are preserved under `docs/vendor-licenses`.
+See [exact revisions, licenses and reproduction](docs/VENDORED-SKILLS.md).
+
+These development references retain Apache-2.0 or MIT terms; original Commit Zero
+material remains AGPL-3.0. The application does not import their scripts and they
+are optional for installation/runtime use. The full source check verifies their
+file identity; it does not launch or qualify the tools. `npm run skills:verify`
+also performs that offline comparison without executing upstream code.

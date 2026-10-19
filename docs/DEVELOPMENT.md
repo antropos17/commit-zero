@@ -57,6 +57,10 @@ checkout can use `npm run publication:prepare -- --base-local <full-sha>
 [the publication contract](RELEASE.md#maintainer-publication-preparation) for
 fresh fetches, matching bases, patch review, ordinary commits/push and exact CI.
 The preparer never fetches, commits, pushes or creates a release/tag.
+`npm run skills:verify` checks the existing vendored design references and their
+original notices against pinned byte identities. It performs no download or
+execution. [Sources, terms and update procedure](VENDORED-SKILLS.md) apply when
+using or changing those references; the full gate includes its drift checks.
 `npm run benchmark:ui -- --history 1000 --samples 5` measures a labelled read-only
 chat fixture in cold browser contexts after `npm run build`. Use the same browser,
 viewport and parameters for comparison; it never opens a retained user store.
