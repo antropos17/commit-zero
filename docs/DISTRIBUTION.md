@@ -35,6 +35,8 @@ Suggested first-comment facts for the maker to rewrite in their own voice:
 
 Assets: [workspace desktop](media/workspace-desktop.png), [review](media/workspace-review.png),
 [condensed saved-run demo](media/workflow-demo.gif), and [static fallback](media/workflow-poster.png).
+The [current scenario PR diff](media/scenario-pr-2026-10-19.png) is a real Chrome
+capture of the deterministic ten-step example; caption it as simulated activity.
 The new [catalog capture](media/agent-catalog-2026-10-19.png) is an optional
 third image only when captioned as 18 disabled proposals in a deterministic
 fixture. Gallery sizing/crop and thumbnail have not been checked against Product

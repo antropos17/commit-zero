@@ -21,6 +21,12 @@ recovery, run `npm run simulate:commons -- --seed 17` in a separate terminal.
 It uses isolated fixture actors and does not modify a saved user run.
 [Simulation scope](SIMULATIONS.md).
 
+The [PR diff capture](media/scenario-pr-2026-10-19.png) is an actual Chrome
+capture after completing the deterministic ten-step example in disposable
+services. Conversation, checks and changed files remain inspectable after merge.
+At narrow widths, focus the code region and use arrow keys or swipe sideways to
+read complete lines. Scenario checks are predefined results, not executed code.
+
 ## Enable reviewed local proposals
 
 On Windows x64 with PowerShell 7, Vulkan-compatible hardware and sufficient

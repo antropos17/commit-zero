@@ -3514,6 +3514,16 @@ textarea::placeholder {
   overflow: auto;
   scrollbar-gutter: stable;
 }
+.pr-diff-scroll-hint {
+  display: none;
+}
+@media (max-width: 760px) {
+  .pr-diff-scroll-hint {
+    display: block;
+    margin: 0;
+    padding: 8px 14px 0;
+  }
+}
 .repo-body > section > .project-live-timeline {
   margin-top: 24px;
 }

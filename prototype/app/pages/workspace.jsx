@@ -842,6 +842,7 @@ function Diff({ pr }) {
           <b className="text-red">−{old.length - prefix - suffix}</b>
         </span>
       </div>
+      <p className="small muted pr-diff-scroll-hint">Scroll code sideways to see complete lines.</p>
       <SourceCode diff={lines} label="Code changes" />
     </div>
   );

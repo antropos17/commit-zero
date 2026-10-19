@@ -16,6 +16,7 @@ export const browserGroups = Object.freeze([
     ]),
   }),
   Object.freeze({ name: "workspace", files: Object.freeze(["workspace.spec.mjs"]) }),
+  Object.freeze({ name: "scenario-pr", files: Object.freeze(["scenario-pr.spec.mjs"]) }),
 ]);
 
 export async function assertBrowserCoverage() {

@@ -115,7 +115,9 @@ receipts; mocked tests never count as inference or runtime test evidence.
 Public hosted deployment is still gated on TLS and account authorization for all shared
 writes, qualified generated-code isolation, provider/OAuth configuration, actual
 external PostgreSQL deployment/load and recovery tests, and native Git hosting if
-remote clone/push is required. Docker was unavailable during this work and the C:
-volume had approximately 4 GB free; no Docker startup, data relocation or global
-configuration changes were performed. Publishing source on GitHub does not establish
+remote clone/push is required. Earlier qualification recorded an unavailable Docker
+runtime and approximately 4 GB free on C:. The 2026-10-19 mission recheck found
+80.6 GB free on the X: workspace volume; Docker execution remains unqualified.
+No Docker startup, data relocation or global configuration changes were performed.
+Publishing source on GitHub does not establish
 these deployment guarantees. No hosted application service was created.

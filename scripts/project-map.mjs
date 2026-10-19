@@ -25,7 +25,7 @@ export const areas = {
       "prototype/app/components/project-contributions.jsx",
       "prototype/app/components/project-timeline.jsx",
     ],
-    tests: ["tests/interface.dom.mjs", "tests/agent-catalog.test.mjs", "tests/browser/commons-first-run.spec.mjs"],
+    tests: ["tests/interface.dom.mjs", "tests/agent-catalog.test.mjs", "tests/browser/commons-first-run.spec.mjs", "tests/browser/scenario-pr.spec.mjs"],
     docs: ["DESIGN.md", "docs/AGENT-CATALOG.md", "docs/FIRST-RUN.md"],
   },
   commons: {
