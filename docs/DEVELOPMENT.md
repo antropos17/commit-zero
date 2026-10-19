@@ -34,6 +34,9 @@ only Node `.test.mjs` files. Run `npm run test:ui` for real browser coverage.
 `npm run benchmark:ui -- --history 1000 --samples 5` measures a labelled read-only
 chat fixture in cold browser contexts after `npm run build`. Use the same browser,
 viewport and parameters for comparison; it never opens a retained user store.
+`npm run capture:launch` performs disposable model-free journeys and captures
+ready-size launch images with provenance under `runtime/verification/launch-assets`.
+Review the actual images before copying them into source; see [distribution](DISTRIBUTION.md).
 Focused suites are explicitly labeled feedback, not full acceptance. Select an area
 deliberately: changed-file inference is unreliable in this dirty checkout and can
 miss integration dependencies. The full gate remains serial to bound PGlite memory.

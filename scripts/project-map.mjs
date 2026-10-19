@@ -157,6 +157,7 @@ export const areas = {
       "scripts/verify.mjs",
       "scripts/test-ui.mjs",
       "scripts/benchmark-ui.mjs",
+      "scripts/capture-launch.mjs",
       "scripts/repo-check.mjs",
       "scripts/sandbox-doctor.mjs",
       "scripts/sandbox-contract.mjs",

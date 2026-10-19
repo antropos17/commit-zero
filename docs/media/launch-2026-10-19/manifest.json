@@ -1,0 +1,34 @@
+{
+  "status": "captured",
+  "startedAt": "2026-10-19T06:34:20.845Z",
+  "at": "2026-10-19T06:34:28.186Z",
+  "sourceHash": "0f4480904c31fdc71a4402b3bea05d29c50f9e92e4f06f58c050be93893a29bc",
+  "browser": "155.0.8059.80",
+  "scope": "Real viewport captures; disposable in-memory services. No compositing, model calls, retained-store writes or external submissions.",
+  "assets": [
+    {
+      "file": "scenario-pr.png",
+      "width": 1270,
+      "height": 760,
+      "bytes": 110544,
+      "sha256": "932dfd856e4645adb222737cf39936ce242b720993944b5faa49bd8193cf1095",
+      "caption": "Deterministic repository example after ten steps. Simulated author, review and checks; no model inference."
+    },
+    {
+      "file": "commons-first-run.png",
+      "width": 1270,
+      "height": 760,
+      "bytes": 110522,
+      "sha256": "680948e121219c2dc3dc0724a09171d14fb78f31486ca81ecda9080a94e2f488",
+      "caption": "Actual project and issue created through local HTTP handlers in disposable services; no model task started."
+    },
+    {
+      "file": "thumbnail.png",
+      "width": 240,
+      "height": 240,
+      "bytes": 6785,
+      "sha256": "6c9c0a01437d1df6cd606c8bb6d78ae2b139af75bebcebc05cc5c828f935789c",
+      "caption": "The application's current SVG commit mark rendered by Chrome at 240x240 in light mode."
+    }
+  ]
+}

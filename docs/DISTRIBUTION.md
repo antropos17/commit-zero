@@ -9,7 +9,7 @@ active catalog agents or a generated-code sandbox.
 
 | Channel and audience | Official submission rules and fit | Required preparation and timing |
 | --- | --- | --- |
-| [Product Hunt](https://www.producthunt.com/launch): makers and early adopters who can install a developer tool | [Launch guide](https://www.producthunt.com/launch/preparing-for-launch) accepts a GitHub repository URL, asks for a plain name, tagline up to 60 characters, description up to 500, square thumbnail under 3 MB and at least two gallery images. The [guide](https://www.producthunt.com/launch) forbids direct requests for upvotes. | Best after final public commit and CI pass. Use existing real workspace/review captures as two gallery images, the repository logo as thumbnail only after checking dimensions, and a maker's personal account. The owner should verify all fields and be available for questions. No scheduled launch yet. |
+| [Product Hunt](https://www.producthunt.com/launch): makers and early adopters who can install a developer tool | [Launch guide](https://www.producthunt.com/launch/preparing-for-launch) accepts a GitHub repository URL, asks for a plain name, tagline up to 60 characters, description up to 500, square thumbnail under 3 MB and at least two gallery images. Recommended dimensions are 240x240 and 1270x760. The [guide](https://www.producthunt.com/launch) forbids direct requests for upvotes. | Best after final public commit and CI pass. The checked asset set below provides two real viewport captures and the current application mark. A maker's personal account, final fields and availability for questions remain prerequisites. No scheduled launch yet. |
 | [Show HN](https://news.ycombinator.com/showhn.html): developers who can run the project | Show HN accepts software people can run locally, asks for a `Show HN` title and easy trial without a signup barrier. [HN guidelines](https://news.ycombinator.com/newsguidelines.html) prohibit generated or AI-edited submission text and promotion-first participation. | Provide a clean quickstart, public source and reproducible demo. The human maker must write the submission and comments personally. This file supplies a fact sheet, not post copy. Do not ask for votes. |
 | [DEV Community](https://dev.to/): technical readers interested in verification and local AI | [AI-assisted article rules](https://dev.to/guidelines-for-ai-assisted-articles-on-dev) require disclosure and fact checking, and disallow AI-assisted articles promoting a program. | Defer a launch post. A human-authored technical case study about revision-checked reviews and simulation may fit after sustained real-world feedback. No promotional draft is prepared. |
 | [r/LocalLLaMA](https://www.reddit.com/r/LocalLLaMA/): local-model practitioners | The accessible [community rules page](https://www.reddit.com/r/LocalLLaMA/about/rules/) did not expose the rules to this research tool. Reddit's [general guidance](https://www.reddit.com/wiki/selfpromotion/) explicitly says its older self-promotion page is no longer updated and asks authors to check subreddit-specific rules. | Hold. Recheck current rules in a logged-in view and establish genuine community participation before considering a post. Do not infer permission from old general advice. |
@@ -37,10 +37,32 @@ Assets: [workspace desktop](media/workspace-desktop.png), [review](media/workspa
 [condensed saved-run demo](media/workflow-demo.gif), and [static fallback](media/workflow-poster.png).
 The [current scenario PR diff](media/scenario-pr-2026-10-19.png) is a real Chrome
 capture of the deterministic ten-step example; caption it as simulated activity.
-The new [catalog capture](media/agent-catalog-2026-10-19.png) is an optional
-third image only when captioned as 18 disabled proposals in a deterministic
-fixture. Gallery sizing/crop and thumbnail have not been checked against Product
-Hunt's upload requirements; those are prerequisites before submission.
+The [catalog capture](media/agent-catalog-2026-10-19.png) is optional only when
+captioned as 18 disabled proposals. Prefer the following ready-size set for a
+first launch; it demonstrates a model-free entry path and the repository example.
+
+| Asset | Checked file | Required caption |
+| --- | --- | --- |
+| Gallery 1 | [Commons first run](media/launch-2026-10-19/commons-first-run.png), 1270x760 | Actual local project and issue created by a deterministic capture script in disposable services. No model task started. |
+| Gallery 2 | [Scenario PR](media/launch-2026-10-19/scenario-pr.png), 1270x760 | Deterministic ten-step repository example. Author, review and checks are simulated. |
+| Thumbnail | [Current commit mark](media/launch-2026-10-19/thumbnail.png), 240x240 | Current application SVG mark rendered in Chrome, light mode. |
+
+The [capture manifest](media/launch-2026-10-19/manifest.json) records dimensions,
+bytes, SHA-256, capture time, source fingerprint and Chrome version. The PNGs are
+actual viewports without resizing, compositing or invented activity; all are
+below 3 MB. Visual inspection confirmed the relevant issue and changed lines
+are visible. The manifest is capture provenance, not a full release gate.
+
+Regenerate after `npm run build` with `npm run capture:launch`. On this Windows
+host set `CZ_BROWSER_EXECUTABLE` as described in [development](DEVELOPMENT.md).
+The command starts disposable in-memory services, performs actual scenario and
+Commons HTTP interactions, captures PNGs, checks sizes/hashes and awaits cleanup.
+It writes only `runtime/verification/launch-assets`; copy reviewed assets into a
+dated source folder. Captured issue timestamps can differ on later runs, so the
+journey is reproducible but byte-identical screenshots are not promised. The
+personal account, maker comment and final launch timing remain human actions.
+The mutable manifest is replaced with `running` before capture and `failed` on
+an error; an interrupted attempt cannot leave an older success marked current.
 
 ## GitHub release candidate draft
 
@@ -59,6 +81,11 @@ announcement posted elsewhere.
 > in isolated fixtures. The sandbox contract reports its actual host readiness;
 > no container execution is claimed without a working runtime.
 >
+> Chat now starts with the latest 40 saved messages and explicitly loads earlier
+> batches while preserving the reading anchor. `npm run benchmark:ui` records a
+> read-only large-history fixture; smaller initial DOM size is verified, while
+> changed snapshots still transfer the full history.
+>
 > The existing local Builder/Reviewer and Language lab paths remain separate
 > from the deterministic repository example and new fixtures. Proposal parsing
 > and review do not prove code behavior. Follow `README.md` for installation,
@@ -67,6 +94,12 @@ announcement posted elsewhere.
 Before publishing a release, replace the candidate version with an actual tag,
 link its exact commit and CI run, re-run the documented gates, and record real
 browser/model/sandbox coverage separately. No release was created by this note.
+Current implemented-code checkpoint: public `4b1238c`, [CI run 39210013058](https://github.com/antropos17/commit-zero/actions/runs/39210013058)
+passed full gate, Chromium and runtime dependency audit. Local frozen gate at
+`6bab440` passed 66/66 Node tests, DOM/axe 2/2, build and serving with source
+hash `20deff889c69cfceab726fa372d4bf96568ba2b9afea2b43fd8293e0cf9c7917`;
+separate Chrome coverage passed 11/11. This draft and capture tooling will require
+their own final source check before publication.
 
 ## Show HN fact sheet for a human author
 
