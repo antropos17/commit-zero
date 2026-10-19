@@ -3194,6 +3194,26 @@ textarea::placeholder {
 .agent-readiness {
   padding-left: 24px;
 }
+.agent-catalog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 20px;
+  margin-bottom: 20px;
+}
+.agent-catalog-filters label {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+.agent-catalog-filters input,
+.agent-catalog-filters select {
+  width: 100%;
+}
+.agent-catalog-filters p {
+  margin: 0 0 8px;
+}
 .sandbox-layout.page-columns > section > h2 {
   margin: 0 0 16px;
   font-size: var(--type-section);

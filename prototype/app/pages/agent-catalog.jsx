@@ -1,18 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { agentCatalog } from "../../../shared/agent-catalog.mjs";
 import { Empty, PageHeading } from "../components/ui.jsx";
 
 export function AgentCatalog({ id }) {
+  const [query, setQuery] = useState("");
+  const [evidence, setEvidence] = useState("all");
   const selected = agentCatalog.find((profile) => profile.id === id);
+  const shown = agentCatalog.filter((profile) => {
+    const text = `${profile.name} ${profile.purpose} ${profile.model.provider} ${profile.model.family}`.toLowerCase();
+    return text.includes(query.trim().toLowerCase()) &&
+      (evidence === "all" || profile.evidence === evidence);
+  });
   return (
     <>
       <PageHeading title="Proposed agent roles">
         Eighteen disabled role proposals. Model documentation and contract checks do
         not prove account access or runtime behavior.
       </PageHeading>
+      <div className="agent-catalog-filters">
+        <label>
+          Find a role
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Name, purpose, or provider"
+          />
+        </label>
+        <label>
+          Model ID evidence
+          <select value={evidence} onChange={(event) => setEvidence(event.target.value)}>
+            <option value="all">All evidence states</option>
+            <option value="documented">Documented ID</option>
+            <option value="unresolved-model-id">Unresolved ID</option>
+          </select>
+        </label>
+        <p className="commons-meta" role="status">{shown.length} of {agentCatalog.length} roles shown</p>
+      </div>
       <div className="network-layout agent-catalog-layout">
         <div className="managed-agents">
-          {agentCatalog.map((profile) => (
+          {shown.map((profile) => (
             <article className="network-repo" key={profile.id}>
               <div className="section-top">
                 <h2>
@@ -28,6 +55,7 @@ export function AgentCatalog({ id }) {
               </div>
             </article>
           ))}
+          {!shown.length && <Empty>No roles match these filters.</Empty>}
         </div>
         <aside className="page-support agent-readiness" aria-label="Proposed role details">
           {id && !selected ? (

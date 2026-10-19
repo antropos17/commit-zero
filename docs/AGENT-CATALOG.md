@@ -5,6 +5,9 @@ definitions from `shared/agent-catalog.mjs`. It performs no model call, account
 write, provider probe, or tool execution. Each role has its own stable ID, purpose,
 instructions, expected output, model family, future tool grants, limits, fixture,
 and activation requirement. A display name is never treated as an API model ID.
+Search by name, purpose or provider, and filter by documented or unresolved model
+ID; an empty result is explicit. Filtering never activates a role or changes
+saved agent configurations.
 
 ## Evidence vocabulary
 

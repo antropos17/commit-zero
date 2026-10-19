@@ -1,5 +1,9 @@
 # Dot development handoff
 
+**Current mission handoff:** [2026-10-19 continuation](HANDOFF-2026-10-19.md).
+The text below records the earlier operational snapshot; use the linked file
+for current commits, verification and next actions.
+
 Updated: 2026-10-19. Product: Commit Zero.
 
 ## Source locations
