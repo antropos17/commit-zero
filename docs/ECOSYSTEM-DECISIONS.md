@@ -47,6 +47,19 @@ No substitute model is inferred from a familiar display name.
 
 ## Other adopted decisions and their evidence
 
+The [W3C button pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/)
+(accessed 2026-10-19) distinguishes a stable-label toggle from an action button
+with changing labels, and describes focus staying on actions in the same
+context. Actual Chrome fixtures showed focus loss after Next step and an
+unavailable Pause during an in-flight transaction. Decision: retain native
+action buttons, restore manual-operation entry after the DOM commit, and keep
+Pause available until future scheduling stops. The existing small
+[React layout effect](https://react.dev/reference/react/useLayoutEffect)
+runs after committed updates; it performs no state update, network call or
+layout loop. Expected benefit: keyboard users can complete and pause the
+deterministic cycle. Browser fixtures check terminal/new-run history, failure
+without automatic write retry, and pause with/without another focus choice.
+
 | Question | Decision and verification |
 | --- | --- |
 | Hosted request/response patterns | Four disconnected text contracts share host context and evidence validation. [Primary sources, offline fixtures and activation gaps](PROVIDER-DRAFTS.md). |

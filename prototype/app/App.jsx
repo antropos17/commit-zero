@@ -186,17 +186,17 @@ export function App() {
     [toast, setToast] = useState("");
   const main = useRef(null);
   const handledRoute = useRef(null);
-  const refreshOrigin = useRef(null);
+  const operationOrigin = useRef(null);
   useLayoutEffect(() => {
     if (busy) return;
-    const pending = refreshOrigin.current;
-    refreshOrigin.current = null;
+    const pending = operationOrigin.current;
+    operationOrigin.current = null;
     if (pending && location.hash === pending.hash &&
         (document.activeElement === document.body || document.activeElement === pending.trigger))
-      (pending.trigger.isConnected ? pending.trigger : main.current)?.focus({ preventScroll: true });
+      (pending.trigger.isConnected && !pending.trigger.disabled ? pending.trigger : main.current)?.focus({ preventScroll: true });
   }, [busy, data, error]);
   function refreshWorkspace(event) {
-    refreshOrigin.current = { trigger: event.currentTarget, hash: location.hash };
+    operationOrigin.current = { trigger: event.currentTarget, hash: location.hash };
     workspace.setPlaying(false);
     void workspace.refresh();
   }
@@ -389,10 +389,16 @@ export function App() {
                   </span>
                   <button
                     id="playback-toggle"
-                    disabled={!data || busy || Boolean(error)}
-                    aria-pressed={playing}
-                    onClick={() => {
+                    disabled={!data || (busy && !playing) || Boolean(error)}
+                    title={playing ? "Pause future steps. The current step can finish." : undefined}
+                    onClick={(event) => {
+                      if (playing) {
+                        if (busy) operationOrigin.current = { trigger: event.currentTarget, hash: location.hash };
+                        workspace.setPlaying(false);
+                        return;
+                      }
                       if (data.step === 10) {
+                        operationOrigin.current = { trigger: event.currentTarget, hash: location.hash };
                         void workspace.newRun().then((next) => {
                           if (next && next.runId !== data.runId) {
                             routeScroll.delete("#/home");
@@ -405,18 +411,15 @@ export function App() {
                       workspace.setPlaying(!playing);
                     }}
                   >
-                    {data?.step === 10
-                      ? "New run"
-                      : playing
-                        ? "Pause cycle"
-                        : "Play cycle"}
+                    {playing ? "Pause cycle" : data?.step === 10 ? "New run" : "Play cycle"}
                   </button>
                   <button
                     id="playback-next"
                     disabled={
                       !data || busy || Boolean(error) || data.step === 10
                     }
-                    onClick={() => {
+                    onClick={(event) => {
+                      operationOrigin.current = { trigger: event.currentTarget, hash: location.hash };
                       workspace.setPlaying(false);
                       void workspace.advance();
                     }}

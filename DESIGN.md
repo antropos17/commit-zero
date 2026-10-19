@@ -86,6 +86,12 @@ keyboard recovery control.
 Environment stays readable without a workspace snapshot; unknown repository
 counts stay absent until data arrives.
 
+Manual scenario steps keep keyboard focus on the same enabled control; completion
+or a failed step returns entry to main. Pausing remains available during an
+in-flight step and stops future scheduling, while the current transaction can
+finish. A changing Play/Pause/New run action label uses an ordinary button,
+without a contradictory toggle pressed state. Respect another chosen control.
+
 ## Motion
 
 No authored animation or transition in the workspace, including modal scale/fade, progress interpolation, hover motion and smooth route scrolling. Update status immediately without recreating the page. Native dialog handles focus and Escape; returning focus must not move the document. Game canvas motion belongs to gameplay and remains independent of workspace chrome.

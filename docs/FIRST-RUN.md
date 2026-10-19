@@ -24,6 +24,11 @@ It uses isolated fixture actors and does not modify a saved user run.
 The [PR diff capture](media/scenario-pr-2026-10-19.png) is an actual Chrome
 capture after completing the deterministic ten-step example in disposable
 services. Conversation, checks and changed files remain inspectable after merge.
+Use **Next step** with Enter or Space to continue from the same control. At the
+last step, focus returns to content. **New run** preserves the completed run's
+export. **Pause cycle** stops future scheduled steps; a step already sent to the
+service can finish. A failed step never advances the view optimistically, and
+**Retry** refreshes the saved state without repeating the write.
 At narrow widths, focus the code region and use arrow keys or swipe sideways to
 read complete lines. Scenario checks are predefined results, not executed code.
 
