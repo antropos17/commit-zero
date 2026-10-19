@@ -126,6 +126,7 @@ function Page({ route, preview, notify }) {
     case "repo":
       return (
         <Repository
+          key={`${data.runId}/${id}`}
           id={id}
           tab={tab}
           file={file}

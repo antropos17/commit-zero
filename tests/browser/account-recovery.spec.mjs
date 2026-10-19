@@ -250,3 +250,98 @@ test("a prior account response cannot replace another user's saved repositories"
     release();
   }
 });
+
+for (const firstFails of [false, true]) test(`repository saves stay ordered when the first response ${firstFails ? "fails" : "is delayed"}`, async ({ page }) => {
+  const displayName = firstFails ? "Queued Failure" : "Queued Saves";
+  await register(page, firstFails ? "queued_failure" : "queued_saves", displayName);
+  await page.setViewportSize({ width: 390, height: 844 });
+  let captured = false, released = false, premature = false, release;
+  const writes = [];
+  const gate = new Promise((resolve) => { release = resolve; });
+  await page.route("**/api/account/bookmarks/*", async (route) => {
+    const repo = route.request().url().split("/").at(-1);
+    writes.push(repo);
+    if (repo !== "orbit") {
+      premature ||= !released;
+      return route.continue();
+    }
+    const response = firstFails ? null : await route.fetch();
+    captured = true;
+    await gate;
+    return response ? route.fulfill({ response }) : route.fulfill({ status: 503,
+      contentType: "application/json", body: JSON.stringify({ message: "Fixture first save unavailable." }) });
+  });
+  try {
+    await page.evaluate(() => { location.hash = "/repo/orbit"; });
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect.poll(() => captured).toBe(true);
+    await page.evaluate(() => { location.hash = "/repo/vector-kit"; });
+    const save = page.getByRole("button", { name: "Save", exact: true });
+    await save.focus();
+    await page.keyboard.press("Enter");
+    await expect(save).toBeDisabled();
+    await expect(save).toHaveAttribute("aria-busy", "true");
+    await expect(page.getByRole("status").filter({ hasText: "Saving repository" })).toBeVisible();
+    if (!firstFails) {
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+    }
+    const search = page.getByRole("searchbox", { name: "Search agents, repositories, and pull requests" });
+    if (firstFails) await search.fill("keep chosen input during queued saves");
+    const first = page.waitForResponse((response) => response.url().endsWith("/api/account/bookmarks/orbit"));
+    const second = page.waitForResponse((response) => response.url().endsWith("/api/account/bookmarks/vector-kit"));
+    released = true;
+    release();
+    expect((await first).status()).toBe(firstFails ? 503 : 200);
+    expect((await second).status()).toBe(200);
+    await expect(page.getByRole("button", { name: "Saved", exact: true })).toBeVisible();
+    await expect(firstFails ? search : page.getByRole("button", { name: "Saved", exact: true })).toBeFocused();
+    expect(premature).toBe(false);
+    expect(writes).toEqual(["orbit", "vector-kit"]);
+    await page.evaluate(() => { location.hash = "/profile"; });
+    await expect(page.locator(".observer-profile .repo-catalog")).toContainText("chatgpt/vector-kit");
+    if (!firstFails) await expect(page.locator(".observer-profile .repo-catalog")).toContainText("chatgpt/orbit");
+    const saved = await (await page.request.get("/api/account")).json();
+    expect([...saved.bookmarks].sort()).toEqual(firstFails ? ["vector-kit"] : ["orbit", "vector-kit"]);
+  } finally { released = true; release(); }
+});
+
+test("queued saves from a signed-out account never execute in the next session", async ({ page }) => {
+  await register(page, "queued_owner_a", "Queued Owner A");
+  let captured = false, release;
+  const writes = [];
+  const gate = new Promise((resolve) => { release = resolve; });
+  await page.route("**/api/account/bookmarks/*", async (route) => {
+    const repo = route.request().url().split("/").at(-1);
+    writes.push(repo);
+    if (repo !== "orbit") return route.continue();
+    const response = await route.fetch();
+    captured = true;
+    await gate;
+    return route.fulfill({ response });
+  });
+  try {
+    await page.evaluate(() => { location.hash = "/repo/orbit"; });
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect.poll(() => captured).toBe(true);
+    await page.evaluate(() => { location.hash = "/profile"; });
+    await expect(page.getByRole("heading", { name: "Queued Owner A", exact: true })).toBeVisible();
+    await page.evaluate(() => { location.hash = "/repo/vector-kit"; });
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Save", exact: true })).toBeDisabled();
+    await page.evaluate(() => { location.hash = "/profile"; });
+    await page.getByRole("button", { name: "Sign out", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Your profile", exact: true })).toBeVisible();
+    await register(page, "queued_owner_b", "Queued Owner B");
+    await expect(page.getByText("No repositories in this view.", { exact: true })).toBeVisible();
+    const first = page.waitForResponse((response) => response.url().endsWith("/api/account/bookmarks/orbit"));
+    release();
+    await (await first).finished();
+    const saved = await (await page.request.get("/api/account")).json();
+    expect(saved.user.username).toBe("queued_owner_b");
+    expect(saved.bookmarks).toEqual([]);
+    expect(writes).toEqual(["orbit"]);
+    await expect(page.getByRole("heading", { name: "Queued Owner B", exact: true })).toBeVisible();
+    await expect(page.getByText("No repositories in this view.", { exact: true })).toBeVisible();
+  } finally { release(); }
+});

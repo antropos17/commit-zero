@@ -100,7 +100,7 @@ output under `.cache/tmp`. Child processes receive TEMP/TMP/TMPDIR explicitly.
   On Windows, a local Chrome installation can be used without downloading a
   Playwright browser by setting `CZ_BROWSER_EXECUTABLE` to its absolute executable
   path. `CZ_CAPTURE_BROWSER=1` saves catalog desktop/narrow captures under
-  `runtime/verification`. `npm run test:ui` runs four serial groups with fresh
+  `runtime/verification`. `npm run test:ui` runs the configured serial groups with fresh
   disposable in-memory services to preserve scenario independence and keep the
   normal 180-request/minute API limiter active. `scripts/test-ui.mjs`
   checks that each browser spec is listed exactly once. Playwright global setup

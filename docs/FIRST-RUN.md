@@ -63,6 +63,7 @@ do not establish runtime correctness. [Complete workflow](COMMONS.md).
 | Project address is already in use | The form retains its name and description; choose another address and submit again. No duplicate project is created. |
 | Saving a scenario repository is rate limited | The repository shows a persistent message beside **Save**. Wait briefly and select **Save** again; a failed request does not add a bookmark. |
 | Saved repositories are unavailable after sign-in | Your sign-in succeeded. Restore the service and select **Refresh saved repositories** on **My profile**. An unknown list is not shown as empty; a previously loaded list remains visible if refresh fails. |
+| Saving several repositories while navigating | Saves from this page session finish in order. The busy button and Saving status persist until that repository's action finishes. A failed save is not retried automatically; another explicitly requested save can proceed. Signing out cancels saves that have not yet been sent. Use **Refresh saved repositories** to reconcile changes from another tab. |
 | Task fails or is cancelled | Inspect its retained timeline and raw receipt. Retry by explicitly starting a new task; a restarted server does not silently retry jobs. |
 | Provider setup is unavailable | Continue exploring the deterministic example and model-free Commons forms. Do not interpret these as actual model contributions. |
 

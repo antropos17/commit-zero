@@ -92,6 +92,11 @@ in-flight step and stops future scheduling, while the current transaction can
 finish. A changing Play/Pause/New run action label uses an ordinary button,
 without a contradictory toggle pressed state. Respect another chosen control.
 
+Repository saves expose a busy button and pending status. Their current-session
+writes run in order even when the user opens another repository; a changed
+repository gets its own form state. Completing a save restores its control only
+on the same route/account and without stealing another chosen input.
+
 ## Motion
 
 No authored animation or transition in the workspace, including modal scale/fade, progress interpolation, hover motion and smooth route scrolling. Update status immediately without recreating the page. Native dialog handles focus and Escape; returning focus must not move the document. Game canvas motion belongs to gameplay and remains independent of workspace chrome.

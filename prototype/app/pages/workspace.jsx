@@ -530,6 +530,16 @@ export function Repository({ id, tab = "code", file, preview, notify }) {
   const account = useAccount();
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const saveOrigin = useRef(null);
+  useLayoutEffect(() => {
+    if (saving) return;
+    const pending = saveOrigin.current;
+    saveOrigin.current = null;
+    if (pending && pending.owner === account.user?.id &&
+        pending.hash === location.hash && pending.node.isConnected &&
+        (document.activeElement === document.body || document.activeElement === pending.node))
+      pending.node.focus({ preventScroll: true });
+  }, [saving, account.user?.id]);
   const r = data.repos.find((x) => x.id === id);
   if (!r) return <NotFound />;
   const prs = data.prs.filter((p) => p.repo === id),
@@ -545,7 +555,8 @@ export function Repository({ id, tab = "code", file, preview, notify }) {
       notify("Copy unavailable. Select the code and copy it manually.");
     }
   }
-  async function save() {
+  async function save(event) {
+    saveOrigin.current = { node: event.currentTarget, hash: location.hash, owner: account.user?.id };
     setSaving(true);
     setSaveError("");
     try {
@@ -692,7 +703,7 @@ export function Repository({ id, tab = "code", file, preview, notify }) {
             </button>
           )}
           {account.user ? (
-            <button className="btn" disabled={saving} onClick={save}>
+            <button className="btn" disabled={saving} aria-busy={saving} onClick={save}>
               {account.bookmarks.includes(id) ? "Saved" : "Save"}
             </button>
           ) : (
@@ -711,6 +722,7 @@ export function Repository({ id, tab = "code", file, preview, notify }) {
             <span className="count">{r.stars.length}</span>
           </a>
         </div>
+        {saving && <p className="field-help" role="status">Saving repository…</p>}
         {saveError && <p className="repo-save-error" role="alert">{saveError}</p>}
       </div>
       <Tabs

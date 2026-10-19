@@ -145,10 +145,12 @@ export function AccountProvider({ children }) {
     [checked, setChecked] = useState(false);
   const currentUser = useRef(null),
     identityVersion = useRef(0),
-    bookmarkVersion = useRef(0);
+    bookmarkVersion = useRef(0),
+    bookmarkQueue = useRef(Promise.resolve());
   const installIdentity = useCallback((next) => {
     identityVersion.current++;
     bookmarkVersion.current++;
+    bookmarkQueue.current = Promise.resolve();
     currentUser.current = next;
     setUser(next);
     setBookmarks([]);
@@ -222,24 +224,31 @@ export function AccountProvider({ children }) {
     currentUser.current = result.user;
     setUser(result.user);
   };
-  const bookmark = async (repo, saved) => {
+  const bookmark = (repo, saved) => {
     const identity = identityVersion.current,
       owner = currentUser.current?.id;
-    const result = await request(
-      `account/bookmarks/${encodeURIComponent(repo)}`,
-      { method: "PUT", body: { saved } },
-    );
-    if (
-      identityVersion.current !== identity ||
-      currentUser.current?.id !== owner
-    )
-      return;
-    // A read captured before this completed write must never replace its result.
-    bookmarkVersion.current++;
-    setBookmarks(result.bookmarks);
-    setBookmarksKnown(true);
-    setBookmarksLoading(false);
-    setBookmarksError("");
+    const isCurrent = () => owner && identityVersion.current === identity &&
+      currentUser.current?.id === owner;
+    // Responses contain full lists without revisions. Serialize this session's
+    // explicit writes so a delayed earlier response cannot undo a later list.
+    const operation = bookmarkQueue.current.then(async () => {
+      if (!isCurrent()) return { applied: false };
+      const result = await request(
+        `account/bookmarks/${encodeURIComponent(repo)}`,
+        { method: "PUT", body: { saved } },
+      );
+      if (!isCurrent()) return { applied: false };
+      // A read captured before this completed write must never replace its result.
+      bookmarkVersion.current++;
+      setBookmarks(result.bookmarks);
+      setBookmarksKnown(true);
+      setBookmarksLoading(false);
+      setBookmarksError("");
+      return { applied: true };
+    });
+    // Keep the caller's error, while allowing the next explicit save to proceed.
+    bookmarkQueue.current = operation.catch(() => {});
+    return operation;
   };
   return (
     <Account.Provider
