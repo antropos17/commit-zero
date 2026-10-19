@@ -3221,6 +3221,15 @@ textarea::placeholder {
 .sandbox-layout .service-list {
   margin-bottom: 20px;
 }
+.commons-fixture-summary {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.commons-fixture-summary h2 {
+  font-size: var(--type-section);
+  margin: 0 0 12px;
+}
 .search-section:first-child {
   margin-top: 0;
 }

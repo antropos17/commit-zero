@@ -39,6 +39,7 @@ export const areas = {
       "shared/agent-catalog.mjs",
       "shared/agent-evaluation.mjs",
       "shared/provider-drafts.mjs",
+      "shared/commons-fixture-seed17.json",
       "db/migrations/003_commons.sql",
       "db/migrations/004_commons_storage.sql",
       "db/migrations/005_commons_issues.sql",

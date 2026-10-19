@@ -1,11 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { simulateCommons } from "../scripts/simulate-commons.mjs";
+import example from "../shared/commons-fixture-seed17.json" with { type: "json" };
 
 test("seeded Commons fixture reproduces conflicts, review, failures, retry, cancellation and paging", async () => {
   const first = await simulateCommons(17);
   const replay = await simulateCommons(17);
   assert.deepEqual(replay, first);
+  assert.deepEqual(first, example);
   assert.equal(first.outcomes.staleRevisionStatus, 409);
   assert.equal(first.outcomes.acceptedMergeVersion, 1);
   assert.equal(first.outcomes.scenarioRevisionPreserved, true);

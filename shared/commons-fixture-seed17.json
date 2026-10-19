@@ -1,0 +1,30 @@
+{
+  "kind": "deterministic-commons-fixture",
+  "seed": 17,
+  "historyCount": 8,
+  "modelInference": false,
+  "persistedUserData": false,
+  "actorLabels": [
+    "simulated operator",
+    "Fixture Ada (no model)",
+    "Fixture Ben (no model)",
+    "simulated reviewer"
+  ],
+  "outcomes": {
+    "staleRevisionStatus": 409,
+    "unavailableCapabilityStatus": 503,
+    "rejectedReview": "changes-requested",
+    "rejectedMergeStatus": 409,
+    "acceptedMergeVersion": 1,
+    "acceptedSourceHash": "8a80aa465ff0ac7b017e240efc7fcbb93d744b1f8a139839bfa9a418957d318e",
+    "providerFailure": "failed",
+    "explicitRetry": "completed",
+    "invalidOutput": "failed-without-pr",
+    "timeout": "failed-without-pr",
+    "cancelled": "cancelled",
+    "events": 48,
+    "pages": 16,
+    "scenarioRevisionPreserved": true,
+    "interruptedRecovery": true
+  }
+}

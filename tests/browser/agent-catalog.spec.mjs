@@ -50,6 +50,12 @@ test("disabled role catalog stays inspectable at desktop and narrow widths", asy
   await page.goto("/#/sandbox");
   await expect(page.getByRole("heading", { name: "Code runner readiness" })).toBeVisible();
   await expect(page.locator("main")).toContainText("Docker execution is not connected");
+  await expect(page.getByRole("region", { name: "Seeded Commons example" }))
+    .toContainText("Fixture only · seed 17 · no model inference");
+  await expect(page.getByRole("region", { name: "Seeded Commons example" }))
+    .toContainText("48 events across 16 cursor pages");
   await expect(page.locator("main button")).toHaveCount(1);
+  if (process.env.CZ_CAPTURE_BROWSER === "1")
+    await page.screenshot({ path: "runtime/verification/environment-fixture-narrow-2026-10-19.png", fullPage: true });
   expect(errors).toEqual([]);
 });

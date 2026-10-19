@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { useAccount, useResource, useWorkspace } from "../hooks.mjs";
 import { path, replaceRoute } from "../router.mjs";
 import { stages, before, after } from "../../../shared/scenario.mjs";
+import commonsFixture from "../../../shared/commons-fixture-seed17.json";
 import { TimelineFeed } from "./timeline.jsx";
 import {
   Avatar,
@@ -1183,6 +1184,23 @@ export function Environment() {
             Docker daemon. Runtime denial, timeout, cancellation, and artifact
             capture must pass before activation.
           </p>
+          <section className="commons-fixture-summary" aria-label="Seeded Commons example">
+            <h2>Seeded Commons example</h2>
+            <p>
+              Fixture only · seed {commonsFixture.seed} · no model inference or
+              saved user-history write. These outcomes come from the isolated
+              Commons HTTP reproduction.
+            </p>
+            <p>{commonsFixture.actorLabels.join(" · ")}</p>
+            <ul className="plain-list">
+              <li>Stale edit: HTTP {commonsFixture.outcomes.staleRevisionStatus}; no extra write.</li>
+              <li>Rejected review: {commonsFixture.outcomes.rejectedReview}; merge HTTP {commonsFixture.outcomes.rejectedMergeStatus}.</li>
+              <li>Approved fixture merge: project v{commonsFixture.outcomes.acceptedMergeVersion}.</li>
+              <li>Failure, explicit retry and cancellation: {commonsFixture.outcomes.providerFailure}, {commonsFixture.outcomes.explicitRetry}, {commonsFixture.outcomes.cancelled}.</li>
+              <li>{commonsFixture.outcomes.events} events across {commonsFixture.outcomes.pages} cursor pages; interrupted job recovered.</li>
+            </ul>
+            <p>Reproduce: <code>npm run simulate:commons -- --seed {commonsFixture.seed}</code></p>
+          </section>
         </section>
         <aside className="page-support" aria-label="Execution boundaries">
           <h2>Boundaries</h2>
