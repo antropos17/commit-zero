@@ -9,7 +9,7 @@ import {
 import { CategoryMark } from "../components/category-mark.jsx";
 import { Commons } from "./commons.jsx";
 import { checkLabel } from "../format.mjs";
-import React, { useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { useAccount, useResource, useWorkspace } from "../hooks.mjs";
 import { path, replaceRoute } from "../router.mjs";
 import { stages, before, after } from "../../../shared/scenario.mjs";
@@ -1135,6 +1135,23 @@ export function History() {
 }
 export function Environment() {
   const health = useResource("health");
+  const workspace = useWorkspace();
+  const refreshControl = useRef(null),
+    retryOrigin = useRef(null);
+  useLayoutEffect(() => {
+    if (health.loading) return;
+    const origin = retryOrigin.current;
+    retryOrigin.current = null;
+    if (origin && document.activeElement === document.body)
+      (origin.isConnected ? origin : refreshControl.current)?.focus({
+        preventScroll: true,
+      });
+  }, [health.loading, health.data, health.error]);
+  function retryHealth(event) {
+    if (health.loading) return;
+    retryOrigin.current = event?.currentTarget || null;
+    health.retry();
+  }
   return (
     <>
       <PageHeading
@@ -1142,7 +1159,9 @@ export function Environment() {
         actions={
           <button
             className="btn"
-            onClick={health.retry}
+            ref={refreshControl}
+            aria-controls="service-health"
+            onClick={retryHealth}
             disabled={health.loading}
           >
             Refresh health
@@ -1151,30 +1170,44 @@ export function Environment() {
       >
         Local services and execution boundaries.
       </PageHeading>
+      {!workspace.data && (
+        <p className="page-intro">
+          {workspace.error
+            ? "Workspace data is unavailable. Service checks and execution requirements remain available here."
+            : "Workspace data is loading. Service checks remain available here."}
+        </p>
+      )}
       <div className="sandbox-layout page-columns">
         <section>
-          <h2>Service health</h2>
-          {health.error && (
-            <ErrorMessage message={health.error} retry={health.retry} />
-          )}
-          {health.data ? (
-            <div className="service-list">
-              {Object.entries(health.data.services || {}).map(
-                ([name, status]) => (
+          <div id="service-health" role="region"
+            aria-labelledby="service-health-heading" aria-busy={health.loading}>
+            <h2 id="service-health-heading">Service health</h2>
+            {health.error && (
+              <ErrorMessage message={health.error} retry={retryHealth} />
+            )}
+            {health.loading && (
+              <p role="status">
+                {health.data ? "Refreshing service health…" : "Checking services…"}
+              </p>
+            )}
+            {health.error && health.data && (
+              <p className="small muted">Showing the last available service health.</p>
+            )}
+            {health.data ? (
+              <div className="service-list">
+                {Object.entries(health.data.services || {}).map(([name, status]) => (
                   <div className="policy-row" key={name}>
                     <strong>{name}</strong>
-                    <span
-                      className={`pill ${status.status === "ok" ? "green" : "red"}`}
-                    >
+                    <span className={`pill ${status.status === "ok" ? "green" : "red"}`}>
                       {status.status}
                     </span>
                   </div>
-                ),
-              )}
-            </div>
-          ) : (
-            <p role="status">Checking services…</p>
-          )}
+                ))}
+              </div>
+            ) : (
+              !health.loading && <p>Service health is unavailable. Refresh to try again.</p>
+            )}
+          </div>
           <h2>Code runner readiness</h2>
           <p>
             Docker execution is not connected to Commit Zero. The source-tested

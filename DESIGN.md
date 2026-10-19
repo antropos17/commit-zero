@@ -79,7 +79,12 @@ One React root owns all active pages and preview controls. Preserve component/no
 
 A settled initial connection error clears the main region's busy state and shows
 Unavailable in the scenario status. Explicit keyboard retry returns focus to main
-after content is restored; background refresh does not move focus.
+after content is restored if the user has not chosen another control or route;
+background refresh does not move focus. Service-health refresh distinguishes
+pending, unavailable and last-available data, with scoped busy state and a stable
+keyboard recovery control.
+Environment stays readable without a workspace snapshot; unknown repository
+counts stay absent until data arrives.
 
 ## Motion
 

@@ -186,6 +186,20 @@ export function App() {
     [toast, setToast] = useState("");
   const main = useRef(null);
   const handledRoute = useRef(null);
+  const refreshOrigin = useRef(null);
+  useLayoutEffect(() => {
+    if (busy) return;
+    const pending = refreshOrigin.current;
+    refreshOrigin.current = null;
+    if (pending && location.hash === pending.hash &&
+        (document.activeElement === document.body || document.activeElement === pending.trigger))
+      (pending.trigger.isConnected ? pending.trigger : main.current)?.focus({ preventScroll: true });
+  }, [busy, data, error]);
+  function refreshWorkspace(event) {
+    refreshOrigin.current = { trigger: event.currentTarget, hash: location.hash };
+    workspace.setPlaying(false);
+    void workspace.refresh();
+  }
   const notify = useCallback((message) => setToast(message), []);
   useEffect(() => {
     if (
@@ -329,7 +343,7 @@ export function App() {
               <section className="directory-section">
                 <h2>
                   Repositories{" "}
-                  <span className="count">{data?.repos.length || 0}</span>
+                  {data && <span className="count">{data.repos.length}</span>}
                 </h2>
                 {data?.repos.map((r) => (
                   <div
@@ -414,10 +428,7 @@ export function App() {
                     aria-label="Refresh workspace"
                     title="Refresh workspace"
                     disabled={busy}
-                    onClick={() => {
-                      workspace.setPlaying(false);
-                      void workspace.refresh();
-                    }}
+                    onClick={refreshWorkspace}
                   >
                     <Icon name="sync" />
                   </button>
@@ -432,7 +443,7 @@ export function App() {
             aria-busy={busy || (!data && !error)}
           >
             {data ||
-            ["login", "signup", "profile", "my-agents"].includes(kind) ? (
+            ["login", "signup", "profile", "my-agents", "sandbox"].includes(kind) ? (
               <Page route={route} preview={setPreview} notify={notify} />
             ) : (
               <section className="loading-workspace">
@@ -442,11 +453,7 @@ export function App() {
                     "Connecting to your saved projects and agent activity."}
                 </p>
                 {error && (
-                  <button className="btn" onClick={async () => {
-                    const next = await workspace.refresh();
-                    // The retry control disappears after success; retain keyboard entry to content.
-                    if (next) main.current?.focus({ preventScroll: true });
-                  }}>
+                  <button className="btn" onClick={refreshWorkspace}>
                     Try again
                   </button>
                 )}
@@ -487,7 +494,7 @@ export function App() {
       {error && data && (
         <div className="workspace-error" role="alert">
           <span>{error}</span>
-          <button className="btn" onClick={workspace.refresh} disabled={busy}>
+          <button className="btn" onClick={refreshWorkspace} disabled={busy}>
             Retry
           </button>
         </div>

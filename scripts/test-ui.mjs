@@ -32,6 +32,7 @@ export const browserGroups = Object.freeze([
       "commons-history.spec.mjs",
       "scenario-pr.spec.mjs",
       "workspace-recovery.spec.mjs",
+      "service-health.spec.mjs",
     ]),
   }),
 ]);

@@ -9,7 +9,7 @@ or normal user database write was part of these measurements.
 ### Browser temporary paths and readiness
 
 Before the browser-runtime change, a read-only Node check returned
-`C:\Users\murtu\AppData\Local\Temp`. Installed Playwright 1.64.1 source uses
+the Windows user-local Temp directory (`%LOCALAPPDATA%\Temp`). Installed Playwright 1.64.1 source uses
 `os.tmpdir()` for temporary profiles/artifacts; the old browser entrypoints did
 not set workspace variables. No baseline browser was launched for this check.
 Receipt: `runtime/verification/browser-temp-baseline-2026-10-19.json` includes

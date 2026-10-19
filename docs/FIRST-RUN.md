@@ -48,11 +48,13 @@ do not establish runtime correctness. [Complete workflow](COMMONS.md).
 | Observation | Check and recovery |
 | --- | --- |
 | Gateway does not open | Run `npm run doctor`; check the terminal that runs `npm run dev`. Port 4173 must be free for this project. Do not remove a database lock to force startup. |
-| Workspace unavailable after the page opens | The initial workspace request failed. Restore the local service, then use **Try again**. The settled error is not marked busy; keyboard retry returns focus to the main content after success. |
+| Workspace unavailable after the page opens | The initial workspace request failed. Restore the local service, then use **Try again**. The settled error is not busy. Retry restores keyboard entry unless you choose another control or route while waiting. |
+| Need diagnostics while workspace data is unavailable | Open **Environment**; service checks and execution requirements remain accessible. **Refresh workspace** in the toolbar retries the snapshot; **Refresh health** separately updates service status. |
+| Service health cannot be loaded or refreshed | Use **Refresh health** or the inline **Try again**. Failure stops the checking indicator. A retained result is marked as the last available health until a successful refresh replaces it. |
 | Commons cannot reach the service | Restore the local gateway, then use **Retry**. The error settles without a busy announcement; Retry is disabled while its request is pending. Background polling can also recover once the service returns. |
 | Built UI is older than source | `npm start` serves `dist`; run `npm run build` after source changes, or use `npm run dev` for development. |
 | **Run agents** is disabled | Check that the task has text, the project is active, no task is running, and **Check model** reports available. Start the local provider if it is offline. |
-| Health request fails | Check gateway and provider terminals, then select **Check model** again. The draft remains in the form. |
+| Model health request fails | Check gateway and provider terminals, then select **Check model** again. The draft remains in the form. |
 | Project address is already in use | The form retains its name and description; choose another address and submit again. No duplicate project is created. |
 | Saving a scenario repository is rate limited | The repository shows a persistent message beside **Save**. Wait briefly and select **Save** again; a failed request does not add a bookmark. |
 | Saved repositories are unavailable after sign-in | Your sign-in succeeded. Restore the service and select **Refresh saved repositories** on **My profile**. An unknown list is not shown as empty; a previously loaded list remains visible if refresh fails. |
@@ -83,3 +85,12 @@ one routed HTTP 503 for the optional list. Registration still succeeds; keyboard
 Refresh then receives HTTP 200. Separate held-response fixtures check that a
 completed bookmark write and a different user's list cannot be overwritten by
 an older read. No retained account data or model activity is used.
+
+The [service-health failure capture](media/service-health-unavailable-2026-10-19.png)
+is an actual Chrome viewport after a routed connection failure. The
+[narrow dark capture](media/service-health-last-known-2026-10-19.png) follows a
+real HTTP 200 from disposable services, then a routed HTTP 503; retained `ok`
+rows are explicitly qualified as the last available result. The browser test
+recovers through the real health handler, checks keyboard focus and preserves
+the exact scenario step without reset/advance requests. These captures establish
+neither a production outage nor code-sandbox/model qualification.
